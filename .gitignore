@@ -62,7 +62,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Personal files / preferences
 /generated/prisma
-.claude/*
+.claude/
 CLAUDE.md
 /plans
 .markdown*
