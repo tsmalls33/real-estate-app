@@ -60,6 +60,9 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# Old standalone repos (kept locally as archives)
+real-estate-app-frontend/
+
 # Personal files / preferences
 /generated/prisma
 .claude/
