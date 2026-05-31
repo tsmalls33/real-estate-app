@@ -1,0 +1,17 @@
+.tenant-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tenant-item h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tenant-item p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}

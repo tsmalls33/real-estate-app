@@ -1,3 +1,4 @@
+export * from './Auth';
 export * from './User';
 export * from './Tenant';
 export * from './Theme';
