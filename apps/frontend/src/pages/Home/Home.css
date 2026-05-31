@@ -1,0 +1,72 @@
+.home-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.home-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.home-buttons button {
+  padding: 8px 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.home-buttons button.active {
+  background-color: #282c34;
+  color: #fff;
+  border-color: #282c34;
+}
+
+.home-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-list-item {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.home-list-item span {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.home-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.home-card p {
+  display: flex;
+  gap: 16px;
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.home-card p:last-child {
+  margin-bottom: 0;
+}
+
+.home-card span {
+  width: 80px;
+  flex-shrink: 0;
+  color: #888;
+  font-size: 0.85rem;
+}
