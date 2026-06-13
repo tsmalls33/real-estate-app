@@ -1,7 +1,7 @@
-import { PrismaClient, UserRoles } from '@prisma/client';
+import { PrismaClient, UserRoles, User } from '@prisma/client';
 import { seedPasswordHash } from './_password';
 
-const DEFAULT_USERS = [
+const DEFAULT_USERS: Partial<User>[] = [
   {
     email: 'superadmin@gmail.com',
     firstName: 'Super',
@@ -41,7 +41,7 @@ export async function seedUsers(prisma: PrismaClient) {
     await prisma.user.upsert({
       where: { email: user.email },
       update: { firstName: user.firstName, lastName: user.lastName, role: user.role, id_tenant: user.id_tenant },
-      create: { ...user, passwordHash },
+      create: { ...user as User, passwordHash },
     });
   }
 
