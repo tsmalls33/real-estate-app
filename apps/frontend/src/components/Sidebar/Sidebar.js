@@ -18,6 +18,7 @@ function Sidebar() {
         <li><NavLink to="/" end>Home</NavLink></li>
         {!isClient() && <li><NavLink to="/user">Users</NavLink></li>}
         {!isClient() && <li><NavLink to="/tenant">Tenants</NavLink></li>}
+        {!isClient() && <li><NavLink to="/properties">Properties</NavLink></li>}
         <li><NavLink to="/profile">Profile</NavLink></li>
       </ul>
       <button className="sidebar-logout" onClick={handleLogout}>Log out</button>

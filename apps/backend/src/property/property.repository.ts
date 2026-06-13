@@ -17,7 +17,7 @@ import {
 
 @Injectable()
 export class PropertyRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(data: Prisma.PropertyUncheckedCreateInput): Promise<Property> {
     return (await this.prisma.property.create({
@@ -33,7 +33,7 @@ export class PropertyRepository {
     id_agent?: string;
     page: number;
     limit: number;
-  }): Promise<{ data: Property[]; total: number }> {
+  }): Promise<{ properties: Property[]; total: number }> {
     const { page, limit, scope, ...filterFields } = filters;
     const skip = (page - 1) * limit;
 
@@ -56,7 +56,7 @@ export class PropertyRepository {
       this.prisma.property.count({ where }),
     ]);
 
-    return { data: data as Property[], total };
+    return { properties: data as Property[], total };
   }
 
   async findById(id_property: string): Promise<Property | null> {
