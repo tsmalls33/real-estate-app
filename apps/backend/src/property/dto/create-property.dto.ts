@@ -5,10 +5,11 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  ValidateIf,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { PropertyStatus, SaleType } from '@prisma/client';
+import { PropertyStatus, RentalMode, SaleType } from '@prisma/client';
 
 export class CreatePropertyDto {
   @ApiProperty({ example: 'Casa Bonita' })
@@ -47,6 +48,19 @@ export class CreatePropertyDto {
   @IsEnum(SaleType)
   @IsOptional()
   saleType?: SaleType;
+
+  @ApiProperty({
+    required: false,
+    enum: RentalMode,
+    description:
+      'Required when saleType is RENT. SHORT_TERM = nightly (Airbnb/Booking), LONG_TERM = monthly tenancy, HYBRID = both.',
+  })
+  @ValidateIf((o: CreatePropertyDto) => o.saleType === SaleType.RENT)
+  @IsEnum(RentalMode, {
+    message: 'rentalMode is required when saleType is RENT',
+  })
+  @IsOptional()
+  rentalMode?: RentalMode;
 
   @ApiProperty({
     required: false,
