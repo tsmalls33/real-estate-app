@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../../api/userService';
+import ErrorPanel from '../../components/ErrorPanel/ErrorPanel';
 import '../../styles/global.css';
 import './UserList.css';
 import { UserRoles, User } from '@RealEstate/types';
+
+type ApiError = Error & { status?: number };
 
 function UserCard({ user }: { user: User }) {
   const [role, setRole] = useState(user.role)
@@ -34,12 +37,19 @@ function UserCard({ user }: { user: User }) {
 
 function UserList() {
   const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
     userService.getAll()
       .then(setUsers)
-      .catch(err => console.error('Error fetching users:', err));
+      .catch((err: ApiError) => {
+        console.error('Error fetching users:', err);
+        setError(err);
+      });
   }, [])
+
+  if (error?.status === 403) return <ErrorPanel variant="forbidden" />;
+  if (error) return <ErrorPanel variant="error" message={error.message} />;
 
   return (
     <ul className='card-list'>

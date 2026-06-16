@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../../api/userService';
+import ErrorPanel from '../../components/ErrorPanel/ErrorPanel';
 import '../../styles/global.css';
 import './Profile.css';
 
 function Profile() {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     userService.getMe()
       .then(setUser)
-      .catch(err => console.error('Error fetching profile:', err));
+      .catch(err => {
+        console.error('Error fetching profile:', err);
+        setError(err);
+      });
   }, [])
 
+  if (error?.status === 403) return <ErrorPanel variant="forbidden" />;
+  if (error) return <ErrorPanel variant="error" message={error.message} />;
   if (!user) return <div className="page-container">Loading...</div>;
 
   return (
