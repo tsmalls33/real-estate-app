@@ -8,20 +8,20 @@ export class UpdateThemeDto implements SharedUpdateThemeDto {
   @IsString()
   name?: string;
 
-  @ApiProperty({ required: false, example: '#1976d2' })
+  @ApiProperty({ required: false, example: '#FAFAFA', description: 'Page background color' })
   @IsOptional()
   @IsString()
-  primary?: string;
+  backgroundColor?: string;
 
-  @ApiProperty({ required: false, example: '#9c27b0' })
+  @ApiProperty({ required: false, example: '#1976d2', description: 'Main brand color — primary CTAs, active states' })
   @IsOptional()
   @IsString()
-  secondary?: string;
+  brandColor?: string;
 
-  @ApiProperty({ required: false, example: '#ff9800' })
+  @ApiProperty({ required: false, example: '#ff9800', description: 'Secondary brand accent' })
   @IsOptional()
   @IsString()
-  accent?: string;
+  secondaryColor?: string;
 
   @ApiProperty({ required: false, example: 'logoicon.com' })
   @IsOptional()

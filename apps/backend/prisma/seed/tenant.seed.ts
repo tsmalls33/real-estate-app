@@ -1,8 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 
 const DEFAULT_TENANTS = [
-  { id_tenant: 'tenant-seed-0001', name: 'Default Tenant', customDomain: null as string | null },
-  { id_tenant: 'tenant-seed-0002', name: 'Devomart', customDomain: 'www.devomart.es' },
+  {
+    id_tenant: 'tenant-seed-0001',
+    name: 'Default Tenant',
+    customDomain: null as string | null,
+    id_theme: 'theme-seed-0001', // Default
+  },
+  {
+    id_tenant: 'tenant-seed-0002',
+    name: 'Devomart',
+    customDomain: 'www.devomart.es',
+    id_theme: 'theme-seed-0003', // Devomart Default
+  },
 ];
 
 export async function seedTenants(prisma: PrismaClient) {
@@ -11,7 +21,10 @@ export async function seedTenants(prisma: PrismaClient) {
   for (const tenant of DEFAULT_TENANTS) {
     await prisma.tenant.upsert({
       where: { id_tenant: tenant.id_tenant },
-      update: { id_tenant: tenant.id_tenant, customDomain: tenant.customDomain },
+      update: {
+        customDomain: tenant.customDomain,
+        id_theme: tenant.id_theme,
+      },
       create: tenant,
     });
   }

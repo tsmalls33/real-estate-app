@@ -48,16 +48,16 @@ model Tenant {
 }
 
 model Theme {
-  id_theme   String   @id @default(uuid())
-  name       String
-  primary    String
-  secondary  String
-  accent     String
-  logoIcon   String?
-  logoBanner String?
-  isDeleted  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  id_theme        String   @id @default(uuid())
+  name            String
+  backgroundColor String
+  brandColor      String
+  secondaryColor  String
+  logoIcon        String?
+  logoBanner      String?
+  isDeleted       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
 
   tenants Tenant[]
 
