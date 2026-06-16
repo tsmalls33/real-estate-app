@@ -8,7 +8,7 @@ export const UserRoles = {
 
 export type UserRoles = (typeof UserRoles)[keyof typeof UserRoles]
 
-export class UserResponseDto {
+export class User {
   id_user!: string;
   email!: string;
   firstName?: string | null;
@@ -18,7 +18,7 @@ export class UserResponseDto {
 }
 
 
-export class PrivateUserResponseDto extends UserResponseDto {
+export class PrivateUser extends User {
   passwordHash?: string
 }
 

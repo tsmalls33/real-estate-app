@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { userService } from '../../api/userService';
 import '../../styles/global.css';
 import './UserList.css';
-import { UserRoles, UserResponseDto } from '@RealEstate/types';
+import { UserRoles, User } from '@RealEstate/types';
 
-function UserCard({ user }: { user: UserResponseDto }) {
+function UserCard({ user }: { user: User }) {
   const [role, setRole] = useState(user.role)
   const [saving, setSaving] = useState(false)
 
@@ -33,7 +33,7 @@ function UserCard({ user }: { user: UserResponseDto }) {
 }
 
 function UserList() {
-  const [users, setUsers] = useState<UserResponseDto[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     userService.getAll()

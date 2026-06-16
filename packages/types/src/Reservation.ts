@@ -37,7 +37,7 @@ export class UpdateReservationStatusDto {
   status!: ReservationStatus;
 }
 
-export class ReservationResponseDto {
+export class Reservation {
   id_reservation!: string;
   id_property!: string;
   guestName!: string;

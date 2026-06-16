@@ -4,14 +4,13 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { UserRoles } from '@RealEstate/types';
+import { UserRoles, User, PrivateUser } from '@RealEstate/types';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { ClientService } from '../client/client.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { UserResponseDto, PrivateUserResponseDto } from './dto/user-response.dto';
 import { type TenantScope, assertTenantMatch, resolveTenantId } from '../common/types/tenant-scope';
 
 @Injectable()
@@ -33,7 +32,7 @@ export class UserService {
     this.saltOrRounds = rounds;
   }
 
-  async createUser(input: CreateUserDto, scope: TenantScope): Promise<UserResponseDto> {
+  async createUser(input: CreateUserDto, scope: TenantScope): Promise<User> {
     const isUserExists = await this.userRepository.existsByEmail(input.email);
     if (isUserExists) {
       throw new ConflictException('User already exists');
@@ -69,7 +68,7 @@ export class UserService {
     return this.userRepository.findWithPagination(page, limit, scope);
   }
 
-  async findOne(id_user: string, scope?: TenantScope): Promise<UserResponseDto> {
+  async findOne(id_user: string, scope?: TenantScope): Promise<User> {
     const foundUser = await this.userRepository.findById(id_user);
     if (!foundUser) {
       throw new NotFoundException('User not found');
@@ -81,15 +80,15 @@ export class UserService {
   async findByEmail(
     email: string,
     includePrivate: boolean = false,
-  ): Promise<PrivateUserResponseDto> {
+  ): Promise<PrivateUser> {
     const foundUser = await this.userRepository.findByEmail(email, includePrivate);
     if (!foundUser) {
       throw new NotFoundException('User not found');
     }
-    return foundUser as PrivateUserResponseDto;
+    return foundUser as PrivateUser;
   }
 
-  async update(id_user: string, input: UpdateUserDto, scope?: TenantScope): Promise<UserResponseDto> {
+  async update(id_user: string, input: UpdateUserDto, scope?: TenantScope): Promise<User> {
     if (
       input.email === undefined &&
       input.firstName === undefined &&
@@ -121,7 +120,7 @@ export class UserService {
     return await this.userRepository.update(id_user, updateInput);
   }
 
-  async remove(id_user: string, scope?: TenantScope): Promise<UserResponseDto> {
+  async remove(id_user: string, scope?: TenantScope): Promise<User> {
     const user = await this.userRepository.findById(id_user);
     if (!user) throw new NotFoundException('User not found');
     if (scope) assertTenantMatch(scope, user.id_tenant);
