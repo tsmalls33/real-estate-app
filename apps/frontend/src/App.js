@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import UserList from './pages/UserList/UserList';
 import TenantList from './pages/TenantList/TenantList';
+import PropertyList from './pages/PropertyList/PropertyList'
 import Profile from './pages/Profile/Profile';
 import Sidebar from './components/Sidebar/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/user" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
           <Route path="/tenant" element={<ProtectedRoute><TenantList /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/properties" element={<ProtectedRoute><PropertyList /></ProtectedRoute>} />
         </Routes>
       </div>
     </div>

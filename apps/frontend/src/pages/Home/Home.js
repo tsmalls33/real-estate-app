@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isClient } from '../../utils/auth';
 import { userService } from '../../api/userService';
 import { tenantService } from '../../api/tenantService';
+import { propertyService } from '../../api/propertyService'
 import '../../styles/global.css';
 import './Home.css';
 
@@ -9,6 +10,7 @@ const fetchers = {
   users: () => userService.getAll(),
   tenants: () => tenantService.getAll(),
   me: () => userService.getMe(),
+  properties: () => propertyService.getAll()
 };
 
 function renderData(resourceType, data) {
@@ -29,7 +31,7 @@ function renderData(resourceType, data) {
   return (
     <ul className="card-list">
       {data.map(item => (
-        <li key={item.id_user || item.id_tenant} className="card home-list-item">
+        <li key={item.id_user || item.id_tenant || item.id_property} className="card home-list-item">
           {resourceType === 'users' && (
             <>
               <strong>{item.firstName} {item.lastName}</strong>
@@ -43,6 +45,14 @@ function renderData(resourceType, data) {
               {item.customDomain && <span>{item.customDomain}</span>}
             </>
           )}
+          {
+            resourceType === 'properties' && (
+              <>
+                <strong>{item.propertyName}</strong>
+                <p>{item.propertyAddress}</p>
+              </>
+            )
+          }
         </li>
       ))}
     </ul>
@@ -75,6 +85,12 @@ function Home() {
             className={resourceType === 'tenants' ? 'active' : ''}
             onClick={() => setResourceType('tenants')}
           >Tenants</button>
+        )}
+        {!isClient() && (
+          <button
+            className={resourceType === 'properties' ? 'active' : ''}
+            onClick={() => setResourceType('properties')}
+          >Properties</button>
         )}
         <button
           className={resourceType === 'me' ? 'active' : ''}

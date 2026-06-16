@@ -4,7 +4,7 @@ import {
   VALIDATION_MESSAGES,
 } from 'src/utils/validators/validation-patterns';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserResponseDto } from '@RealEstate/types'
+import { User } from '@RealEstate/types'
 
 export class SignInDto {
   @ApiProperty({ required: true, example: 'johnDoe@gmail.com' })
@@ -21,7 +21,7 @@ export class SignInDto {
 
 
 export class SignInResponseDto {
-  user: UserResponseDto
+  user: User
   accessToken: string
   refreshToken: string
 }

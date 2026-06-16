@@ -1,11 +1,11 @@
-import { UserResponseDto } from './User'
+import { User } from './User'
 
-export class TenantResonseDto {
+export class Tenant {
   id_tenant!: string
   name!: string
   customDomain?: string | null
   id_plan?: string | null
-  users?: UserResponseDto[] | null
+  users?: User[] | null
 }
 
 export class CreateTenantDto {

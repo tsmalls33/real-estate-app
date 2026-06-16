@@ -5,6 +5,7 @@ import { seedThemes } from './seed/theme.seed';
 import { seedTenants } from './seed/tenant.seed';
 import { seedUsers } from './seed/user.seed';
 import { seedPlans } from './seed/plan.seed';
+import { seedProperties } from './seed/property.seed';
 
 const prisma = new PrismaClient();
 
@@ -14,6 +15,7 @@ async function main() {
   await seedTenants(prisma);
   await seedUsers(prisma);
   await seedPlans(prisma);
+  await seedProperties(prisma)
 }
 
 main()

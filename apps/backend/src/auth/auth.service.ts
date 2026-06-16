@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SignInDto, SignInResponseDto } from './dto/signin.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserResponseDto } from '@RealEstate/types';
+import { User } from '@RealEstate/types';
 
 @Injectable()
 export class AuthService {
@@ -82,7 +82,7 @@ export class AuthService {
     };
   }
 
-  async signUp(input: SignUpDto): Promise<UserResponseDto> {
+  async signUp(input: SignUpDto): Promise<User> {
     const { email, password, firstName, lastName } = input;
 
     // Public sign-up: never trust the body for `role` or `id_tenant`.

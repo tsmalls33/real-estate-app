@@ -1,4 +1,4 @@
-export class ThemeResponseDto {
+export class Theme {
   id_theme!: string;
   name!: string;
   primary!: string;

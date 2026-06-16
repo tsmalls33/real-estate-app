@@ -18,7 +18,7 @@ export class CreatePropertyStatsDto {
   hasGarage?: boolean;
 }
 
-export class PropertyStatsResponseDto {
+export class PropertyStats {
   id_property_stats!: string;
   id_property!: string;
   numberOfBedrooms!: number;
