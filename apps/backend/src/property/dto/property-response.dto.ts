@@ -1,4 +1,4 @@
-import { PropertyStatus, SaleType } from '@prisma/client';
+import { PropertyStatus, RentalMode, SaleType } from '@prisma/client';
 
 export class PropertyResponseDto {
   id_property!: string;
@@ -9,6 +9,7 @@ export class PropertyResponseDto {
   agentFeePercentage?: any | null;
   salePrice?: any | null;
   saleType?: SaleType | null;
+  rentalMode?: RentalMode | null;
   id_owner?: string | null;
   id_agent?: string | null;
   id_tenant?: string | null;

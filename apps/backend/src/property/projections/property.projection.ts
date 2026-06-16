@@ -33,6 +33,7 @@ export const PROPERTY_LIST_SELECT = {
   coverImage: true,
   salePrice: true,
   saleType: true,
+  rentalMode: true,
   status: true,
   id_owner: true,
   id_agent: true,

@@ -82,6 +82,7 @@ model Property {
   agentFeePercentage  Decimal?       @db.Decimal(5, 4)
   salePrice           Decimal?       @db.Decimal(12, 2)
   saleType            SaleType?
+  rentalMode          RentalMode?
   id_owner            String?
   id_agent            String?
   id_tenant           String?
@@ -245,6 +246,12 @@ enum UserRoles {
 enum SaleType {
   RENT
   SALE
+}
+
+enum RentalMode {
+  SHORT_TERM
+  LONG_TERM
+  HYBRID
 }
 
 enum PropertyType {

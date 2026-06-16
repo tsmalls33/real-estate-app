@@ -15,6 +15,14 @@ export const SaleType = {
 
 export type SaleType = (typeof SaleType)[keyof typeof SaleType];
 
+export const RentalMode = {
+  SHORT_TERM: 'SHORT_TERM',
+  LONG_TERM: 'LONG_TERM',
+  HYBRID: 'HYBRID',
+} as const;
+
+export type RentalMode = (typeof RentalMode)[keyof typeof RentalMode];
+
 export class Property {
   id_property!: string;
   propertyName!: string;
@@ -24,6 +32,7 @@ export class Property {
   agentFeePercentage?: number | null;
   salePrice?: number | null;
   saleType?: SaleType | null;
+  rentalMode?: RentalMode | null;
   id_owner?: string | null;
   id_agent?: string | null;
   id_tenant?: string | null;
