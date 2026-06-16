@@ -2,7 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './ErrorPanel.css';
 
-const PRESETS = {
+type Variant = 'forbidden' | 'not-found' | 'error';
+
+const PRESETS: Record<Variant, { title: string; message: string }> = {
   forbidden: {
     title: '403 — Forbidden',
     message: "You don't have permission to view this resource.",
@@ -17,7 +19,14 @@ const PRESETS = {
   },
 };
 
-function ErrorPanel({ variant = 'error', title, message, action }) {
+type ErrorPanelProps = {
+  variant?: Variant;
+  title?: string;
+  message?: string;
+  action?: React.ReactNode;
+};
+
+function ErrorPanel({ variant = 'error', title, message, action }: ErrorPanelProps) {
   const preset = PRESETS[variant] || PRESETS.error;
   return (
     <div className="error-panel">
