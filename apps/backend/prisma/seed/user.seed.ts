@@ -30,6 +30,50 @@ const DEFAULT_USERS: Partial<User>[] = [
     role: UserRoles.EMPLOYEE,
     id_tenant: 'tenant-seed-0002',
   },
+  // Default Tenant — property owners
+  {
+    email: 'alice.owner@default.com',
+    firstName: 'Alice',
+    lastName: 'Owner',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0001',
+  },
+  {
+    email: 'bob.owner@default.com',
+    firstName: 'Bob',
+    lastName: 'Owner',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0001',
+  },
+  {
+    email: 'carol.owner@default.com',
+    firstName: 'Carol',
+    lastName: 'Owner',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0001',
+  },
+  // Devomart — property owners
+  {
+    email: 'diego.propietario@devomart.es',
+    firstName: 'Diego',
+    lastName: 'Propietario',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0002',
+  },
+  {
+    email: 'elena.propietaria@devomart.es',
+    firstName: 'Elena',
+    lastName: 'Propietaria',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0002',
+  },
+  {
+    email: 'fernando.propietario@devomart.es',
+    firstName: 'Fernando',
+    lastName: 'Propietario',
+    role: UserRoles.CLIENT,
+    id_tenant: 'tenant-seed-0002',
+  },
 ];
 
 export async function seedUsers(prisma: PrismaClient) {
