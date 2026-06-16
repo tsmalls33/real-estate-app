@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { propertyService } from '../../api/propertyService';
+import ErrorPanel from '../../components/ErrorPanel/ErrorPanel';
 import '../../styles/global.css';
 import './PropertyList.css'
 
 function PropertyList() {
   const [properties, setProperties] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     propertyService.getAll()
       .then(setProperties)
-      .catch(err => console.error('Error fetching properties:', err));
+      .catch(err => {
+        console.error('Error fetching properties:', err);
+        setError(err);
+      });
   }, [])
+
+  if (error?.status === 403) return <ErrorPanel variant="forbidden" />;
+  if (error) return <ErrorPanel variant="error" message={error.message} />;
 
   return (
     <div className="page-container" >
