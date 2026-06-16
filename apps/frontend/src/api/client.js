@@ -21,15 +21,17 @@ async function request(method, path, body) {
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (response.status === 401) {
-    handleUnauthorized();
-    throw new Error('Unauthorized');
-  }
-
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     const error = new Error(payload.message || 'Request failed');
     error.status = response.status;
+
+    // Global session-expired handling only applies to authenticated requests.
+    // Auth endpoints (/auth/*) return 401 to mean "bad credentials" — surface that to the page.
+    if (response.status === 401 && !path.startsWith('/auth/')) {
+      handleUnauthorized();
+    }
+
     throw error;
   }
 

@@ -3,6 +3,7 @@ import { isClient } from '../../utils/auth';
 import { userService } from '../../api/userService';
 import { tenantService } from '../../api/tenantService';
 import { propertyService } from '../../api/propertyService'
+import ErrorPanel from '../../components/ErrorPanel/ErrorPanel';
 import '../../styles/global.css';
 import './Home.css';
 
@@ -62,12 +63,17 @@ function renderData(resourceType, data) {
 function Home() {
   const [resourceType, setResourceType] = useState(isClient() ? 'me' : 'users');
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setData(null);
+    setError(null);
     fetchers[resourceType]()
       .then(setData)
-      .catch(err => console.error('Error fetching data:', err));
+      .catch(err => {
+        console.error('Error fetching data:', err);
+        setError(err);
+      });
   }, [resourceType])
 
   return (
@@ -97,7 +103,9 @@ function Home() {
           onClick={() => setResourceType('me')}
         >Me</button>
       </div>
-      {renderData(resourceType, data)}
+      {error?.status === 403 && <ErrorPanel variant="forbidden" />}
+      {error && error.status !== 403 && <ErrorPanel variant="error" message={error.message} />}
+      {!error && renderData(resourceType, data)}
     </div>
   );
 }
