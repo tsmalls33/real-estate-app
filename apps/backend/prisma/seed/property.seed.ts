@@ -1,4 +1,9 @@
-import { PrismaClient, PropertyStatus, SaleType } from '@prisma/client';
+import {
+  PrismaClient,
+  PropertyStatus,
+  RentalMode,
+  SaleType,
+} from '@prisma/client';
 
 type PropertySeed = {
   id_property: string;
@@ -9,6 +14,7 @@ type PropertySeed = {
   propertyAddress: string;
   status: PropertyStatus;
   saleType?: SaleType;
+  rentalMode?: RentalMode;
 };
 
 const PROPERTIES: PropertySeed[] = [
@@ -22,6 +28,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Default Property 1',
     propertyAddress: '12 Default Street, Springfield',
     status: PropertyStatus.AVAILABLE_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.SHORT_TERM,
   },
   // Bob — 2 properties
   {
@@ -32,6 +40,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Default Property 2',
     propertyAddress: '34 Default Avenue, Springfield',
     status: PropertyStatus.AVAILABLE_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.SHORT_TERM,
   },
   {
     id_property: 'property-seed-0003',
@@ -43,7 +53,7 @@ const PROPERTIES: PropertySeed[] = [
     status: PropertyStatus.AVAILABLE_SALE,
     saleType: SaleType.SALE,
   },
-  // Carol — 3 properties
+  // Carol — 3 properties (mix of rental modes)
   {
     id_property: 'property-seed-0004',
     id_tenant: 'tenant-seed-0001',
@@ -52,6 +62,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Default Property 4',
     propertyAddress: '78 Default Boulevard, Springfield',
     status: PropertyStatus.UNDER_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.LONG_TERM,
   },
   {
     id_property: 'property-seed-0005',
@@ -61,6 +73,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Default Property 5',
     propertyAddress: '90 Default Road, Springfield',
     status: PropertyStatus.AVAILABLE_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.SHORT_TERM,
   },
   {
     id_property: 'property-seed-0006',
@@ -82,8 +96,10 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Devomart Property 1',
     propertyAddress: 'Calle Mayor 1, Madrid',
     status: PropertyStatus.AVAILABLE_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.SHORT_TERM,
   },
-  // Elena — 2 properties
+  // Elena — 2 properties (one under long-term tenancy)
   {
     id_property: 'property-seed-0008',
     id_tenant: 'tenant-seed-0002',
@@ -92,6 +108,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Devomart Property 2',
     propertyAddress: 'Avenida del Sol 22, Barcelona',
     status: PropertyStatus.UNDER_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.LONG_TERM,
   },
   {
     id_property: 'property-seed-0009',
@@ -103,7 +121,7 @@ const PROPERTIES: PropertySeed[] = [
     status: PropertyStatus.AVAILABLE_SALE,
     saleType: SaleType.SALE,
   },
-  // Fernando — 3 properties
+  // Fernando — 3 properties (covers all three rental modes for UI test coverage)
   {
     id_property: 'property-seed-0010',
     id_tenant: 'tenant-seed-0002',
@@ -112,6 +130,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Devomart Property 4',
     propertyAddress: 'Gran Via 130, Madrid',
     status: PropertyStatus.AVAILABLE_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.HYBRID,
   },
   {
     id_property: 'property-seed-0011',
@@ -121,6 +141,8 @@ const PROPERTIES: PropertySeed[] = [
     propertyName: 'Devomart Property 5',
     propertyAddress: 'Carrer de Provença 88, Barcelona',
     status: PropertyStatus.UNDER_RENTAL,
+    saleType: SaleType.RENT,
+    rentalMode: RentalMode.SHORT_TERM,
   },
   {
     id_property: 'property-seed-0012',
@@ -163,6 +185,7 @@ export async function seedProperties(prisma: PrismaClient) {
       id_agent,
       status: p.status,
       saleType: p.saleType ?? null,
+      rentalMode: p.rentalMode ?? null,
     };
 
     await prisma.property.upsert({
