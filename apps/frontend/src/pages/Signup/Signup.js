@@ -17,7 +17,8 @@ function Signup() {
       await authService.signup(form);
       navigate('/signin');
     } catch (err) {
-      setError('Could not create account');
+      if (err.status) setError(err.message || 'Could not create account');
+      else setError('Could not reach server');
     }
   };
 

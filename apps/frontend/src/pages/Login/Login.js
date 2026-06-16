@@ -18,7 +18,9 @@ function Login() {
       localStorage.setItem('refreshToken', refreshToken);
       navigate('/');
     } catch (err) {
-      setError(err.status === 401 ? 'Invalid credentials' : 'Could not reach server');
+      if (err.status === 401) setError('Invalid credentials');
+      else if (err.status) setError(err.message || 'Sign in failed');
+      else setError('Could not reach server');
     }
   };
 
