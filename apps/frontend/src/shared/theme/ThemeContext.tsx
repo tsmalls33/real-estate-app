@@ -69,6 +69,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const refresh = useCallback(async () => {
     if (!getAccessToken()) {
       setMe(null);
+      applyTheme(null);
       setLoading(false);
       return;
     }
@@ -78,6 +79,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       applyTheme(next);
     } catch {
       setMe(null);
+      applyTheme(null);
     } finally {
       setLoading(false);
     }

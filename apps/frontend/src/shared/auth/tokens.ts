@@ -16,11 +16,18 @@ export function clearTokens(): void {
   localStorage.removeItem('refreshToken');
 }
 
+// JWT segments are base64url (-/_ , no padding); atob expects base64.
+function decodeBase64Url(segment: string): string {
+  const base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+  return atob(padded);
+}
+
 export function decodeToken(): Payload | null {
   const token = getAccessToken();
   if (!token) return null;
   try {
-    return JSON.parse(atob(token.split('.')[1])) as Payload;
+    return JSON.parse(decodeBase64Url(token.split('.')[1])) as Payload;
   } catch {
     return null;
   }

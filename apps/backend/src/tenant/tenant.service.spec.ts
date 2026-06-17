@@ -161,8 +161,11 @@ describe('TenantService', () => {
 
   describe('updateTheme', () => {
     it('should update tenant theme', async () => {
+      mockTenantRepository.findById.mockResolvedValue({
+        id_tenant: 'tenant123',
+        name: 'Test',
+      });
       mockThemeService.findOne.mockResolvedValue({ id_theme: 'theme1' });
-      mockTenantRepository.existsById.mockResolvedValue(true);
       mockTenantRepository.assignTheme.mockResolvedValue({
         id_tenant: 'tenant123',
         id_theme: 'theme1',
@@ -175,9 +178,9 @@ describe('TenantService', () => {
     });
 
     it('should throw NotFoundException if tenant not found', async () => {
-      mockThemeService.findOne.mockResolvedValue({ id_theme: 'theme1' });
-      mockTenantRepository.existsById.mockResolvedValue(false);
+      mockTenantRepository.findById.mockResolvedValue(null);
       await expect(service.updateTheme('nonexistent', { id_theme: 'theme1' })).rejects.toThrow(NotFoundException);
+      expect(mockThemeService.findOne).not.toHaveBeenCalled();
     });
   });
 });
