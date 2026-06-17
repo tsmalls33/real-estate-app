@@ -1,0 +1,121 @@
+.cli-shell {
+  min-height: 100vh;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.cli-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.cli-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cli-logo-mark {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
+  display: grid; place-items: center;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cli-brand {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.cli-brand-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cli-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.cli-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+}
+.cli-tab:hover { color: var(--text); }
+.cli-tab.active {
+  color: var(--brand-primary);
+  background: var(--brand-primary-soft);
+  font-weight: 600;
+}
+
+.cli-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cli-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--brand-secondary);
+  color: var(--brand-on-secondary);
+  display: grid; place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.cli-signout {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.cli-signout:hover { color: var(--text); }
+
+.cli-greet {
+  padding: 24px 32px 8px;
+}
+
+.cli-greet-h {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.cli-greet-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.cli-content {
+  padding: 12px 32px 40px;
+  flex: 1;
+}
