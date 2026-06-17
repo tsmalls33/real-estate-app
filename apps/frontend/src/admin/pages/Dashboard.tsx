@@ -3,7 +3,7 @@ import type { Property } from '@RealEstate/types';
 import { UserRoles } from '@RealEstate/types';
 import { propertyApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
-import PropertyList from '../components/PropertyList';
+import PropertyList from '../../shared/components/PropertyList/PropertyList';
 
 type State = { properties: Property[]; total: number } | null;
 
@@ -32,7 +32,9 @@ export default function Dashboard() {
       <p className="section-sub">{scopeLabel}</p>
       {error && <div className="prop-empty">Couldn't load properties: {error}</div>}
       {!error && data === null && <div className="prop-empty">Loading…</div>}
-      {!error && data !== null && <PropertyList items={data.properties} />}
+      {!error && data !== null && (
+        <PropertyList items={data.properties} variant="admin" showOwner />
+      )}
     </section>
   );
 }

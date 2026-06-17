@@ -108,7 +108,22 @@ export class TenantService {
     if (!tenant)
       throw new NotFoundException(`Tenant with id '${id_tenant}' not found`);
 
+    const hasFieldOverrides =
+      input.name !== undefined ||
+      input.backgroundColor !== undefined ||
+      input.brandColor !== undefined ||
+      input.secondaryColor !== undefined ||
+      input.logoIcon !== undefined ||
+      input.logoBanner !== undefined;
+
     if (input.id_theme) {
+      // Reassignment and per-field edits are mutually exclusive: a request
+      // carrying both would silently drop the overrides on the early return.
+      if (hasFieldOverrides) {
+        throw new BadRequestException(
+          'Provide either id_theme (to reassign) or theme fields (to edit), not both',
+        );
+      }
       await this.themeService.findOne(input.id_theme);
       try {
         return (await this.tenantRepository.assignTheme(
@@ -129,14 +144,7 @@ export class TenantService {
       }
     }
 
-    if (
-      !input.backgroundColor &&
-      !input.brandColor &&
-      !input.secondaryColor &&
-      !input.name &&
-      input.logoIcon === undefined &&
-      input.logoBanner === undefined
-    ) {
+    if (!hasFieldOverrides) {
       throw new BadRequestException('No theme fields to update');
     }
 

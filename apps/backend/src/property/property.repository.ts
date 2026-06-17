@@ -12,6 +12,7 @@ import { tenantFilter, type TenantScope } from '../common/types/tenant-scope';
 import {
   PROPERTY_DETAIL_SELECT,
   PROPERTY_LIST_SELECT,
+  presentOwner,
   type PropertyDetail,
   type PropertyListItem,
 } from './projections/property.projection';
@@ -21,10 +22,12 @@ export class PropertyRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.PropertyUncheckedCreateInput): Promise<PropertyListItem> {
-    return this.prisma.property.create({
-      data,
-      select: PROPERTY_LIST_SELECT,
-    });
+    return presentOwner(
+      await this.prisma.property.create({
+        data,
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
   async findAll(filters: {
@@ -59,14 +62,15 @@ export class PropertyRepository {
       this.prisma.property.count({ where }),
     ]);
 
-    return { properties: data, total };
+    return { properties: data.map(presentOwner), total };
   }
 
   async findById(id_property: string): Promise<PropertyDetail | null> {
-    return this.prisma.property.findUnique({
+    const property = await this.prisma.property.findUnique({
       where: { id_property, isDeleted: false },
       select: PROPERTY_DETAIL_SELECT,
     });
+    return property ? presentOwner(property) : null;
   }
 
   async existsById(id_property: string): Promise<boolean> {
@@ -81,19 +85,23 @@ export class PropertyRepository {
     id_property: string,
     data: Prisma.PropertyUncheckedUpdateInput,
   ): Promise<PropertyListItem> {
-    return this.prisma.property.update({
-      where: { id_property },
-      data,
-      select: PROPERTY_LIST_SELECT,
-    });
+    return presentOwner(
+      await this.prisma.property.update({
+        where: { id_property },
+        data,
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
   async softDelete(id_property: string): Promise<PropertyListItem> {
-    return this.prisma.property.update({
-      where: { id_property },
-      data: { isDeleted: true },
-      select: PROPERTY_LIST_SELECT,
-    });
+    return presentOwner(
+      await this.prisma.property.update({
+        where: { id_property },
+        data: { isDeleted: true },
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
   async findReservations(

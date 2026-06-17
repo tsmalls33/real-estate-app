@@ -7,6 +7,11 @@
 */*/node_modules
 /build
 
+# turbo build cache
+.turbo
+*/.turbo
+*/*/.turbo
+
 # Logs
 logs
 *.log

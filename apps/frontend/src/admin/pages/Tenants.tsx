@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Tenant } from '@RealEstate/types';
 import { tenantApi } from '../../shared/api/services';
-import '../components/PropertyList.css';
+import '../../shared/components/PropertyList/PropertyList.css';
 
 export default function Tenants() {
   const [tenants, setTenants] = useState<Tenant[] | null>(null);

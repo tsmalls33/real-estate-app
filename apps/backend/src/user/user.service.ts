@@ -4,7 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { UserRoles, User, PrivateUser } from '@RealEstate/types';
+import { UserRoles, User, PrivateUser, MeResponse } from '@RealEstate/types';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
@@ -81,10 +81,10 @@ export class UserService {
     return foundUser;
   }
 
-  async findMe(id_user: string) {
+  async findMe(id_user: string): Promise<MeResponse> {
     const me = await this.userRepository.findMe(id_user);
     if (!me) throw new NotFoundException('User not found');
-    return me;
+    return me as MeResponse;
   }
 
   async findByEmail(
