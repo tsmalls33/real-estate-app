@@ -38,6 +38,8 @@ export const tenantApi = {
       backgroundColor?: string;
       brandColor?: string;
       secondaryColor?: string;
+      logoIcon?: string | null;
+      logoBanner?: string | null;
     },
   ) => api.patch<Envelope<Tenant>>(`/tenant/${id_tenant}/theme`, input).then(r => r.data),
 };

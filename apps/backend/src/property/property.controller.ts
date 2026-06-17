@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -21,7 +20,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentTenant } from '../common/decorators/current-tenant.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
-import type { TenantScope } from '../common/types/tenant-scope';
+import { tenantScopeForUser, type TenantScope } from '../common/types/tenant-scope';
 import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { UserRoles } from '@RealEstate/types';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -81,14 +80,7 @@ export class PropertyController {
         { id_owner: user.sub },
       );
     }
-    if (user.role === UserRoles.SUPERADMIN) {
-      return this.propertyService.findAll(query, { type: 'ALL' });
-    }
-    if (!user.tenantId) {
-      throw new ForbiddenException('Tenant context is required');
-    }
-    const scope: TenantScope = { type: 'TENANT', tenantId: user.tenantId };
-    return this.propertyService.findAll(query, scope);
+    return this.propertyService.findAll(query, tenantScopeForUser(user));
   }
 
   /** GET /properties/:id_property */

@@ -4,6 +4,7 @@ export const TENANT_PUBLIC_SELECT = {
   id_tenant: true,
   name: true,
   customDomain: true,
+  id_plan: true,
   id_theme: true,
 } as const;
 
