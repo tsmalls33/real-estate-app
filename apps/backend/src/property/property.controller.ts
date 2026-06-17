@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -80,10 +81,13 @@ export class PropertyController {
         { id_owner: user.sub },
       );
     }
-    const scope: TenantScope =
-      user.role === UserRoles.SUPERADMIN
-        ? { type: 'ALL' }
-        : { type: 'TENANT', tenantId: user.tenantId as string };
+    if (user.role === UserRoles.SUPERADMIN) {
+      return this.propertyService.findAll(query, { type: 'ALL' });
+    }
+    if (!user.tenantId) {
+      throw new ForbiddenException('Tenant context is required');
+    }
+    const scope: TenantScope = { type: 'TENANT', tenantId: user.tenantId };
     return this.propertyService.findAll(query, scope);
   }
 

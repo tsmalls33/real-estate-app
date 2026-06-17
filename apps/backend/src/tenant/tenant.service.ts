@@ -4,6 +4,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { UpdateTenantThemeDto } from './dto/update-tenant-theme.dto';
@@ -109,10 +110,23 @@ export class TenantService {
 
     if (input.id_theme) {
       await this.themeService.findOne(input.id_theme);
-      return this.tenantRepository.assignTheme(
-        id_tenant,
-        input.id_theme,
-      ) as Promise<TenantResponseDto>;
+      try {
+        return (await this.tenantRepository.assignTheme(
+          id_tenant,
+          input.id_theme,
+        )) as TenantResponseDto;
+      } catch (error) {
+        // Unique constraint on Tenant.id_theme: a theme belongs to one tenant.
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2002'
+        ) {
+          throw new ConflictException(
+            `Theme '${input.id_theme}' is already assigned to another tenant`,
+          );
+        }
+        throw error;
+      }
     }
 
     if (

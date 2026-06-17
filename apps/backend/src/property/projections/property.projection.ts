@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export const PROPERTY_STATS_SELECT = {
   id_property_stats: true,
   id_property: true,
@@ -25,8 +27,6 @@ export const FEE_RULE_SELECT = {
   name: true,
   isActive: true,
 } as const;
-
-import { Prisma } from '@prisma/client';
 
 export const PROPERTY_LIST_SELECT = {
   id_property: true,
