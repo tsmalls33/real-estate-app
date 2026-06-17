@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Property } from '@RealEstate/types';
 import { propertyApi } from '../../shared/api/services';
+import { formatPrice } from '../../shared/format/price';
 import '../components/PropertyList.css';
 
 export default function Dashboard() {
@@ -23,16 +24,19 @@ export default function Dashboard() {
       )}
       {!error && items && items.length > 0 && (
         <div className="cli-prop-grid">
-          {items.map(p => (
-            <div key={p.id_property} className="cli-prop-card">
-              <div className="cli-prop-name">{p.propertyName}</div>
-              <div className="cli-prop-addr">{p.propertyAddress}</div>
-              <div className="cli-prop-row">
-                <span className="cli-status-pill">{p.status.replace('_', ' ')}</span>
-                {typeof p.salePrice === 'number' && <span>€{p.salePrice.toLocaleString()}</span>}
+          {items.map(p => {
+            const price = formatPrice(p.salePrice);
+            return (
+              <div key={p.id_property} className="cli-prop-card">
+                <div className="cli-prop-name">{p.propertyName}</div>
+                <div className="cli-prop-addr">{p.propertyAddress}</div>
+                <div className="cli-prop-row">
+                  <span className="cli-status-pill">{p.status.replace('_', ' ')}</span>
+                  {price && <span>{price}</span>}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </section>

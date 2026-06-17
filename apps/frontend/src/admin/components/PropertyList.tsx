@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import type { Property, PropertyOwnerSummary } from '@RealEstate/types';
+import { formatPrice } from '../../shared/format/price';
 import './PropertyList.css';
 
 function ownerLabel(owner?: PropertyOwnerSummary | null): string {
@@ -15,17 +16,20 @@ export default function PropertyList({ items }: { items: Property[] }) {
   }
   return (
     <div className="prop-grid">
-      {items.map(p => (
-        <div key={p.id_property} className="prop-card">
-          <div className="prop-card-name">{p.propertyName}</div>
-          <div className="prop-card-addr">{p.propertyAddress}</div>
-          <div className="prop-card-owner"><FontAwesomeIcon icon={faUser} /> {ownerLabel(p.owner)}</div>
-          <div className="prop-card-row">
-            <span className="prop-status">{p.status.replace('_', ' ')}</span>
-            {typeof p.salePrice === 'number' && <span>€{p.salePrice.toLocaleString()}</span>}
+      {items.map(p => {
+        const price = formatPrice(p.salePrice);
+        return (
+          <div key={p.id_property} className="prop-card">
+            <div className="prop-card-name">{p.propertyName}</div>
+            <div className="prop-card-addr">{p.propertyAddress}</div>
+            <div className="prop-card-owner"><FontAwesomeIcon icon={faUser} /> {ownerLabel(p.owner)}</div>
+            <div className="prop-card-row">
+              <span className="prop-status">{p.status.replace('_', ' ')}</span>
+              {price && <span>{price}</span>}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
