@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
-import { USER_PUBLIC_SELECT, USER_AUTH_SELECT } from './projections/user.projection';
+import {
+  USER_PUBLIC_SELECT,
+  USER_AUTH_SELECT,
+} from './projections/user.projection';
 import { tenantFilter, type TenantScope } from '../common/types/tenant-scope';
 
 const AGENT_PAYMENT_SELECT = {
@@ -16,47 +19,50 @@ const AGENT_PAYMENT_SELECT = {
 
 @Injectable()
 export class UserRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
-    return await this.prisma.user.create({
+    return (await this.prisma.user.create({
       data,
       select: USER_PUBLIC_SELECT,
-    }) as User
+    })) as User;
   }
 
   async findAll(): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return (await this.prisma.user.findMany({
       where: { isDeleted: false },
       select: USER_PUBLIC_SELECT,
-    }) as User[]
+    })) as User[];
   }
 
   async findAllWithSelect<T>(select: Prisma.UserSelect): Promise<T[]> {
-    return await this.prisma.user.findMany({
+    return (await this.prisma.user.findMany({
       select,
-    }) as T[]
+    })) as T[];
   }
 
   async findById(id_user: string): Promise<User | null> {
-    return await this.prisma.user.findFirst({
+    return (await this.prisma.user.findFirst({
       where: { id_user, isDeleted: false },
       select: USER_PUBLIC_SELECT,
-    }) as User | null
+    })) as User | null;
   }
 
-  async findByEmail(email: string, includePrivate: boolean = false): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+  async findByEmail(
+    email: string,
+    includePrivate: boolean = false,
+  ): Promise<User | null> {
+    return (await this.prisma.user.findUnique({
       where: { email },
       select: includePrivate ? USER_AUTH_SELECT : USER_PUBLIC_SELECT,
-    }) as User | null;
+    })) as User | null;
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    return (await this.prisma.user.findUnique({
       where: { email },
       select: USER_AUTH_SELECT,
-    }) as User | null;
+    })) as User | null;
   }
 
   async existsByEmail(email: string): Promise<boolean> {
@@ -76,33 +82,33 @@ export class UserRepository {
   }
 
   async update(id_user: string, data: Prisma.UserUpdateInput): Promise<User> {
-    return await this.prisma.user.update({
+    return (await this.prisma.user.update({
       where: { id_user },
       data,
       select: USER_PUBLIC_SELECT,
-    }) as User;
+    })) as User;
   }
 
   async softDelete(id_user: string): Promise<User> {
-    return await this.prisma.user.update({
+    return (await this.prisma.user.update({
       where: { id_user },
       data: { isDeleted: true },
       select: USER_PUBLIC_SELECT,
-    }) as User;
+    })) as User;
   }
 
   async findByTenantId(id_tenant: string): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return (await this.prisma.user.findMany({
       where: { id_tenant },
       select: USER_PUBLIC_SELECT,
-    }) as User[];
+    })) as User[];
   }
 
   async findByRole(role: Prisma.EnumUserRolesFilter): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return (await this.prisma.user.findMany({
       where: { role },
       select: USER_PUBLIC_SELECT,
-    }) as User[];
+    })) as User[];
   }
 
   async count(): Promise<number> {
@@ -140,8 +146,36 @@ export class UserRepository {
     return { users: users as User[], total, page, limit };
   }
 
+  async findMe(id_user: string) {
+    return this.prisma.user.findFirst({
+      where: { id_user, isDeleted: false },
+      select: {
+        ...USER_PUBLIC_SELECT,
+        tenant: {
+          select: {
+            id_tenant: true,
+            name: true,
+            customDomain: true,
+            id_plan: true,
+            theme: {
+              select: {
+                id_theme: true,
+                name: true,
+                backgroundColor: true,
+                brandColor: true,
+                secondaryColor: true,
+                logoIcon: true,
+                logoBanner: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async findByIdWithRelations(id_user: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    return (await this.prisma.user.findUnique({
       where: { id_user },
       include: {
         tenant: true,
@@ -150,10 +184,12 @@ export class UserRepository {
         agentPayments: true,
         clients: true,
       },
-    }) as User | null;
+    })) as User | null;
   }
 
-  async createMany(data: Prisma.UserCreateManyInput[]): Promise<Prisma.BatchPayload> {
+  async createMany(
+    data: Prisma.UserCreateManyInput[],
+  ): Promise<Prisma.BatchPayload> {
     return await this.prisma.user.createMany({
       data,
       skipDuplicates: true,
@@ -161,10 +197,10 @@ export class UserRepository {
   }
 
   async findByIds(ids: string[]): Promise<User[]> {
-    return await this.prisma.user.findMany({
+    return (await this.prisma.user.findMany({
       where: { id_user: { in: ids } },
       select: USER_PUBLIC_SELECT,
-    }) as User[];
+    })) as User[];
   }
 
   async findAgentPayments(id_user: string) {

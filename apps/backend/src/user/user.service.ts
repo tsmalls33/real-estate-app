@@ -11,7 +11,11 @@ import { UserRepository } from './user.repository';
 import { ClientService } from '../client/client.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { type TenantScope, assertTenantMatch, resolveTenantId } from '../common/types/tenant-scope';
+import {
+  type TenantScope,
+  assertTenantMatch,
+  resolveTenantId,
+} from '../common/types/tenant-scope';
 
 @Injectable()
 export class UserService {
@@ -77,18 +81,31 @@ export class UserService {
     return foundUser;
   }
 
+  async findMe(id_user: string) {
+    const me = await this.userRepository.findMe(id_user);
+    if (!me) throw new NotFoundException('User not found');
+    return me;
+  }
+
   async findByEmail(
     email: string,
     includePrivate: boolean = false,
   ): Promise<PrivateUser> {
-    const foundUser = await this.userRepository.findByEmail(email, includePrivate);
+    const foundUser = await this.userRepository.findByEmail(
+      email,
+      includePrivate,
+    );
     if (!foundUser) {
       throw new NotFoundException('User not found');
     }
     return foundUser as PrivateUser;
   }
 
-  async update(id_user: string, input: UpdateUserDto, scope?: TenantScope): Promise<User> {
+  async update(
+    id_user: string,
+    input: UpdateUserDto,
+    scope?: TenantScope,
+  ): Promise<User> {
     if (
       input.email === undefined &&
       input.firstName === undefined &&
@@ -102,7 +119,9 @@ export class UserService {
     if (input.email) {
       const emailExists = await this.userRepository.existsByEmail(input.email);
       if (emailExists) {
-        throw new ConflictException(`User email '${input.email}' already exists`);
+        throw new ConflictException(
+          `User email '${input.email}' already exists`,
+        );
       }
     }
 

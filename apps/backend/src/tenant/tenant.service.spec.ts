@@ -168,7 +168,7 @@ describe('TenantService', () => {
         id_theme: 'theme1',
       });
 
-      const result = await service.updateTheme('tenant123', 'theme1');
+      const result = await service.updateTheme('tenant123', { id_theme: 'theme1' });
       expect(result).toEqual({ id_tenant: 'tenant123', id_theme: 'theme1' });
       expect(mockThemeService.findOne).toHaveBeenCalledWith('theme1');
       expect(mockTenantRepository.assignTheme).toHaveBeenCalledWith('tenant123', 'theme1');
@@ -177,7 +177,7 @@ describe('TenantService', () => {
     it('should throw NotFoundException if tenant not found', async () => {
       mockThemeService.findOne.mockResolvedValue({ id_theme: 'theme1' });
       mockTenantRepository.existsById.mockResolvedValue(false);
-      await expect(service.updateTheme('nonexistent', 'theme1')).rejects.toThrow(NotFoundException);
+      await expect(service.updateTheme('nonexistent', { id_theme: 'theme1' })).rejects.toThrow(NotFoundException);
     });
   });
 });

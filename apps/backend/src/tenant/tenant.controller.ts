@@ -1,5 +1,6 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
   Post,
   Body,
@@ -13,11 +14,14 @@ import {
 import { TenantService } from './tenant.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { UpdateTenantThemeDto } from './dto/update-tenant-theme.dto';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
-import { UserRoles } from "@RealEstate/types";
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { UserRoles } from '@RealEstate/types';
 import { GetTenantQueryParams } from './dto/get-tenant-query-params';
 import { TenantResponseDto } from './dto/tenant-response.dto';
+import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
@@ -27,7 +31,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Tenant')
 @Controller('tenant')
 export class TenantController {
-  constructor(private readonly tenantService: TenantService) { }
+  constructor(private readonly tenantService: TenantService) {}
 
   @Post()
   @ResponseMessage('Tenant created successfully')
@@ -47,23 +51,32 @@ export class TenantController {
     @Param('id_tenant') id_tenant: string,
     @Query(new ValidationPipe({ transform: true })) query: GetTenantQueryParams,
   ): Promise<TenantResponseDto> {
-    const { includeUsers } = query
+    const { includeUsers } = query;
     return this.tenantService.findOne(id_tenant, includeUsers);
   }
 
   @Patch(':id_tenant')
   @ResponseMessage('Tenant updated successfully')
-  update(@Param('id_tenant') id_tenant: string, @Body() updateTenantDto: UpdateTenantDto): Promise<TenantResponseDto> {
+  update(
+    @Param('id_tenant') id_tenant: string,
+    @Body() updateTenantDto: UpdateTenantDto,
+  ): Promise<TenantResponseDto> {
     return this.tenantService.update(id_tenant, updateTenantDto);
   }
 
   @Patch(':id_tenant/theme')
+  @Roles(UserRoles.SUPERADMIN, UserRoles.ADMIN)
   @ResponseMessage('Tenant theme updated successfully')
   updateTheme(
     @Param('id_tenant') id_tenant: string,
-    @Body('id_theme') id_theme: string,
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    input: UpdateTenantThemeDto,
+    @CurrentUser() user: JwtPayload,
   ): Promise<TenantResponseDto> {
-    return this.tenantService.updateTheme(id_tenant, id_theme);
+    if (user.role === UserRoles.ADMIN && user.tenantId !== id_tenant) {
+      throw new ForbiddenException('Admins may only edit their own tenant');
+    }
+    return this.tenantService.updateTheme(id_tenant, input);
   }
 
   @Delete(':id_tenant')

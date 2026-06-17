@@ -26,6 +26,8 @@ export const FEE_RULE_SELECT = {
   isActive: true,
 } as const;
 
+import { Prisma } from '@prisma/client';
+
 export const PROPERTY_LIST_SELECT = {
   id_property: true,
   propertyName: true,
@@ -36,11 +38,19 @@ export const PROPERTY_LIST_SELECT = {
   rentalMode: true,
   status: true,
   id_owner: true,
+  owner: {
+    select: {
+      id_user: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+    },
+  },
   id_agent: true,
   id_tenant: true,
   createdAt: true,
   updatedAt: true,
-} as const;
+} satisfies Prisma.PropertySelect;
 
 export const PROPERTY_DETAIL_SELECT = {
   ...PROPERTY_LIST_SELECT,
@@ -55,4 +65,7 @@ export const PROPERTY_DETAIL_SELECT = {
   feeRules: {
     select: FEE_RULE_SELECT,
   },
-} as const;
+} satisfies Prisma.PropertySelect;
+
+export type PropertyListItem = Prisma.PropertyGetPayload<{ select: typeof PROPERTY_LIST_SELECT }>;
+export type PropertyDetail = Prisma.PropertyGetPayload<{ select: typeof PROPERTY_DETAIL_SELECT }>;

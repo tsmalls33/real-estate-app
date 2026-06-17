@@ -1,10 +1,18 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { GetPropertiesQueryParams } from './dto/get-properties-query-params';
 import { GetReservationsQueryParams } from './dto/get-reservations-query-params';
-import { type TenantScope, assertTenantMatch, resolveTenantId } from '../common/types/tenant-scope';
+import {
+  type TenantScope,
+  assertTenantMatch,
+  resolveTenantId,
+} from '../common/types/tenant-scope';
 
 import { PropertyRepository } from './property.repository';
 
@@ -21,12 +29,17 @@ export class PropertyService {
     });
   }
 
-  async findAll(query: GetPropertiesQueryParams, scope: TenantScope) {
+  async findAll(
+    query: GetPropertiesQueryParams,
+    scope: TenantScope,
+    extra?: { id_owner?: string },
+  ) {
     return this.propertyRepository.findAll({
       status: query.status,
       saleType: query.saleType,
       scope,
       id_agent: query.id_agent,
+      id_owner: extra?.id_owner,
       page: query.page ?? 1,
       limit: query.limit ?? 20,
     });
@@ -44,7 +57,11 @@ export class PropertyService {
     return property;
   }
 
-  async update(id_property: string, dto: UpdatePropertyDto, scope?: TenantScope) {
+  async update(
+    id_property: string,
+    dto: UpdatePropertyDto,
+    scope?: TenantScope,
+  ) {
     const property = await this.propertyRepository.findById(id_property);
     if (!property)
       throw new NotFoundException(

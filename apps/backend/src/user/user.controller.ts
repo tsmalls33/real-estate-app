@@ -41,7 +41,10 @@ export class UserController {
   @ResponseMessage('Users fetched successfully')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.SUPERADMIN, UserRoles.EMPLOYEE)
-  findAll(@Query() query: GetUsersQueryParams, @CurrentTenant() scope: TenantScope) {
+  findAll(
+    @Query() query: GetUsersQueryParams,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.userService.findAll(query.page, query.limit, scope);
   }
 
@@ -50,14 +53,17 @@ export class UserController {
   @ResponseMessage('Profile fetched successfully')
   @UseGuards(AuthGuard)
   getMe(@CurrentUser() user: JwtPayload) {
-    return this.userService.findOne(user.sub);
+    return this.userService.findMe(user.sub);
   }
 
   @Get(':id_user')
   @ResponseMessage('User fetched successfully')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.SUPERADMIN, UserRoles.EMPLOYEE)
-  findOne(@Param('id_user') id_user: string, @CurrentTenant() scope: TenantScope) {
+  findOne(
+    @Param('id_user') id_user: string,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.userService.findOne(id_user, scope);
   }
 
@@ -65,7 +71,10 @@ export class UserController {
   @ResponseMessage('Agent payments fetched successfully')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoles.SUPERADMIN)
-  findAgentPayments(@Param('id_user') id_user: string, @CurrentTenant() scope: TenantScope) {
+  findAgentPayments(
+    @Param('id_user') id_user: string,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.userService.findAgentPayments(id_user, scope);
   }
 
@@ -73,7 +82,11 @@ export class UserController {
   @ResponseMessage('User updated successfully')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.SUPERADMIN)
-  update(@Param('id_user') id_user: string, @Body() input: UpdateUserDto, @CurrentTenant() scope: TenantScope) {
+  update(
+    @Param('id_user') id_user: string,
+    @Body() input: UpdateUserDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.userService.update(id_user, input, scope);
   }
 
@@ -81,7 +94,10 @@ export class UserController {
   @ResponseMessage('User deleted successfully')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.SUPERADMIN)
-  remove(@Param('id_user') id_user: string, @CurrentTenant() scope: TenantScope) {
+  remove(
+    @Param('id_user') id_user: string,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.userService.remove(id_user, scope);
   }
 }
