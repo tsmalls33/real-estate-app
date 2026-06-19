@@ -70,3 +70,6 @@ CLAUDE.md
 /plans
 .markdown*
 /previews
+
+# turbo build cache
+.turbo
