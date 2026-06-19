@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
-import { UserRoles, type MeResponse } from '@RealEstate/types';
+import { UserRoles } from '@RealEstate/types';
 
 vi.mock('../shared/api/services', () => ({
   userApi: { me: vi.fn() },
@@ -11,23 +11,21 @@ vi.mock('../shared/api/services', () => ({
 
 import { userApi, propertyApi } from '../shared/api/services';
 import { seedAuth, clearAuth } from '../test-utils/auth';
+import { makeMe } from '../test-utils/factories';
 import { renderWithSession } from '../test-utils/render';
 import AppRouter from './AppRouter';
 
-const meClient: MeResponse = {
-  id_user: 'c1',
-  email: 'client@acme.com',
-  firstName: 'Cli',
-  lastName: 'Ent',
-  role: UserRoles.CLIENT,
-  id_tenant: 't1',
-  tenant: { id_tenant: 't1', name: 'Acme', customDomain: null, id_plan: null, theme: null },
-};
-
+// Admin landing renders the admin Dashboard, which fires propertyApi.list();
+// the client landing renders the client Dashboard, which also fires it. Resolve
+// it for every test so the app-level ErrorBoundary never trips.
 beforeEach(() => {
   clearAuth();
   vi.clearAllMocks();
+  vi.mocked(propertyApi.list).mockResolvedValue({ properties: [], total: 0 });
 });
+
+const onAdmin = () => screen.findByRole('link', { name: /dashboard/i }); // admin-only nav label
+const onClient = () => screen.findByText(/welcome back/i); // client shell greeting
 
 describe('AppRouter guards', () => {
   it('redirects an unauthed user from a protected route to /signin', async () => {
@@ -37,11 +35,34 @@ describe('AppRouter guards', () => {
 
   it('redirects a CLIENT away from /admin to the client landing', async () => {
     seedAuth(UserRoles.CLIENT);
-    vi.mocked(userApi.me).mockResolvedValue(meClient);
-    vi.mocked(propertyApi.list).mockResolvedValue({ properties: [], total: 0 });
-
+    vi.mocked(userApi.me).mockResolvedValue(makeMe({ role: UserRoles.CLIENT }));
     renderWithSession(<AppRouter />, { route: '/admin' });
-    // ClientShell greeting confirms we landed on /client.
-    expect(await screen.findByText(/welcome back/i)).toBeInTheDocument();
+    expect(await onClient()).toBeInTheDocument();
+  });
+
+  it('redirects an ADMIN away from /client to the admin landing', async () => {
+    seedAuth(UserRoles.ADMIN);
+    vi.mocked(userApi.me).mockResolvedValue(makeMe({ role: UserRoles.ADMIN }));
+    renderWithSession(<AppRouter />, { route: '/client' });
+    expect(await onAdmin()).toBeInTheDocument();
+  });
+
+  it('sends an authed user hitting / to their role landing', async () => {
+    seedAuth(UserRoles.CLIENT);
+    vi.mocked(userApi.me).mockResolvedValue(makeMe({ role: UserRoles.CLIENT }));
+    renderWithSession(<AppRouter />, { route: '/' });
+    expect(await onClient()).toBeInTheDocument();
+  });
+
+  it('redirects an authed user away from the public-only /signin route', async () => {
+    seedAuth(UserRoles.ADMIN);
+    vi.mocked(userApi.me).mockResolvedValue(makeMe({ role: UserRoles.ADMIN }));
+    renderWithSession(<AppRouter />, { route: '/signin' });
+    expect(await onAdmin()).toBeInTheDocument();
+  });
+
+  it('renders the 404 panel for an unknown path', async () => {
+    renderWithSession(<AppRouter />, { route: '/does-not-exist' });
+    expect(await screen.findByText('404 — Not found')).toBeInTheDocument();
   });
 });
