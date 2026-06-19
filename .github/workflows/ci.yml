@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # pnpm 10 skips dependency build scripts, so @prisma/client is not
+      # generated on install. Generate it explicitly (reads the schema only,
+      # no DATABASE_URL needed) before anything imports @prisma/client.
+      - name: Generate Prisma client
+        run: pnpm --filter @RealEstate/backend exec prisma generate
+
+      - name: Build types
+        run: pnpm --filter @RealEstate/types run build
+
+      - name: Build backend
+        run: pnpm --filter @RealEstate/backend run build
+
+      # GitHub Actions sets CI=true, so react-scripts treats lint warnings as
+      # build errors.
+      - name: Build frontend
+        run: pnpm --filter @RealEstate/frontend run build
+
+      - name: Test backend
+        run: pnpm --filter @RealEstate/backend run test
+
+      - name: Test frontend
+        run: pnpm --filter @RealEstate/frontend run test
