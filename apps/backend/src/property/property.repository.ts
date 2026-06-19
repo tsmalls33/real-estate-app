@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   Platform,
   Prisma,
-  Property,
   PropertyStatus,
   Reservation,
   ReservationStatus,
@@ -13,17 +12,22 @@ import { tenantFilter, type TenantScope } from '../common/types/tenant-scope';
 import {
   PROPERTY_DETAIL_SELECT,
   PROPERTY_LIST_SELECT,
+  presentOwner,
+  type PropertyDetail,
+  type PropertyListItem,
 } from './projections/property.projection';
 
 @Injectable()
 export class PropertyRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Prisma.PropertyUncheckedCreateInput): Promise<Property> {
-    return (await this.prisma.property.create({
-      data,
-      select: PROPERTY_LIST_SELECT,
-    })) as Property;
+  async create(data: Prisma.PropertyUncheckedCreateInput): Promise<PropertyListItem> {
+    return presentOwner(
+      await this.prisma.property.create({
+        data,
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
   async findAll(filters: {
@@ -31,9 +35,10 @@ export class PropertyRepository {
     saleType?: SaleType;
     scope: TenantScope;
     id_agent?: string;
+    id_owner?: string;
     page: number;
     limit: number;
-  }): Promise<{ properties: Property[]; total: number }> {
+  }): Promise<{ properties: PropertyListItem[]; total: number }> {
     const { page, limit, scope, ...filterFields } = filters;
     const skip = (page - 1) * limit;
 
@@ -43,6 +48,7 @@ export class PropertyRepository {
       ...(filterFields.saleType && { saleType: filterFields.saleType }),
       ...tenantFilter(scope),
       ...(filterFields.id_agent && { id_agent: filterFields.id_agent }),
+      ...(filterFields.id_owner && { id_owner: filterFields.id_owner }),
     };
 
     const [data, total] = await this.prisma.$transaction([
@@ -56,14 +62,15 @@ export class PropertyRepository {
       this.prisma.property.count({ where }),
     ]);
 
-    return { properties: data as Property[], total };
+    return { properties: data.map(presentOwner), total };
   }
 
-  async findById(id_property: string): Promise<Property | null> {
-    return (await this.prisma.property.findUnique({
+  async findById(id_property: string): Promise<PropertyDetail | null> {
+    const property = await this.prisma.property.findUnique({
       where: { id_property, isDeleted: false },
       select: PROPERTY_DETAIL_SELECT,
-    })) as Property | null;
+    });
+    return property ? presentOwner(property) : null;
   }
 
   async existsById(id_property: string): Promise<boolean> {
@@ -77,20 +84,24 @@ export class PropertyRepository {
   async update(
     id_property: string,
     data: Prisma.PropertyUncheckedUpdateInput,
-  ): Promise<Property> {
-    return (await this.prisma.property.update({
-      where: { id_property },
-      data,
-      select: PROPERTY_LIST_SELECT,
-    })) as Property;
+  ): Promise<PropertyListItem> {
+    return presentOwner(
+      await this.prisma.property.update({
+        where: { id_property },
+        data,
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
-  async softDelete(id_property: string): Promise<Property> {
-    return (await this.prisma.property.update({
-      where: { id_property },
-      data: { isDeleted: true },
-      select: PROPERTY_LIST_SELECT,
-    })) as Property;
+  async softDelete(id_property: string): Promise<PropertyListItem> {
+    return presentOwner(
+      await this.prisma.property.update({
+        where: { id_property },
+        data: { isDeleted: true },
+        select: PROPERTY_LIST_SELECT,
+      }),
+    );
   }
 
   async findReservations(
@@ -130,5 +141,4 @@ export class PropertyRepository {
 
     return { data, total };
   }
-
 }

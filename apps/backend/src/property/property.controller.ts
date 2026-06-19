@@ -18,8 +18,10 @@ import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentTenant } from '../common/decorators/current-tenant.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
-import type { TenantScope } from '../common/types/tenant-scope';
+import { tenantScopeForUser, type TenantScope } from '../common/types/tenant-scope';
+import type { JwtPayload } from '../common/types/jwt-payload.interface';
 import { UserRoles } from '@RealEstate/types';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
@@ -50,19 +52,35 @@ export class PropertyController {
   /** POST /properties */
   @Post()
   @ResponseMessage('Property created successfully')
-  create(@Body() createPropertyDto: CreatePropertyDto, @CurrentTenant() scope: TenantScope) {
+  create(
+    @Body() createPropertyDto: CreatePropertyDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.propertyService.create(createPropertyDto, scope);
   }
 
   /** GET /properties?status=&saleType=&id_tenant=&id_agent=&page=&limit= */
   @Get()
+  @Roles(
+    UserRoles.SUPERADMIN,
+    UserRoles.ADMIN,
+    UserRoles.EMPLOYEE,
+    UserRoles.CLIENT,
+  )
   @ResponseMessage('Properties fetched successfully')
   findAll(
     @Query(new ValidationPipe({ transform: true }))
     query: GetPropertiesQueryParams,
-    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: JwtPayload,
   ) {
-    return this.propertyService.findAll(query, scope);
+    if (user.role === UserRoles.CLIENT) {
+      return this.propertyService.findAll(
+        query,
+        { type: 'ALL' },
+        { id_owner: user.sub },
+      );
+    }
+    return this.propertyService.findAll(query, tenantScopeForUser(user));
   }
 
   /** GET /properties/:id_property */

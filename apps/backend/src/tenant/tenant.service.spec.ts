@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { TenantService } from './tenant.service';
 import { TenantRepository } from './tenant.repository';
 import { ThemeService } from '../theme/theme.service';
@@ -23,6 +24,8 @@ describe('TenantService', () => {
 
     mockThemeService = {
       findOne: jest.fn(),
+      update: jest.fn(),
+      create: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -159,25 +162,72 @@ describe('TenantService', () => {
     });
   });
 
-  describe('updateTheme', () => {
-    it('should update tenant theme', async () => {
+  describe('assignTheme', () => {
+    it('should assign an existing theme to the tenant', async () => {
+      mockTenantRepository.findById.mockResolvedValue({
+        id_tenant: 'tenant123',
+        name: 'Test',
+      });
       mockThemeService.findOne.mockResolvedValue({ id_theme: 'theme1' });
-      mockTenantRepository.existsById.mockResolvedValue(true);
       mockTenantRepository.assignTheme.mockResolvedValue({
         id_tenant: 'tenant123',
         id_theme: 'theme1',
       });
 
-      const result = await service.updateTheme('tenant123', 'theme1');
+      const result = await service.assignTheme('tenant123', 'theme1');
       expect(result).toEqual({ id_tenant: 'tenant123', id_theme: 'theme1' });
       expect(mockThemeService.findOne).toHaveBeenCalledWith('theme1');
       expect(mockTenantRepository.assignTheme).toHaveBeenCalledWith('tenant123', 'theme1');
     });
 
     it('should throw NotFoundException if tenant not found', async () => {
+      mockTenantRepository.findById.mockResolvedValue(null);
+      await expect(service.assignTheme('nonexistent', 'theme1')).rejects.toThrow(NotFoundException);
+      expect(mockThemeService.findOne).not.toHaveBeenCalled();
+    });
+
+    it('should throw ConflictException if the theme already belongs to another tenant', async () => {
+      mockTenantRepository.findById.mockResolvedValue({
+        id_tenant: 'tenant123',
+        name: 'Test',
+      });
       mockThemeService.findOne.mockResolvedValue({ id_theme: 'theme1' });
-      mockTenantRepository.existsById.mockResolvedValue(false);
-      await expect(service.updateTheme('nonexistent', 'theme1')).rejects.toThrow(NotFoundException);
+      mockTenantRepository.assignTheme.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+          code: 'P2002',
+          clientVersion: 'test',
+        }),
+      );
+
+      await expect(service.assignTheme('tenant123', 'theme1')).rejects.toThrow(ConflictException);
+    });
+  });
+
+  describe('updateAssignedTheme', () => {
+    it('should patch the existing theme fields', async () => {
+      mockTenantRepository.findById
+        .mockResolvedValueOnce({ id_tenant: 'tenant123', name: 'Test', id_theme: 'theme1' })
+        .mockResolvedValueOnce({ id_tenant: 'tenant123', id_theme: 'theme1' });
+
+      const result = await service.updateAssignedTheme('tenant123', { brandColor: '#123456' });
+      expect(result).toEqual({ id_tenant: 'tenant123', id_theme: 'theme1' });
+      expect(mockThemeService.update).toHaveBeenCalledWith('theme1', { brandColor: '#123456' });
+    });
+
+    it('should throw BadRequestException if no fields provided', async () => {
+      mockTenantRepository.findById.mockResolvedValue({
+        id_tenant: 'tenant123',
+        name: 'Test',
+        id_theme: 'theme1',
+      });
+      await expect(service.updateAssignedTheme('tenant123', {})).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw NotFoundException if tenant not found', async () => {
+      mockTenantRepository.findById.mockResolvedValue(null);
+      await expect(
+        service.updateAssignedTheme('nonexistent', { brandColor: '#123456' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -4,22 +4,25 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { UpdateTenantThemeDto } from './dto/update-tenant-theme.dto';
 import { TenantResponseDto } from './dto/tenant-response.dto';
 import { TenantRepository } from './tenant.repository';
 import { ThemeService } from '../theme/theme.service';
-
 
 @Injectable()
 export class TenantService {
   constructor(
     private readonly tenantRepository: TenantRepository,
     private readonly themeService: ThemeService,
-  ) { }
+  ) {}
 
   async create(createTenantDto: CreateTenantDto): Promise<TenantResponseDto> {
-    const isTenantExists = await this.tenantRepository.existsByName(createTenantDto.name);
+    const isTenantExists = await this.tenantRepository.existsByName(
+      createTenantDto.name,
+    );
 
     if (isTenantExists) throw new ConflictException('Tenant already exists'); // returns 409 Conflict
 
@@ -36,8 +39,14 @@ export class TenantService {
     return this.tenantRepository.findAll() as Promise<TenantResponseDto[]>;
   }
 
-  async findOne(id_tenant: string, includeUsers: boolean = false): Promise<TenantResponseDto> {
-    const foundTenant = await this.tenantRepository.findById(id_tenant, includeUsers);
+  async findOne(
+    id_tenant: string,
+    includeUsers: boolean = false,
+  ): Promise<TenantResponseDto> {
+    const foundTenant = await this.tenantRepository.findById(
+      id_tenant,
+      includeUsers,
+    );
 
     if (!foundTenant)
       throw new NotFoundException(`Tenant with id '${id_tenant}' not found`); // returns 404 Not Found
@@ -45,22 +54,25 @@ export class TenantService {
     return foundTenant as TenantResponseDto;
   }
 
-  async update(id_tenant: string, input: UpdateTenantDto): Promise<TenantResponseDto> {
+  async update(
+    id_tenant: string,
+    input: UpdateTenantDto,
+  ): Promise<TenantResponseDto> {
     // check if at least one field is provided for update
-    if (
-      !input.name &&
-      !input.customDomain &&
-      !input.id_plan
-    ) {
+    if (!input.name && !input.customDomain && !input.id_plan) {
       throw new BadRequestException('No fields to update');
     }
 
     // check if tenant name is being updated and if it already exists
     if (input.name) {
-      const isTenantExists = await this.tenantRepository.existsByName(input.name);
+      const isTenantExists = await this.tenantRepository.existsByName(
+        input.name,
+      );
 
       if (isTenantExists) {
-        throw new ConflictException(`Tenant name '${input.name}' already exists`);
+        throw new ConflictException(
+          `Tenant name '${input.name}' already exists`,
+        );
       }
     }
 
@@ -70,7 +82,10 @@ export class TenantService {
     if (!tenantExists)
       throw new NotFoundException(`Tenant with id '${id_tenant}' not found`); // returns 404 Not Found
 
-    return this.tenantRepository.update(id_tenant, input) as Promise<TenantResponseDto>;
+    return this.tenantRepository.update(
+      id_tenant,
+      input,
+    ) as Promise<TenantResponseDto>;
   }
 
   async remove(id_tenant: string): Promise<TenantResponseDto> {
@@ -80,18 +95,92 @@ export class TenantService {
     if (!tenantExists)
       throw new NotFoundException(`Tenant with '${id_tenant}' not found`); // returns 404 Not Found
 
-    return this.tenantRepository.softDelete(id_tenant) as Promise<TenantResponseDto>;
+    return this.tenantRepository.softDelete(
+      id_tenant,
+    ) as Promise<TenantResponseDto>;
   }
 
-  async updateTheme(id_tenant: string, id_theme: string): Promise<TenantResponseDto> {
-    // validate theme exists before assigning
+  /**
+   * Point a tenant at a different, already-existing theme. The theme must exist
+   * and must not already belong to another tenant (1:1 Tenant<->Theme).
+   */
+  async assignTheme(
+    id_tenant: string,
+    id_theme: string,
+  ): Promise<TenantResponseDto> {
+    const tenant = await this.tenantRepository.findById(id_tenant);
+    if (!tenant)
+      throw new NotFoundException(`Tenant with id '${id_tenant}' not found`);
+
     await this.themeService.findOne(id_theme);
+    try {
+      return (await this.tenantRepository.assignTheme(
+        id_tenant,
+        id_theme,
+      )) as TenantResponseDto;
+    } catch (error) {
+      // Unique constraint on Tenant.id_theme: a theme belongs to one tenant.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          `Theme '${id_theme}' is already assigned to another tenant`,
+        );
+      }
+      throw error;
+    }
+  }
 
-    // check if tenant exists
-    const tenantExists = await this.tenantRepository.existsById(id_tenant);
-    if (!tenantExists)
-      throw new NotFoundException(`Tenant with id '${id_tenant}' not found`); // returns 404 Not Found
+  /**
+   * Edit the tenant's own theme fields. If the tenant already has a theme, its
+   * fields are patched; otherwise a new theme is created (requires the three
+   * colors) and assigned to the tenant.
+   */
+  async updateAssignedTheme(
+    id_tenant: string,
+    input: UpdateTenantThemeDto,
+  ): Promise<TenantResponseDto> {
+    const tenant = await this.tenantRepository.findById(id_tenant);
+    if (!tenant)
+      throw new NotFoundException(`Tenant with id '${id_tenant}' not found`);
 
-    return this.tenantRepository.assignTheme(id_tenant, id_theme) as Promise<TenantResponseDto>;
+    const hasFieldOverrides =
+      input.name !== undefined ||
+      input.backgroundColor !== undefined ||
+      input.brandColor !== undefined ||
+      input.secondaryColor !== undefined ||
+      input.logoIcon !== undefined ||
+      input.logoBanner !== undefined;
+
+    if (!hasFieldOverrides) {
+      throw new BadRequestException('No theme fields to update');
+    }
+
+    if (tenant.id_theme) {
+      await this.themeService.update(tenant.id_theme, input);
+      return this.tenantRepository.findById(
+        id_tenant,
+      ) as Promise<TenantResponseDto>;
+    }
+
+    if (!input.backgroundColor || !input.brandColor || !input.secondaryColor) {
+      throw new BadRequestException(
+        'backgroundColor, brandColor, and secondaryColor are required when creating a tenant theme',
+      );
+    }
+
+    const created = await this.themeService.create({
+      name: input.name ?? `${tenant.name} theme`,
+      backgroundColor: input.backgroundColor,
+      brandColor: input.brandColor,
+      secondaryColor: input.secondaryColor,
+      logoIcon: input.logoIcon ?? null,
+      logoBanner: input.logoBanner ?? null,
+    });
+    return this.tenantRepository.assignTheme(
+      id_tenant,
+      created.id_theme,
+    ) as Promise<TenantResponseDto>;
   }
 }

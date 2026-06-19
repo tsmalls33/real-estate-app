@@ -1,8 +1,23 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { UserRoles } from '@RealEstate/types';
+import type { JwtPayload } from './jwt-payload.interface';
 
 export type TenantScope =
   | { type: 'ALL' }
   | { type: 'TENANT'; tenantId: string };
+
+/**
+ * Derive the tenant scope for an authenticated user.
+ * SUPERADMIN sees everything; any other role must carry a tenantId, otherwise
+ * the account is misconfigured and we refuse rather than run an unscoped query.
+ */
+export function tenantScopeForUser(user: JwtPayload): TenantScope {
+  if (user.role === UserRoles.SUPERADMIN) return { type: 'ALL' };
+  if (!user.tenantId) {
+    throw new ForbiddenException('Tenant context is required');
+  }
+  return { type: 'TENANT', tenantId: user.tenantId };
+}
 
 /**
  * Throws NotFoundException if the record's tenant does not match the scope.

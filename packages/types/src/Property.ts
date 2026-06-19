@@ -23,6 +23,13 @@ export const RentalMode = {
 
 export type RentalMode = (typeof RentalMode)[keyof typeof RentalMode];
 
+export interface PropertyOwnerSummary {
+  id_user: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email: string;
+}
+
 export class Property {
   id_property!: string;
   propertyName!: string;
@@ -34,6 +41,7 @@ export class Property {
   saleType?: SaleType | null;
   rentalMode?: RentalMode | null;
   id_owner?: string | null;
+  owner?: PropertyOwnerSummary | null;
   id_agent?: string | null;
   id_tenant?: string | null;
   status!: PropertyStatus;
