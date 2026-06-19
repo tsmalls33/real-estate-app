@@ -35,9 +35,13 @@ jobs:
       - name: Build backend
         run: pnpm --filter @RealEstate/backend run build
 
-      # GitHub Actions sets CI=true, so react-scripts treats lint warnings as
-      # build errors.
+      # react-scripts 5 (CRA) drives ESLint with options removed in ESLint 9,
+      # which is hoisted into the workspace by the backend. Lint is out of
+      # scope as a CI gate for now, so disable CRA's lint pass — the build
+      # still type-checks and bundles.
       - name: Build frontend
+        env:
+          DISABLE_ESLINT_PLUGIN: "true"
         run: pnpm --filter @RealEstate/frontend run build
 
       - name: Test backend
