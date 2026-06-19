@@ -100,7 +100,44 @@ export class TenantService {
     ) as Promise<TenantResponseDto>;
   }
 
-  async updateTheme(
+  /**
+   * Point a tenant at a different, already-existing theme. The theme must exist
+   * and must not already belong to another tenant (1:1 Tenant<->Theme).
+   */
+  async assignTheme(
+    id_tenant: string,
+    id_theme: string,
+  ): Promise<TenantResponseDto> {
+    const tenant = await this.tenantRepository.findById(id_tenant);
+    if (!tenant)
+      throw new NotFoundException(`Tenant with id '${id_tenant}' not found`);
+
+    await this.themeService.findOne(id_theme);
+    try {
+      return (await this.tenantRepository.assignTheme(
+        id_tenant,
+        id_theme,
+      )) as TenantResponseDto;
+    } catch (error) {
+      // Unique constraint on Tenant.id_theme: a theme belongs to one tenant.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          `Theme '${id_theme}' is already assigned to another tenant`,
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Edit the tenant's own theme fields. If the tenant already has a theme, its
+   * fields are patched; otherwise a new theme is created (requires the three
+   * colors) and assigned to the tenant.
+   */
+  async updateAssignedTheme(
     id_tenant: string,
     input: UpdateTenantThemeDto,
   ): Promise<TenantResponseDto> {
@@ -115,34 +152,6 @@ export class TenantService {
       input.secondaryColor !== undefined ||
       input.logoIcon !== undefined ||
       input.logoBanner !== undefined;
-
-    if (input.id_theme) {
-      // Reassignment and per-field edits are mutually exclusive: a request
-      // carrying both would silently drop the overrides on the early return.
-      if (hasFieldOverrides) {
-        throw new BadRequestException(
-          'Provide either id_theme (to reassign) or theme fields (to edit), not both',
-        );
-      }
-      await this.themeService.findOne(input.id_theme);
-      try {
-        return (await this.tenantRepository.assignTheme(
-          id_tenant,
-          input.id_theme,
-        )) as TenantResponseDto;
-      } catch (error) {
-        // Unique constraint on Tenant.id_theme: a theme belongs to one tenant.
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002'
-        ) {
-          throw new ConflictException(
-            `Theme '${input.id_theme}' is already assigned to another tenant`,
-          );
-        }
-        throw error;
-      }
-    }
 
     if (!hasFieldOverrides) {
       throw new BadRequestException('No theme fields to update');

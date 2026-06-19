@@ -1,5 +1,5 @@
 import type { TenantScope } from '../types/tenant-scope';
-import type { JwtPayload } from '../../auth/interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../types/jwt-payload.interface';
 
 export const TENANT_A = 'tenant-aaa-aaa';
 export const TENANT_B = 'tenant-bbb-bbb';

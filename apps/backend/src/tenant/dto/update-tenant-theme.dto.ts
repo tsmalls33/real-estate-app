@@ -1,16 +1,6 @@
-import {
-  IsHexColor,
-  IsOptional,
-  IsString,
-  IsUUID,
-  MaxLength,
-} from 'class-validator';
+import { IsHexColor, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTenantThemeDto {
-  @IsOptional()
-  @IsUUID()
-  id_theme?: string;
-
   @IsOptional()
   @IsString()
   @MaxLength(80)
