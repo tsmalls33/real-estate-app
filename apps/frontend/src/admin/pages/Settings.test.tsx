@@ -44,6 +44,12 @@ describe('Admin Settings', () => {
     expect(await screen.findByRole('heading', { name: 'Tenant theme' })).toBeInTheDocument();
   });
 
+  it('shows the theme editor for a SUPERADMIN attached to a tenant', async () => {
+    setSession(UserRoles.SUPERADMIN); // makeMe gives a tenant by default
+    renderWithSession(<Settings />);
+    expect(await screen.findByRole('heading', { name: 'Tenant theme' })).toBeInTheDocument();
+  });
+
   it('hides the theme editor for EMPLOYEE', async () => {
     setSession(UserRoles.EMPLOYEE);
     renderWithSession(<Settings />);

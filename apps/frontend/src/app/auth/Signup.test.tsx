@@ -54,6 +54,8 @@ describe('Signup', () => {
     );
     expect(authApi.signin).toHaveBeenCalledWith('new@acme.com', 'hunter2!!');
     expect(localStorage.getItem('accessToken')).toBe('access-1');
+    // auto-signin must refresh the session before landing on the portal.
+    expect(userApi.me).toHaveBeenCalled();
   });
 
   it('surfaces the error message on a 409 conflict', async () => {

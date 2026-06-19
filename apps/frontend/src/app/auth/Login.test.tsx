@@ -51,6 +51,9 @@ describe('Login', () => {
     expect(authApi.signin).toHaveBeenCalledWith('ada@acme.com', 'hunter2!!');
     expect(localStorage.getItem('accessToken')).toBe('access-1');
     expect(localStorage.getItem('refreshToken')).toBe('refresh-1');
+    // refresh() must run so the session reflects the new user before we land.
+    // (it only calls userApi.me when a token is present — which only the login set)
+    expect(userApi.me).toHaveBeenCalled();
   });
 
   it('surfaces the error message on a 401', async () => {
