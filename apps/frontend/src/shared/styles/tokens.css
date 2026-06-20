@@ -46,6 +46,9 @@
 
   --brand-primary-tint:    #2A2030;
   --brand-secondary-tint:  #2E211B;
+  /* Brand is lightened for dark mode, so on-brand text flips to near-black. */
+  --brand-on-primary:      #14171D;
+  --brand-on-secondary:    #14171D;
 
   --success-soft: #16261C;
   --danger-soft:  #2A1A1A;
