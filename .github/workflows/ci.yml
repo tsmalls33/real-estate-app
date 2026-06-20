@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +35,30 @@ jobs:
       - name: Build backend
         run: pnpm --filter @RealEstate/backend run build
 
+      - name: Test backend
+        run: pnpm --filter @RealEstate/backend run test
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Frontend imports @RealEstate/types (its compiled output), so build it first.
+      - name: Build types
+        run: pnpm --filter @RealEstate/types run build
+
       # react-scripts 5 (CRA) drives ESLint with options removed in ESLint 9,
       # which is hoisted into the workspace by the backend. Lint is out of
       # scope as a CI gate for now, so disable CRA's lint pass — the build
@@ -43,9 +67,6 @@ jobs:
         env:
           DISABLE_ESLINT_PLUGIN: "true"
         run: pnpm --filter @RealEstate/frontend run build
-
-      - name: Test backend
-        run: pnpm --filter @RealEstate/backend run test
 
       - name: Test frontend
         run: pnpm --filter @RealEstate/frontend run test
