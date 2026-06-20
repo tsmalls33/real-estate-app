@@ -62,9 +62,12 @@
   text-decoration: none;
 }
 .cli-tab:hover { color: var(--text); }
+/* Solid brand pill — the brand/on-brand pair stays high-contrast in both
+   light and dark, unlike a faint brand-primary-soft tint which disappears on
+   dark surfaces for dark brand colors. */
 .cli-tab.active {
-  color: var(--brand-primary);
-  background: var(--brand-primary-soft);
+  color: var(--brand-on-primary);
+  background: var(--brand-primary);
   font-weight: 600;
 }
 

@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { MeResponse } from '@RealEstate/types';
 import { ThemeMode } from '@RealEstate/types';
 import { userApi } from '../api/services';
-import { getAccessToken } from '../auth/tokens';
+import { clearTokens, getAccessToken } from '../auth/tokens';
 
 const THEME_MODE_KEY = 'theme-mode';
 
@@ -11,6 +11,7 @@ type Ctx = {
   loading: boolean;
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
+  logout: () => void;
   refresh: () => Promise<void>;
 };
 
@@ -19,6 +20,7 @@ const SessionCtx = createContext<Ctx>({
   loading: true,
   mode: ThemeMode.SYSTEM,
   setMode: () => {},
+  logout: () => {},
   refresh: async () => {},
 });
 
@@ -135,6 +137,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Logout clears auth + tenant vars (me -> null re-applies the neutral base via
+  // the effect below) but preserves the theme-mode preference in localStorage.
+  const logout = useCallback(() => {
+    clearTokens();
+    setMe(null);
+  }, []);
+
   useEffect(() => {
     refresh();
   }, [refresh]);
@@ -144,9 +153,19 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     applyTheme(me, mode);
   }, [me, mode]);
 
+  // While following the OS, re-apply when the system preference flips.
+  useEffect(() => {
+    if (mode !== ThemeMode.SYSTEM) return;
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
+    if (!mq?.addEventListener) return;
+    const handler = () => applyTheme(me, mode);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [mode, me]);
+
   const value = useMemo(
-    () => ({ me, loading, mode, setMode, refresh }),
-    [me, loading, mode, setMode, refresh],
+    () => ({ me, loading, mode, setMode, logout, refresh }),
+    [me, loading, mode, setMode, logout, refresh],
   );
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>;
 }

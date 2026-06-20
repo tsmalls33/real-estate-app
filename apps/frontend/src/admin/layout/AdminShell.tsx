@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGauge, faBuilding, faGear } from '@fortawesome/free-solid-svg-icons';
 import { UserRoles } from '@RealEstate/types';
 import { useSession } from '../../shared/theme/ThemeContext';
-import { clearTokens } from '../../shared/auth/tokens';
 import './AdminShell.css';
 
 function initials(firstName?: string | null, lastName?: string | null, email?: string) {
@@ -20,12 +19,12 @@ const TITLES: Record<string, { title: string; sub: string }> = {
 };
 
 export default function AdminShell() {
-  const { me } = useSession();
+  const { me, logout } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
 
   function signOut() {
-    clearTokens();
+    logout();
     navigate('/signin', { replace: true });
   }
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { UserRoles } from '@RealEstate/types';
 import { tenantApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
+import ThemeToggle from '../../shared/components/ThemeToggle/ThemeToggle';
 import './Settings.css';
 
 const DEFAULTS = {
@@ -81,6 +82,15 @@ export default function Settings() {
         <div className="settings-row">
           <div className="settings-row-label">Tenant</div>
           <div className="settings-row-value">{tenant?.name ?? '—'}</div>
+        </div>
+      </section>
+
+      <section className="settings-card">
+        <h3>Appearance</h3>
+        <p className="settings-card-sub">Applies to your account only.</p>
+        <div className="settings-row">
+          <div className="settings-row-label">Theme</div>
+          <div className="settings-row-value"><ThemeToggle /></div>
         </div>
       </section>
 
