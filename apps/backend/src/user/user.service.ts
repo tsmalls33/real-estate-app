@@ -89,6 +89,10 @@ export class UserService {
   }
 
   async updateMe(id_user: string, input: UpdateMeDto): Promise<MeResponse> {
+    const foundUser = await this.userRepository.findById(id_user);
+    if (!foundUser) {
+      throw new NotFoundException('User not found');
+    }
     await this.userRepository.update(id_user, {
       preferredThemeMode: input.preferredThemeMode,
     });

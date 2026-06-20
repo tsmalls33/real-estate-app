@@ -202,6 +202,37 @@ describe('UserService – tenant scoping', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // updateMe
+  // ---------------------------------------------------------------------------
+  describe('updateMe', () => {
+    it('persists the new preference and returns the refreshed profile', async () => {
+      mockUserRepo.findById.mockResolvedValue(baseUser as any);
+      mockUserRepo.update.mockResolvedValue(baseUser as any);
+      mockUserRepo.findMe = jest
+        .fn()
+        .mockResolvedValue({ ...baseUser, preferredThemeMode: 'DARK' });
+
+      const result = await service.updateMe(USER_ID, {
+        preferredThemeMode: 'DARK',
+      } as any);
+
+      expect(mockUserRepo.update).toHaveBeenCalledWith(USER_ID, {
+        preferredThemeMode: 'DARK',
+      });
+      expect(result.preferredThemeMode).toBe('DARK');
+    });
+
+    it('throws NotFoundException when the user does not exist', async () => {
+      mockUserRepo.findById.mockResolvedValue(null as any);
+
+      await expect(
+        service.updateMe(USER_ID, { preferredThemeMode: 'DARK' } as any),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockUserRepo.update).not.toHaveBeenCalled();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // remove
   // ---------------------------------------------------------------------------
   describe('remove', () => {
