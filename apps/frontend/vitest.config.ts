@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // CRA keeps JSX in plain `.js` files; tell esbuild to parse them as JSX.
-  esbuild: { loader: 'jsx', include: /src\/.*\.jsx?$/, exclude: [] },
+  // CRA keeps JSX in plain `.js` files; the `tsx` loader parses JSX in `.js`
+  // and also handles `.ts`/`.tsx` type syntax (a superset of jsx).
+  esbuild: { loader: 'tsx', include: /src\/.*\.[jt]sx?$/, exclude: [] },
   optimizeDeps: { esbuildOptions: { loader: { '.js': 'jsx' } } },
   test: {
     globals: true,
