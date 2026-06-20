@@ -39,8 +39,8 @@ export default function AdminShell() {
 
   return (
     <div className="adm-shell">
-      <aside className="adm-sidebar">
-        <div className="adm-brand">
+      <header className="adm-topbar">
+        <div className="adm-brand-zone">
           <div className="adm-brand-mark">{tenantName[0]?.toUpperCase() ?? '·'}</div>
           <div>
             <div className="adm-brand-name">{tenantName}</div>
@@ -48,43 +48,48 @@ export default function AdminShell() {
           </div>
         </div>
 
-        <nav className="adm-nav">
-          <div className="adm-nav-section">Workspace</div>
-          <NavLink to="/admin" end className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
-            <span className="adm-nav-icon"><FontAwesomeIcon icon={faGauge} /></span> Dashboard
-          </NavLink>
-          {isSuper && (
-            <NavLink to="/admin/tenants" className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
-              <span className="adm-nav-icon"><FontAwesomeIcon icon={faBuilding} /></span> Tenants
-            </NavLink>
-          )}
-          <div className="adm-nav-section">Account</div>
-          <NavLink to="/admin/settings" className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
-            <span className="adm-nav-icon"><FontAwesomeIcon icon={faGear} /></span> Settings
-          </NavLink>
-        </nav>
-
-        <div className="adm-user">
-          <div className="adm-user-avatar">{initials(me?.firstName, me?.lastName, me?.email)}</div>
-          <div>
-            <div className="adm-user-name">{me?.firstName ?? me?.email}</div>
-            <div className="adm-user-role">{roleLabel}</div>
-          </div>
-          <button className="adm-user-signout" onClick={signOut}>Sign out</button>
-        </div>
-      </aside>
-
-      <main className="adm-main">
-        <header className="adm-topbar">
-          <div>
+        <div className="adm-topbar-main">
+          <div className="adm-topbar-titles">
             <span className="adm-topbar-title">{pageMeta.title}</span>
             <span className="adm-topbar-sub">{pageMeta.sub}</span>
           </div>
-        </header>
-        <div className="adm-content">
-          <Outlet />
+
+          <div className="adm-acct">
+            <div className="adm-acct-id">
+              <div className="adm-acct-name">{me?.firstName ?? me?.email}</div>
+              <div className="adm-acct-role">{roleLabel}</div>
+            </div>
+            <div className="adm-user-avatar">{initials(me?.firstName, me?.lastName, me?.email)}</div>
+            <button className="adm-user-signout" onClick={signOut}>Sign out</button>
+          </div>
         </div>
-      </main>
+      </header>
+
+      <div className="adm-below">
+        <aside className="adm-sidebar">
+          <nav className="adm-nav">
+            <div className="adm-nav-section">Workspace</div>
+            <NavLink to="/admin" end className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
+              <span className="adm-nav-icon"><FontAwesomeIcon icon={faGauge} /></span> Dashboard
+            </NavLink>
+            {isSuper && (
+              <NavLink to="/admin/tenants" className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
+                <span className="adm-nav-icon"><FontAwesomeIcon icon={faBuilding} /></span> Tenants
+              </NavLink>
+            )}
+            <div className="adm-nav-section">Account</div>
+            <NavLink to="/admin/settings" className={({isActive}) => `adm-nav-item ${isActive ? 'active' : ''}`}>
+              <span className="adm-nav-icon"><FontAwesomeIcon icon={faGear} /></span> Settings
+            </NavLink>
+          </nav>
+        </aside>
+
+        <main className="adm-main">
+          <div className="adm-content">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

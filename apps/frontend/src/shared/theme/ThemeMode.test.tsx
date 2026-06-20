@@ -43,7 +43,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   localStorage.removeItem('theme-mode');
   root().removeAttribute('data-theme');
-  ['--bg', '--brand-primary', '--sidebar-bg'].forEach(v => root().style.removeProperty(v));
+  ['--bg', '--brand-primary'].forEach(v => root().style.removeProperty(v));
 });
 
 describe('theme mode', () => {
@@ -75,7 +75,6 @@ describe('theme mode', () => {
 
     expect(root().dataset.theme).toBe('dark');
     expect(cssVar('--bg')).toBe(''); // dark bg comes from the CSS neutral block
-    expect(cssVar('--sidebar-bg')).not.toBe('');
   });
 
   it('logout clears tenant vars but preserves the mode preference', async () => {

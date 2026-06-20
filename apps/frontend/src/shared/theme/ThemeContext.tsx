@@ -57,22 +57,15 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function mix(hex: string, towards: [number, number, number], ratio: number): string {
-  const [r, g, b] = parseHex(hex);
-  const m = (a: number, b: number) => Math.round(a * (1 - ratio) + b * ratio);
-  const to = (n: number) => n.toString(16).padStart(2, '0');
-  return `#${to(m(r, towards[0]))}${to(m(g, towards[1]))}${to(m(b, towards[2]))}`;
-}
-
-const SIDEBAR_VARS = [
+// Vars set inline per tenant (brand accents + page bg). Removed for non-tenant
+// users so the neutral CSS defaults apply. The sidebar chrome is fixed neutral
+// CSS (tokens.css), NOT brand-derived — brand only appears as UI accents.
+const TENANT_VARS = [
   '--bg',
   '--brand-primary',
   '--brand-secondary',
   '--brand-primary-soft',
   '--brand-secondary-soft',
-  '--sidebar-bg',
-  '--sidebar-border',
-  '--sidebar-text',
 ];
 
 function applyTheme(me: MeResponse | null, mode: ThemeMode): void {
@@ -82,20 +75,18 @@ function applyTheme(me: MeResponse | null, mode: ThemeMode): void {
 
   const theme = me?.tenant?.theme;
   if (!theme) {
-    SIDEBAR_VARS.forEach(v => root.style.removeProperty(v));
+    TENANT_VARS.forEach(v => root.style.removeProperty(v));
     return;
   }
 
-  // Brand colors are tenant identity — IDENTICAL in light and dark. Only the
-  // page background flips; surfaces/text/borders flip via the CSS [data-theme]
-  // neutral block. Brand-derived chrome (sidebar, soft tints) is mode-independent.
+  // Brand colors are tenant identity — IDENTICAL in light and dark, used only as
+  // accents (brand mark, avatar, active indicator). The sidebar chrome and all
+  // surfaces/text/borders are fixed neutral CSS that flips via [data-theme].
+  // Only the page background is tenant-driven, and only in light mode.
   root.style.setProperty('--brand-primary', theme.brandColor);
   root.style.setProperty('--brand-secondary', theme.secondaryColor);
   root.style.setProperty('--brand-primary-soft', hexToRgba(theme.brandColor, 0.08));
   root.style.setProperty('--brand-secondary-soft', hexToRgba(theme.secondaryColor, 0.12));
-  root.style.setProperty('--sidebar-bg', mix(theme.brandColor, [0, 0, 0], 0.78));
-  root.style.setProperty('--sidebar-border', mix(theme.brandColor, [0, 0, 0], 0.65));
-  root.style.setProperty('--sidebar-text', mix(theme.brandColor, [255, 255, 255], 0.62));
 
   if (effectiveMode(mode) === 'dark') {
     // Dark background comes from the neutral token block; don't pin the light bg.
