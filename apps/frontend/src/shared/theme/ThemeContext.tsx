@@ -84,32 +84,23 @@ function applyTheme(me: MeResponse | null, mode: ThemeMode): void {
     return;
   }
 
-  if (effectiveMode(mode) === 'dark') {
-    // Dark variant of the tenant brand: keep hue, lift lightness so brand reads
-    // on dark surfaces; background/surfaces go near-black tinted toward brand.
-    // (RGB mix shifts hue slightly — acceptable for v1, see #68.)
-    const primary = mix(theme.brandColor, [255, 255, 255], 0.34);
-    const secondary = mix(theme.secondaryColor, [255, 255, 255], 0.30);
-    root.style.setProperty('--bg', mix(theme.brandColor, [14, 17, 22], 0.9));
-    root.style.setProperty('--brand-primary', primary);
-    root.style.setProperty('--brand-secondary', secondary);
-    root.style.setProperty('--brand-primary-soft', hexToRgba(primary, 0.16));
-    root.style.setProperty('--brand-secondary-soft', hexToRgba(secondary, 0.2));
-    root.style.setProperty('--sidebar-bg', mix(theme.brandColor, [9, 11, 15], 0.84));
-    root.style.setProperty('--sidebar-border', mix(theme.brandColor, [42, 48, 58], 0.72));
-    root.style.setProperty('--sidebar-text', mix(theme.brandColor, [255, 255, 255], 0.7));
-    return;
-  }
-
-  root.style.setProperty('--bg', theme.backgroundColor);
+  // Brand colors are tenant identity — IDENTICAL in light and dark. Only the
+  // page background flips; surfaces/text/borders flip via the CSS [data-theme]
+  // neutral block. Brand-derived chrome (sidebar, soft tints) is mode-independent.
   root.style.setProperty('--brand-primary', theme.brandColor);
   root.style.setProperty('--brand-secondary', theme.secondaryColor);
   root.style.setProperty('--brand-primary-soft', hexToRgba(theme.brandColor, 0.08));
   root.style.setProperty('--brand-secondary-soft', hexToRgba(theme.secondaryColor, 0.12));
-  // Sidebar derives from the brand color so each tenant gets matching chrome.
   root.style.setProperty('--sidebar-bg', mix(theme.brandColor, [0, 0, 0], 0.78));
   root.style.setProperty('--sidebar-border', mix(theme.brandColor, [0, 0, 0], 0.65));
   root.style.setProperty('--sidebar-text', mix(theme.brandColor, [255, 255, 255], 0.62));
+
+  if (effectiveMode(mode) === 'dark') {
+    // Dark background comes from the neutral token block; don't pin the light bg.
+    root.style.removeProperty('--bg');
+  } else {
+    root.style.setProperty('--bg', theme.backgroundColor);
+  }
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {

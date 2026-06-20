@@ -1,22 +1,30 @@
+/* Platform-neutral base palette. Tenants override the brand/sidebar/bg vars
+   inline (ThemeContext.applyTheme); SUPERADMIN (no tenant) and the platform
+   console fall back to these neutral values. */
 :root {
-  --bg:                #FFFFFF;
-  --brand-primary:     #5A303A;
-  --brand-secondary:   #EB4F1C;
+  --bg:                #F6F7F9;
+  --brand-primary:     #2C3350;
+  --brand-secondary:   #5B68E0;
 
   --surface:           #FFFFFF;
-  --surface-2:         #FAF6F0;
-  --border:            #E8DED1;
-  --border-strong:     #D5C8B4;
-  --text:              #2A1F1A;
-  --text-muted:        #8C7E70;
-  --text-faint:        #B5A89A;
+  --surface-2:         #F1F3F6;
+  --border:            #E5E8EE;
+  --border-strong:     #D3D8E1;
+  --text:              #1B2230;
+  --text-muted:        #6B7280;
+  --text-faint:        #AEB4BF;
 
-  --brand-primary-soft:    rgba(90, 48, 58, 0.08);
-  --brand-primary-tint:    #F1E3E3;
-  --brand-secondary-soft:  rgba(235, 79, 28, 0.12);
-  --brand-secondary-tint:  #FBE6D9;
+  --brand-primary-soft:    rgba(44, 51, 80, 0.08);
+  --brand-primary-tint:    #E7E9F0;
+  --brand-secondary-soft:  rgba(91, 104, 224, 0.12);
+  --brand-secondary-tint:  #E5E8FB;
   --brand-on-primary:      #FFFFFF;
   --brand-on-secondary:    #FFFFFF;
+
+  /* Neutral sidebar fallback for the platform console (tenants override these). */
+  --sidebar-bg:        #20253A;
+  --sidebar-border:    #2C3350;
+  --sidebar-text:      #AEB6CC;
 
   --success: #2F7A4D;
   --warning: #C8832A;
@@ -44,11 +52,19 @@
   --text-muted:        #9AA1AD;
   --text-faint:        #5B626D;
 
-  --brand-primary-tint:    #2A2030;
-  --brand-secondary-tint:  #2E211B;
-  /* Brand is lightened for dark mode, so on-brand text flips to near-black. */
-  --brand-on-primary:      #14171D;
-  --brand-on-secondary:    #14171D;
+  /* Neutral brand/sidebar fallback for the platform console in dark mode
+     (tenants override brand inline with their own hex; SUPERADMIN falls back
+     here). Saturated accent so white on-brand text stays readable. */
+  --brand-primary:         #5B68E0;
+  --brand-secondary:       #6E7BF2;
+  --brand-primary-soft:    rgba(91, 104, 224, 0.18);
+  --brand-secondary-soft:  rgba(110, 123, 242, 0.20);
+  --brand-primary-tint:    #21263A;
+  --brand-secondary-tint:  #20253A;
+
+  --sidebar-bg:        #12151B;
+  --sidebar-border:    #232834;
+  --sidebar-text:      #AEB6CC;
 
   --success-soft: #16261C;
   --danger-soft:  #2A1A1A;
