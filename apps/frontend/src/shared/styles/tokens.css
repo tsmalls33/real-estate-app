@@ -31,6 +31,29 @@
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
+/* CSS-owned neutral tokens for dark mode. JS flips [data-theme] (ThemeContext);
+   tenant-derived brand/sidebar vars stay JS-owned and are set inline. */
+:root[data-theme="dark"] {
+  --bg:                #0E1116;
+
+  --surface:           #161A21;
+  --surface-2:         #1B2027;
+  --border:            #262B34;
+  --border-strong:     #333A45;
+  --text:              #E6E9EF;
+  --text-muted:        #9AA1AD;
+  --text-faint:        #5B626D;
+
+  --brand-primary-tint:    #2A2030;
+  --brand-secondary-tint:  #2E211B;
+
+  --success-soft: #16261C;
+  --danger-soft:  #2A1A1A;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root { height: 100%; }

@@ -1,5 +1,6 @@
 import {
   PropertyStatus,
+  ThemeMode,
   UserRoles,
   type MeResponse,
   type Property,
@@ -38,6 +39,7 @@ export function makeMe(overrides: Partial<MeResponse> = {}): MeResponse {
     lastName: 'Min',
     role: UserRoles.ADMIN,
     id_tenant: 't1',
+    preferredThemeMode: ThemeMode.SYSTEM,
     tenant: makeTenantSummary(),
     ...overrides,
   };

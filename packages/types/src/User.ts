@@ -8,6 +8,14 @@ export const UserRoles = {
 
 export type UserRoles = (typeof UserRoles)[keyof typeof UserRoles]
 
+export const ThemeMode = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+  SYSTEM: 'SYSTEM'
+} as const;
+
+export type ThemeMode = (typeof ThemeMode)[keyof typeof ThemeMode]
+
 export class User {
   id_user!: string;
   email!: string;
@@ -54,6 +62,11 @@ export interface MeResponse {
   lastName?: string | null;
   role: UserRoles;
   id_tenant?: string | null;
+  preferredThemeMode: ThemeMode;
   tenant: MeTenantSummary | null;
+}
+
+export class UpdateMeDto {
+  preferredThemeMode!: ThemeMode;
 }
 

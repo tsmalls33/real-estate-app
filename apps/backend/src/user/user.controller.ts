@@ -12,6 +12,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 import { GetUsersQueryParams } from './dto/get-users-query-params';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
 import { CurrentTenant } from '../common/decorators/current-tenant.decorator';
@@ -54,6 +55,14 @@ export class UserController {
   @UseGuards(AuthGuard)
   getMe(@CurrentUser() user: JwtPayload) {
     return this.userService.findMe(user.sub);
+  }
+
+  /** PATCH /user/me — self-service profile prefs; must come before PATCH /user/:id_user */
+  @Patch('me')
+  @ResponseMessage('Profile updated successfully')
+  @UseGuards(AuthGuard)
+  updateMe(@CurrentUser() user: JwtPayload, @Body() input: UpdateMeDto) {
+    return this.userService.updateMe(user.sub, input);
   }
 
   @Get(':id_user')

@@ -1,15 +1,44 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { MeResponse } from '@RealEstate/types';
+import { ThemeMode } from '@RealEstate/types';
 import { userApi } from '../api/services';
 import { getAccessToken } from '../auth/tokens';
+
+const THEME_MODE_KEY = 'theme-mode';
 
 type Ctx = {
   me: MeResponse | null;
   loading: boolean;
+  mode: ThemeMode;
+  setMode: (mode: ThemeMode) => void;
   refresh: () => Promise<void>;
 };
 
-const SessionCtx = createContext<Ctx>({ me: null, loading: true, refresh: async () => {} });
+const SessionCtx = createContext<Ctx>({
+  me: null,
+  loading: true,
+  mode: ThemeMode.SYSTEM,
+  setMode: () => {},
+  refresh: async () => {},
+});
+
+function systemPrefersDark(): boolean {
+  return typeof window !== 'undefined'
+    && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+}
+
+// Resolve the stored preference to the concrete light/dark variant to render.
+function effectiveMode(mode: ThemeMode): 'light' | 'dark' {
+  if (mode === ThemeMode.SYSTEM) return systemPrefersDark() ? 'dark' : 'light';
+  return mode === ThemeMode.DARK ? 'dark' : 'light';
+}
+
+function readStoredMode(): ThemeMode {
+  const v = typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_MODE_KEY) : null;
+  return v === ThemeMode.LIGHT || v === ThemeMode.DARK || v === ThemeMode.SYSTEM
+    ? (v as ThemeMode)
+    : ThemeMode.SYSTEM;
+}
 
 function parseHex(hex: string): [number, number, number] {
   const cleaned = hex.replace('#', '');
@@ -44,8 +73,11 @@ const SIDEBAR_VARS = [
   '--sidebar-text',
 ];
 
-function applyTheme(me: MeResponse | null): void {
+function applyTheme(me: MeResponse | null, mode: ThemeMode): void {
   const root = document.documentElement;
+  // CSS-owned neutral tokens swap via this attribute (see tokens.css).
+  root.dataset.theme = effectiveMode(mode);
+
   const theme = me?.tenant?.theme;
   if (!theme) {
     SIDEBAR_VARS.forEach(v => root.style.removeProperty(v));
@@ -65,23 +97,32 @@ function applyTheme(me: MeResponse | null): void {
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mode, setModeState] = useState<ThemeMode>(readStoredMode);
 
   const refresh = useCallback(async () => {
     if (!getAccessToken()) {
       setMe(null);
-      applyTheme(null);
       setLoading(false);
       return;
     }
     try {
       const next = await userApi.me();
       setMe(next);
-      applyTheme(next);
+      // DB is the source of truth for the preference; mirror it locally.
+      setModeState(next.preferredThemeMode);
+      localStorage.setItem(THEME_MODE_KEY, next.preferredThemeMode);
     } catch {
       setMe(null);
-      applyTheme(null);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const setMode = useCallback((next: ThemeMode) => {
+    setModeState(next);
+    localStorage.setItem(THEME_MODE_KEY, next);
+    if (getAccessToken()) {
+      userApi.updateThemeMode(next).catch(() => {});
     }
   }, []);
 
@@ -89,7 +130,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     refresh();
   }, [refresh]);
 
-  const value = useMemo(() => ({ me, loading, refresh }), [me, loading, refresh]);
+  // Re-derive applied vars whenever the session or the chosen mode changes.
+  useEffect(() => {
+    applyTheme(me, mode);
+  }, [me, mode]);
+
+  const value = useMemo(
+    () => ({ me, loading, mode, setMode, refresh }),
+    [me, loading, mode, setMode, refresh],
+  );
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>;
 }
 

@@ -7,6 +7,7 @@ import {
 import { UserRoles, User, PrivateUser, MeResponse } from '@RealEstate/types';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateMeDto } from './dto/update-me.dto';
 import { UserRepository } from './user.repository';
 import { ClientService } from '../client/client.service';
 import * as bcrypt from 'bcrypt';
@@ -85,6 +86,13 @@ export class UserService {
     const me = await this.userRepository.findMe(id_user);
     if (!me) throw new NotFoundException('User not found');
     return me as MeResponse;
+  }
+
+  async updateMe(id_user: string, input: UpdateMeDto): Promise<MeResponse> {
+    await this.userRepository.update(id_user, {
+      preferredThemeMode: input.preferredThemeMode,
+    });
+    return this.findMe(id_user);
   }
 
   async findByEmail(

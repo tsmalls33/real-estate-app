@@ -15,6 +15,7 @@ model User {
   lastName     String?   @db.VarChar(40)
   role         UserRoles @default(CLIENT)
   id_tenant    String?
+  preferredThemeMode ThemeMode @default(SYSTEM)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   isDeleted    Boolean   @default(false)
@@ -241,6 +242,12 @@ enum UserRoles {
   SUPERADMIN
   CLIENT
   EMPLOYEE
+}
+
+enum ThemeMode {
+  LIGHT
+  DARK
+  SYSTEM
 }
 
 enum SaleType {
