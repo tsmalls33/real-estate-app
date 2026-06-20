@@ -54,7 +54,7 @@ export function makeProperty(overrides: Partial<Property> = {}): Property {
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...overrides,
-  } as Property;
+  };
 }
 
 export function makeTenant(overrides: Partial<Tenant> = {}): Tenant {
@@ -64,7 +64,7 @@ export function makeTenant(overrides: Partial<Tenant> = {}): Tenant {
     customDomain: null,
     id_plan: null,
     ...overrides,
-  } as Tenant;
+  };
 }
 
 export { SAMPLE_THEME };
