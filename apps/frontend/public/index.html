@@ -25,6 +25,18 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
+    <script>
+      // Set the theme attribute before first paint to avoid a light-mode flash.
+      // Mirrors ThemeContext: 'theme-mode' is LIGHT | DARK | SYSTEM (or unset).
+      (function () {
+        try {
+          var m = localStorage.getItem('theme-mode');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = m === 'DARK' || ((m === 'SYSTEM' || !m) && prefersDark);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

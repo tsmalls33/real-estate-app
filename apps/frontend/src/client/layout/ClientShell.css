@@ -62,9 +62,10 @@
   text-decoration: none;
 }
 .cli-tab:hover { color: var(--text); }
+/* Active = secondary (accent) text, no fill. The accent reads on both light
+   and dark surfaces, where dark brand-primary text would vanish. */
 .cli-tab.active {
-  color: var(--brand-primary);
-  background: var(--brand-primary-soft);
+  color: var(--brand-secondary);
   font-weight: 600;
 }
 

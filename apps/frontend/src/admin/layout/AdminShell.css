@@ -1,95 +1,67 @@
+:root {
+  --adm-rail: 236px;
+  --adm-bar-h: 56px;
+  --adm-gap: 12px;
+}
+
 .adm-shell {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--surface-2);
 }
 
-.adm-sidebar {
-  width: 232px;
-  background: var(--sidebar-bg, #1a1410);
-  color: var(--sidebar-text, #BDB0A4);
+/* ---- unified full-width top bar ---- */
+.adm-topbar {
+  height: var(--adm-bar-h);
   display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--sidebar-border, #2a2018);
+  align-items: stretch;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
-.adm-brand {
+/* brand sits in the rail-width zone; a 2px brand underline is the only accent,
+   so there is no full-height separator clashing with the floating sidebar. */
+.adm-brand-zone {
+  width: var(--adm-rail);
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 18px 18px 16px;
-  border-bottom: 1px solid var(--sidebar-border, #2a2018);
+  gap: 11px;
+  padding: 0 16px;
+  box-shadow: inset 0 -2px 0 var(--brand-secondary);
 }
 
 .adm-brand-mark {
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   border-radius: 8px;
   background: var(--brand-primary);
   color: var(--brand-on-primary);
   display: grid; place-items: center;
   font-weight: 800; font-size: 14px;
   letter-spacing: -0.02em;
+  flex-shrink: 0;
 }
 
-.adm-brand-name { font-size: 13px; font-weight: 700; color: #EDE5D8; letter-spacing: -0.01em; }
-.adm-brand-sub  { font-size: 9px; color: #6E5A4B; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 1px; }
+.adm-brand-name { font-size: 13.5px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; line-height: 1.1; }
+.adm-brand-sub  { font-size: 9px; color: var(--text-faint); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
 
-.adm-nav {
+.adm-topbar-main {
   flex: 1;
-  padding: 14px 10px;
-  overflow-y: auto;
-}
-
-.adm-nav-section {
-  font-size: 9px;
-  letter-spacing: 0.16em;
-  color: #5C4F44;
-  text-transform: uppercase;
-  padding: 14px 10px 6px;
-  font-weight: 600;
-}
-
-.adm-nav-item {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #9F9286;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 120ms ease, color 120ms ease;
+  justify-content: space-between;
+  padding: 0 24px;
+  min-width: 0;
 }
 
-.adm-nav-item:hover { background: rgba(255,255,255,0.04); color: #BDB0A4; }
+.adm-topbar-title { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.adm-topbar-sub  { font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin-left: 8px; }
 
-.adm-nav-item.active {
-  background: rgba(255,255,255,0.06);
-  color: #EDE5D8;
-  font-weight: 600;
-}
-
-.adm-nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 6px; bottom: 6px;
-  width: 3px;
-  background: var(--brand-primary);
-  border-radius: 0 3px 3px 0;
-}
-
-.adm-nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; opacity: 0.9; }
-
-.adm-user {
-  padding: 14px 16px;
-  border-top: 1px solid var(--sidebar-border, #2a2018);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.adm-acct { display: flex; align-items: center; gap: 12px; }
+.adm-acct-id { text-align: right; line-height: 1.15; }
+.adm-acct-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.adm-acct-role { font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
 
 .adm-user-avatar {
   width: 30px; height: 30px;
@@ -98,58 +70,94 @@
   color: var(--brand-on-primary);
   display: grid; place-items: center;
   font-weight: 700; font-size: 11px;
+  flex-shrink: 0;
 }
 
-.adm-user-name { font-size: 12px; font-weight: 600; color: #B0A092; }
-.adm-user-role { font-size: 10px; color: #5C4F44; letter-spacing: 0.04em; text-transform: uppercase; }
-
 .adm-user-signout {
-  margin-left: auto;
   background: transparent;
-  color: #5C4F44;
-  border: 0;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
   font-size: 11px;
+  padding: 7px 12px;
+  border-radius: 999px;
   cursor: pointer;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  font-weight: 600;
 }
-.adm-user-signout:hover { color: #B0A092; }
+.adm-user-signout:hover { color: var(--text); border-color: var(--text-muted); }
+
+/* ---- body: floating sidebar card + content ---- */
+.adm-below {
+  flex: 1;
+  display: flex;
+  gap: var(--adm-gap);
+  padding: var(--adm-gap);
+  min-height: 0;
+}
+
+/* sidebar is its own inset card; its right edge lines up with the brand zone. */
+.adm-sidebar {
+  width: calc(var(--adm-rail) - var(--adm-gap));
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.adm-nav { display: flex; flex-direction: column; }
+
+.adm-nav-section {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  padding: 12px 10px 6px;
+  font-weight: 600;
+}
+
+.adm-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 2px;
+  transition: background 120ms ease, color 120ms ease;
+}
+.adm-nav-item:hover { background: var(--hover); color: var(--text); }
+
+.adm-nav-item.active {
+  background: var(--hover);
+  color: var(--text);
+  font-weight: 600;
+}
+.adm-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px; bottom: 7px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--brand-secondary);
+}
+
+.adm-nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; opacity: 0.9; }
 
 .adm-main {
   flex: 1;
-  background: var(--bg);
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-.adm-topbar {
-  height: 56px;
-  padding: 0 28px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface);
-}
-
-.adm-topbar-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
-.adm-topbar-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-left: 8px;
 }
 
 .adm-content {
   flex: 1;
-  padding: 28px;
+  padding: 12px 16px;
   overflow-y: auto;
 }

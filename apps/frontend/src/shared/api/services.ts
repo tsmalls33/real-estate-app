@@ -3,6 +3,7 @@ import type {
   MeResponse,
   Property,
   Tenant,
+  ThemeMode,
   User,
   UserRoles,
 } from '@RealEstate/types';
@@ -20,6 +21,10 @@ export const authApi = {
 
 export const userApi = {
   me: () => api.get<Envelope<MeResponse>>('/user/me').then(r => r.data),
+
+  // Persist the current user's theme-mode preference.
+  updateThemeMode: (preferredThemeMode: ThemeMode) =>
+    api.patch<Envelope<MeResponse>>('/user/me', { preferredThemeMode }).then(r => r.data),
 };
 
 export const propertyApi = {

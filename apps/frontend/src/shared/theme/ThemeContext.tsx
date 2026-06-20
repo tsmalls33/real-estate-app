@@ -1,15 +1,46 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { MeResponse } from '@RealEstate/types';
+import { ThemeMode } from '@RealEstate/types';
 import { userApi } from '../api/services';
-import { getAccessToken } from '../auth/tokens';
+import { clearTokens, getAccessToken } from '../auth/tokens';
+
+const THEME_MODE_KEY = 'theme-mode';
 
 type Ctx = {
   me: MeResponse | null;
   loading: boolean;
+  mode: ThemeMode;
+  setMode: (mode: ThemeMode) => void;
+  logout: () => void;
   refresh: () => Promise<void>;
 };
 
-const SessionCtx = createContext<Ctx>({ me: null, loading: true, refresh: async () => {} });
+const SessionCtx = createContext<Ctx>({
+  me: null,
+  loading: true,
+  mode: ThemeMode.SYSTEM,
+  setMode: () => {},
+  logout: () => {},
+  refresh: async () => {},
+});
+
+function systemPrefersDark(): boolean {
+  return typeof window !== 'undefined'
+    && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+}
+
+// Resolve the stored preference to the concrete light/dark variant to render.
+function effectiveMode(mode: ThemeMode): 'light' | 'dark' {
+  if (mode === ThemeMode.SYSTEM) return systemPrefersDark() ? 'dark' : 'light';
+  return mode === ThemeMode.DARK ? 'dark' : 'light';
+}
+
+function readStoredMode(): ThemeMode {
+  const v = typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_MODE_KEY) : null;
+  return v === ThemeMode.LIGHT || v === ThemeMode.DARK || v === ThemeMode.SYSTEM
+    ? (v as ThemeMode)
+    : ThemeMode.SYSTEM;
+}
 
 function parseHex(hex: string): [number, number, number] {
   const cleaned = hex.replace('#', '');
@@ -26,70 +57,107 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function mix(hex: string, towards: [number, number, number], ratio: number): string {
-  const [r, g, b] = parseHex(hex);
-  const m = (a: number, b: number) => Math.round(a * (1 - ratio) + b * ratio);
-  const to = (n: number) => n.toString(16).padStart(2, '0');
-  return `#${to(m(r, towards[0]))}${to(m(g, towards[1]))}${to(m(b, towards[2]))}`;
-}
-
-const SIDEBAR_VARS = [
+// Vars set inline per tenant (brand accents + page bg). Removed for non-tenant
+// users so the neutral CSS defaults apply. The sidebar chrome is fixed neutral
+// CSS (tokens.css), NOT brand-derived — brand only appears as UI accents.
+const TENANT_VARS = [
   '--bg',
   '--brand-primary',
   '--brand-secondary',
   '--brand-primary-soft',
   '--brand-secondary-soft',
-  '--sidebar-bg',
-  '--sidebar-border',
-  '--sidebar-text',
 ];
 
-function applyTheme(me: MeResponse | null): void {
+function applyTheme(me: MeResponse | null, mode: ThemeMode): void {
   const root = document.documentElement;
+  // CSS-owned neutral tokens swap via this attribute (see tokens.css).
+  root.dataset.theme = effectiveMode(mode);
+
   const theme = me?.tenant?.theme;
   if (!theme) {
-    SIDEBAR_VARS.forEach(v => root.style.removeProperty(v));
+    TENANT_VARS.forEach(v => root.style.removeProperty(v));
     return;
   }
-  root.style.setProperty('--bg', theme.backgroundColor);
+
+  // Brand colors are tenant identity — IDENTICAL in light and dark, used only as
+  // accents (brand mark, avatar, active indicator). The sidebar chrome and all
+  // surfaces/text/borders are fixed neutral CSS that flips via [data-theme].
+  // Only the page background is tenant-driven, and only in light mode.
   root.style.setProperty('--brand-primary', theme.brandColor);
   root.style.setProperty('--brand-secondary', theme.secondaryColor);
   root.style.setProperty('--brand-primary-soft', hexToRgba(theme.brandColor, 0.08));
   root.style.setProperty('--brand-secondary-soft', hexToRgba(theme.secondaryColor, 0.12));
-  // Sidebar derives from the brand color so each tenant gets matching chrome.
-  root.style.setProperty('--sidebar-bg', mix(theme.brandColor, [0, 0, 0], 0.78));
-  root.style.setProperty('--sidebar-border', mix(theme.brandColor, [0, 0, 0], 0.65));
-  root.style.setProperty('--sidebar-text', mix(theme.brandColor, [255, 255, 255], 0.62));
+
+  if (effectiveMode(mode) === 'dark') {
+    // Dark background comes from the neutral token block; don't pin the light bg.
+    root.style.removeProperty('--bg');
+  } else {
+    root.style.setProperty('--bg', theme.backgroundColor);
+  }
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mode, setModeState] = useState<ThemeMode>(readStoredMode);
 
   const refresh = useCallback(async () => {
     if (!getAccessToken()) {
       setMe(null);
-      applyTheme(null);
       setLoading(false);
       return;
     }
     try {
       const next = await userApi.me();
       setMe(next);
-      applyTheme(next);
+      // DB is the source of truth for the preference; mirror it locally.
+      setModeState(next.preferredThemeMode);
+      localStorage.setItem(THEME_MODE_KEY, next.preferredThemeMode);
     } catch {
       setMe(null);
-      applyTheme(null);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const setMode = useCallback((next: ThemeMode) => {
+    setModeState(next);
+    localStorage.setItem(THEME_MODE_KEY, next);
+    if (getAccessToken()) {
+      userApi.updateThemeMode(next).catch(() => {});
+    }
+  }, []);
+
+  // Logout clears auth + tenant vars (me -> null re-applies the neutral base via
+  // the effect below) but preserves the theme-mode preference in localStorage.
+  const logout = useCallback(() => {
+    clearTokens();
+    setMe(null);
   }, []);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  const value = useMemo(() => ({ me, loading, refresh }), [me, loading, refresh]);
+  // Re-derive applied vars whenever the session or the chosen mode changes.
+  useEffect(() => {
+    applyTheme(me, mode);
+  }, [me, mode]);
+
+  // While following the OS, re-apply when the system preference flips.
+  useEffect(() => {
+    if (mode !== ThemeMode.SYSTEM) return;
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
+    if (!mq?.addEventListener) return;
+    const handler = () => applyTheme(me, mode);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [mode, me]);
+
+  const value = useMemo(
+    () => ({ me, loading, mode, setMode, logout, refresh }),
+    [me, loading, mode, setMode, logout, refresh],
+  );
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>;
 }
 

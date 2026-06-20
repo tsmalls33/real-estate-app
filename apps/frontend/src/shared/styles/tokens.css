@@ -1,20 +1,23 @@
+/* Platform-neutral base palette. Tenants override the brand/sidebar/bg vars
+   inline (ThemeContext.applyTheme); SUPERADMIN (no tenant) and the platform
+   console fall back to these neutral values. */
 :root {
-  --bg:                #FFFFFF;
-  --brand-primary:     #5A303A;
-  --brand-secondary:   #EB4F1C;
+  --bg:                #F6F7F9;
+  --brand-primary:     #2C3350;
+  --brand-secondary:   #5B68E0;
 
   --surface:           #FFFFFF;
-  --surface-2:         #FAF6F0;
-  --border:            #E8DED1;
-  --border-strong:     #D5C8B4;
-  --text:              #2A1F1A;
-  --text-muted:        #8C7E70;
-  --text-faint:        #B5A89A;
+  --surface-2:         #F1F3F6;
+  --border:            #E5E8EE;
+  --border-strong:     #D3D8E1;
+  --text:              #1B2230;
+  --text-muted:        #6B7280;
+  --text-faint:        #AEB4BF;
 
-  --brand-primary-soft:    rgba(90, 48, 58, 0.08);
-  --brand-primary-tint:    #F1E3E3;
-  --brand-secondary-soft:  rgba(235, 79, 28, 0.12);
-  --brand-secondary-tint:  #FBE6D9;
+  --brand-primary-soft:    rgba(44, 51, 80, 0.08);
+  --brand-primary-tint:    #E7E9F0;
+  --brand-secondary-soft:  rgba(91, 104, 224, 0.12);
+  --brand-secondary-tint:  #E5E8FB;
   --brand-on-primary:      #FFFFFF;
   --brand-on-secondary:    #FFFFFF;
 
@@ -25,10 +28,45 @@
   --success-soft: #E6F0E9;
   --danger-soft:  #F7E6E6;
 
+  /* Mode-aware hover/selected overlay — reads on both light and dark surfaces. */
+  --hover: rgba(17, 24, 39, 0.05);
+
   --radius: 10px;
   --radius-sm: 6px;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* CSS-owned neutral tokens for dark mode. JS flips [data-theme] (ThemeContext);
+   tenant-derived brand/sidebar vars stay JS-owned and are set inline. */
+:root[data-theme="dark"] {
+  --bg:                #0E1116;
+
+  --surface:           #161A21;
+  --surface-2:         #1B2027;
+  --border:            #262B34;
+  --border-strong:     #333A45;
+  --text:              #E6E9EF;
+  --text-muted:        #9AA1AD;
+  --text-faint:        #5B626D;
+
+  /* Neutral brand fallback for the platform console in dark mode (tenants
+     override brand inline with their own hex; SUPERADMIN falls back here).
+     Saturated accent so white on-brand text stays readable. */
+  --brand-primary:         #5B68E0;
+  --brand-secondary:       #6E7BF2;
+  --brand-primary-soft:    rgba(91, 104, 224, 0.18);
+  --brand-secondary-soft:  rgba(110, 123, 242, 0.20);
+  --brand-primary-tint:    #21263A;
+  --brand-secondary-tint:  #20253A;
+
+  --success-soft: #16261C;
+  --danger-soft:  #2A1A1A;
+
+  --hover: rgba(255, 255, 255, 0.06);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

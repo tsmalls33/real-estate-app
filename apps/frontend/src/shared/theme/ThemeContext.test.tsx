@@ -21,9 +21,6 @@ const CSS_VARS = [
   '--brand-secondary',
   '--brand-primary-soft',
   '--brand-secondary-soft',
-  '--sidebar-bg',
-  '--sidebar-border',
-  '--sidebar-text',
 ];
 
 function brandVar() {
@@ -72,7 +69,6 @@ describe('SessionProvider', () => {
     renderProvider();
     await waitFor(() => expect(brandVar()).toBe(SAMPLE_THEME.brandColor));
     expect(document.documentElement.style.getPropertyValue('--bg')).toBe(SAMPLE_THEME.backgroundColor);
-    expect(document.documentElement.style.getPropertyValue('--sidebar-bg')).not.toBe('');
   });
 
   it('re-applies the theme when refresh() returns new data', async () => {

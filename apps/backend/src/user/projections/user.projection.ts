@@ -5,6 +5,7 @@ export const USER_PUBLIC_SELECT = {
   lastName: true,
   role: true,
   id_tenant: true,
+  preferredThemeMode: true,
 } as const;
 
 export const USER_AUTH_SELECT = {

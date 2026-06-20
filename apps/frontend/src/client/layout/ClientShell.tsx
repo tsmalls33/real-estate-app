@@ -2,7 +2,6 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGauge, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
-import { clearTokens } from '../../shared/auth/tokens';
 import './ClientShell.css';
 
 function initials(firstName?: string | null, lastName?: string | null, email?: string) {
@@ -13,11 +12,11 @@ function initials(firstName?: string | null, lastName?: string | null, email?: s
 }
 
 export default function ClientShell() {
-  const { me } = useSession();
+  const { me, logout } = useSession();
   const navigate = useNavigate();
 
   function signOut() {
-    clearTokens();
+    logout();
     navigate('/signin', { replace: true });
   }
 
