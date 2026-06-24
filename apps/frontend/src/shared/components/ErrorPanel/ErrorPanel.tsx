@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './ErrorPanel.css';
 
 type Variant = 'forbidden' | 'not-found' | 'error';
 
@@ -29,10 +28,10 @@ type ErrorPanelProps = {
 function ErrorPanel({ variant = 'error', title, message, action }: ErrorPanelProps) {
   const preset = PRESETS[variant] || PRESETS.error;
   return (
-    <div className="error-panel">
-      <h2>{title || preset.title}</h2>
-      <p>{message || preset.message}</p>
-      {action ?? <Link to="/" className="error-panel-link">Back home</Link>}
+    <div className="bg-surface border border-border rounded-radius py-[32px] px-[28px] max-w-[520px] mx-auto my-[40px] text-center">
+      <h2 className="text-[1.3rem] font-semibold mb-2">{title || preset.title}</h2>
+      <p className="text-text-muted mb-5">{message || preset.message}</p>
+      {action ?? <Link to="/" className="inline-block text-brand-secondary no-underline text-[0.95rem]">Back home</Link>}
     </div>
   );
 }
