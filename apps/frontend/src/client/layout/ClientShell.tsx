@@ -1,24 +1,14 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGauge, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
+import { useSignOut } from '../../shared/auth/useSignOut';
+import { initials } from '../../shared/format/initials';
 import './ClientShell.css';
 
-function initials(firstName?: string | null, lastName?: string | null, email?: string) {
-  const f = (firstName ?? '').trim();
-  const l = (lastName ?? '').trim();
-  if (f || l) return `${f[0] ?? ''}${l[0] ?? ''}`.toUpperCase();
-  return (email ?? '?').slice(0, 2).toUpperCase();
-}
-
 export default function ClientShell() {
-  const { me, logout } = useSession();
-  const navigate = useNavigate();
-
-  function signOut() {
-    logout();
-    navigate('/signin', { replace: true });
-  }
+  const { me } = useSession();
+  const signOut = useSignOut();
 
   const brandName = me?.tenant?.name ?? 'Owner Portal';
   const greeting = me?.firstName ? `Welcome back, ${me.firstName}` : 'Welcome back';

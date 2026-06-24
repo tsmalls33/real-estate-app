@@ -1,16 +1,11 @@
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGauge, faBuilding, faGear } from '@fortawesome/free-solid-svg-icons';
 import { UserRoles } from '@RealEstate/types';
 import { useSession } from '../../shared/theme/ThemeContext';
+import { useSignOut } from '../../shared/auth/useSignOut';
+import { initials } from '../../shared/format/initials';
 import './AdminShell.css';
-
-function initials(firstName?: string | null, lastName?: string | null, email?: string) {
-  const f = (firstName ?? '').trim();
-  const l = (lastName ?? '').trim();
-  if (f || l) return `${f[0] ?? ''}${l[0] ?? ''}`.toUpperCase();
-  return (email ?? '?').slice(0, 2).toUpperCase();
-}
 
 const TITLES: Record<string, { title: string; sub: string }> = {
   '/admin': { title: 'Dashboard', sub: 'Workspace' },
@@ -19,14 +14,9 @@ const TITLES: Record<string, { title: string; sub: string }> = {
 };
 
 export default function AdminShell() {
-  const { me, logout } = useSession();
-  const navigate = useNavigate();
+  const { me } = useSession();
+  const signOut = useSignOut();
   const location = useLocation();
-
-  function signOut() {
-    logout();
-    navigate('/signin', { replace: true });
-  }
 
   const isSuper = me?.role === UserRoles.SUPERADMIN;
   const tenantName = me?.tenant?.name ?? (isSuper ? 'Platform' : '—');

@@ -36,15 +36,15 @@ export default function Settings() {
 
   function onPicker(key: ColorKey, value: string) {
     const next = normalizeHex(value);
-    setColors(c => ({ ...c, [key]: next }));
-    setHexDrafts(d => ({ ...d, [key]: next }));
+    setColors(prev => ({ ...prev, [key]: next }));
+    setHexDrafts(prev => ({ ...prev, [key]: next }));
   }
 
   function onHexChange(key: ColorKey, value: string) {
-    setHexDrafts(d => ({ ...d, [key]: value.toUpperCase() }));
+    setHexDrafts(prev => ({ ...prev, [key]: value.toUpperCase() }));
     const normalized = normalizeHex(value);
     if (HEX_RE.test(normalized)) {
-      setColors(c => ({ ...c, [key]: normalized }));
+      setColors(prev => ({ ...prev, [key]: normalized }));
     }
   }
 

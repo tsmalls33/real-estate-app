@@ -15,7 +15,7 @@ export default function Dashboard() {
   useEffect(() => {
     propertyApi.list()
       .then(setData)
-      .catch((e: Error) => setError(e.message));
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   const scopeLabel = me?.role === UserRoles.SUPERADMIN
