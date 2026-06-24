@@ -10,7 +10,7 @@ export default function Tenants() {
   useEffect(() => {
     tenantApi.list()
       .then(setTenants)
-      .catch((e: Error) => setError(e.message));
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   return (

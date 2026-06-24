@@ -6,12 +6,19 @@ import './PropertyList.css';
 
 type Variant = 'admin' | 'client';
 
+type ClassSet = {
+  grid: string;
+  card: string;
+  name: string;
+  addr: string;
+  row: string;
+  status: string;
+  empty: string;
+};
+
 // Each shell keeps its own visual identity (admin = primary brand, client =
 // secondary brand); the variant selects the matching class set.
-const CLASSES: Record<
-  Variant,
-  { grid: string; card: string; name: string; addr: string; row: string; status: string; empty: string }
-> = {
+const CLASSES: Record<Variant, ClassSet> = {
   admin: {
     grid: 'prop-grid',
     card: 'prop-card',
