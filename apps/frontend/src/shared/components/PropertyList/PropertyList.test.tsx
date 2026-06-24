@@ -28,7 +28,7 @@ describe('PropertyList', () => {
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
     expect(screen.getByText('AVAILABLE SALE')).toBeInTheDocument();
     expect(screen.getByText(formatPrice(500000) as string)).toBeInTheDocument();
-    expect(container.querySelector('.prop-grid')).toBeTruthy();
+    expect(container.querySelector('[data-variant="admin"]')).toBeTruthy();
   });
 
   it('shows "Unassigned" when a property has no owner', () => {
@@ -46,8 +46,8 @@ describe('PropertyList', () => {
     const { container } = render(
       <PropertyList variant="client" items={[makeProperty()]} />,
     );
-    expect(container.querySelector('.cli-prop-grid')).toBeTruthy();
-    expect(container.querySelector('.prop-grid')).toBeNull();
+    expect(container.querySelector('[data-variant="client"]')).toBeTruthy();
+    expect(container.querySelector('[data-variant="admin"]')).toBeNull();
   });
 
   it('renders the default empty label', () => {

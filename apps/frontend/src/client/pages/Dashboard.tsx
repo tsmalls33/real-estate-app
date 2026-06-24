@@ -15,9 +15,9 @@ export default function Dashboard() {
 
   return (
     <section>
-      <h2 className="cli-section-h">Your properties</h2>
-      {error && <div className="cli-empty">Couldn't load your properties: {error}</div>}
-      {!error && properties === null && <div className="cli-empty">Loading…</div>}
+      <h2 className="text-[13px] font-bold text-text tracking-[-0.01em] mb-3">Your properties</h2>
+      {error && <div className="border border-dashed border-border-strong rounded-[14px] py-9 px-5 text-center text-text-muted bg-surface">Couldn't load your properties: {error}</div>}
+      {!error && properties === null && <div className="border border-dashed border-border-strong rounded-[14px] py-9 px-5 text-center text-text-muted bg-surface">Loading…</div>}
       {!error && properties !== null && (
         <PropertyList
           items={properties}
