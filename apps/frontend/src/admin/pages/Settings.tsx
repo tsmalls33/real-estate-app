@@ -3,7 +3,6 @@ import { UserRoles } from '@RealEstate/types';
 import { tenantApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
 import ThemeToggle from '../../shared/components/ThemeToggle/ThemeToggle';
-import './Settings.css';
 
 const DEFAULTS = {
   backgroundColor: '#FFFFFF',
@@ -67,63 +66,64 @@ export default function Settings() {
   }
 
   return (
-    <div className="settings-grid">
-      <section className="settings-card">
-        <h3>Profile</h3>
-        <p className="settings-card-sub">Your account details.</p>
-        <div className="settings-row">
-          <div className="settings-row-label">Name</div>
-          <div className="settings-row-value">{[me?.firstName, me?.lastName].filter(Boolean).join(' ') || '—'}</div>
+    <div className="grid gap-[18px] max-w-[720px]">
+      <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
+        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Profile</h3>
+        <p className="text-xs text-text-muted mb-4 mt-0">Your account details.</p>
+        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Name</div>
+          <div className="text-text">{[me?.firstName, me?.lastName].filter(Boolean).join(' ') || '—'}</div>
         </div>
-        <div className="settings-row">
-          <div className="settings-row-label">Email</div>
-          <div className="settings-row-value">{me?.email}</div>
+        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Email</div>
+          <div className="text-text">{me?.email}</div>
         </div>
-        <div className="settings-row">
-          <div className="settings-row-label">Tenant</div>
-          <div className="settings-row-value">{tenant?.name ?? '—'}</div>
+        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Tenant</div>
+          <div className="text-text">{tenant?.name ?? '—'}</div>
         </div>
       </section>
 
-      <section className="settings-card">
-        <h3>Appearance</h3>
-        <p className="settings-card-sub">Applies to your account only.</p>
-        <div className="settings-row">
-          <div className="settings-row-label">Theme</div>
-          <div className="settings-row-value"><ThemeToggle /></div>
+      <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
+        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Appearance</h3>
+        <p className="text-xs text-text-muted mb-4 mt-0">Applies to your account only.</p>
+        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Theme</div>
+          <div className="text-text"><ThemeToggle /></div>
         </div>
       </section>
 
       {canEditTheme && tenant && (
-        <section className="settings-card">
-          <h3>Tenant theme</h3>
-          <p className="settings-card-sub">Colors apply to everyone in {tenant.name}.</p>
-          <form className="theme-form" onSubmit={saveTheme}>
+        <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
+          <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Tenant theme</h3>
+          <p className="text-xs text-text-muted mb-4 mt-0">Colors apply to everyone in {tenant.name}.</p>
+          <form className="flex flex-col gap-[14px]" onSubmit={saveTheme}>
             {(['backgroundColor', 'brandColor', 'secondaryColor'] as ColorKey[]).map(key => {
               const label = key === 'backgroundColor' ? 'Background'
                 : key === 'brandColor' ? 'Brand primary' : 'Brand secondary';
               const draft = hexDrafts[key];
               const valid = HEX_RE.test(normalizeHex(draft));
               return (
-                <div key={key} className="theme-field">
-                  <label htmlFor={`${key}-picker`}>{label}</label>
-                  <div className="theme-color-row">
+                <div key={key} className="grid grid-cols-[160px_1fr] items-center gap-3">
+                  <label htmlFor={`${key}-picker`} className="text-[11px] font-semibold text-text-muted tracking-[0.06em] uppercase">{label}</label>
+                  <div className="flex items-center gap-[10px]">
                     <input id={`${key}-picker`} type="color" value={colors[key]}
+                           className="w-[56px] h-[34px] p-0 border border-border-strong rounded-radius-sm bg-surface cursor-pointer"
                            onChange={e => onPicker(key, e.target.value)} />
                     <input type="text" value={draft} maxLength={7}
-                           className={valid ? '' : 'invalid'}
+                           className={`w-[110px] h-[34px] px-[10px] py-0 border rounded-radius-sm bg-surface text-text font-mono text-[13px] uppercase focus:outline-none focus:border-brand-primary ${valid ? 'border-border-strong' : 'border-danger'}`}
                            spellCheck={false}
                            onChange={e => onHexChange(key, e.target.value)} />
                   </div>
                 </div>
               );
             })}
-            <div className="theme-actions">
-              <button type="submit" className="btn-primary" disabled={saving || !allValid}>
+            <div className="flex gap-2 mt-2">
+              <button type="submit" className="bg-brand-primary text-brand-on-primary border-0 px-4 py-[9px] rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed" disabled={saving || !allValid}>
                 {saving ? 'Saving…' : 'Save theme'}
               </button>
             </div>
-            {msg && <div className={`theme-msg ${msg.kind}`}>{msg.text}</div>}
+            {msg && <div className={`text-xs ${msg.kind === 'ok' ? 'text-success' : 'text-danger'}`}>{msg.text}</div>}
           </form>
         </section>
       )}

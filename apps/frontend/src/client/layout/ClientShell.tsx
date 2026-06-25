@@ -4,7 +4,6 @@ import { faGauge, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
 import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
-import './ClientShell.css';
 
 export default function ClientShell() {
   const { me } = useSession();
@@ -14,37 +13,57 @@ export default function ClientShell() {
   const greeting = me?.firstName ? `Welcome back, ${me.firstName}` : 'Welcome back';
 
   return (
-    <div className="cli-shell">
-      <header className="cli-topbar">
-        <div className="cli-logo">
-          <div className="cli-logo-mark">{brandName[0]?.toUpperCase() ?? '·'}</div>
+    <div className="min-h-screen bg-surface-2 flex flex-col">
+      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border">
+        <div className="flex items-center gap-[12px]">
+          <div className="w-[36px] h-[36px] rounded-[10px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold tracking-[-0.02em]">{brandName[0]?.toUpperCase() ?? '·'}</div>
           <div>
-            <div className="cli-brand">{brandName}</div>
-            <div className="cli-brand-sub">Owner Portal</div>
+            <div className="text-[14px] font-bold text-text tracking-[-0.01em]">{brandName}</div>
+            <div className="text-[10px] text-text-muted tracking-[0.16em] uppercase">Owner Portal</div>
           </div>
         </div>
 
-        <nav className="cli-tabs">
-          <NavLink to="/client" end className={({isActive}) => `cli-tab ${isActive ? 'active' : ''}`}>
+        <nav className="flex gap-[4px]">
+          <NavLink
+            to="/client"
+            end
+            className={({ isActive }) =>
+              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${
+                isActive ? 'text-brand-secondary font-semibold' : 'text-text-muted hover:text-text'
+              }`
+            }
+          >
             <FontAwesomeIcon icon={faGauge} /> Overview
           </NavLink>
-          <NavLink to="/client/settings" className={({isActive}) => `cli-tab ${isActive ? 'active' : ''}`}>
+          <NavLink
+            to="/client/settings"
+            className={({ isActive }) =>
+              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${
+                isActive ? 'text-brand-secondary font-semibold' : 'text-text-muted hover:text-text'
+              }`
+            }
+          >
             <FontAwesomeIcon icon={faGear} /> Settings
           </NavLink>
         </nav>
 
-        <div className="cli-topbar-right">
-          <div className="cli-avatar">{initials(me?.firstName, me?.lastName, me?.email)}</div>
-          <button className="cli-signout" onClick={signOut}>Sign out</button>
+        <div className="flex items-center gap-[12px]">
+          <div className="w-[36px] h-[36px] rounded-full bg-brand-secondary text-brand-on-secondary grid place-items-center font-bold text-[12px]">{initials(me?.firstName, me?.lastName, me?.email)}</div>
+          <button
+            className="bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text"
+            onClick={signOut}
+          >
+            Sign out
+          </button>
         </div>
       </header>
 
-      <div className="cli-greet">
-        <div className="cli-greet-h">{greeting}</div>
-        <div className="cli-greet-sub">{me?.email}</div>
+      <div className="pt-[24px] px-[32px] pb-[8px]">
+        <div className="text-[22px] font-bold text-text tracking-[-0.02em]">{greeting}</div>
+        <div className="text-[12px] text-text-muted mt-[4px]">{me?.email}</div>
       </div>
 
-      <main className="cli-content">
+      <main className="pt-[12px] px-[32px] pb-[40px] flex-1">
         <Outlet />
       </main>
     </div>

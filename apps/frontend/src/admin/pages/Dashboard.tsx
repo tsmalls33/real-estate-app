@@ -26,12 +26,12 @@ export default function Dashboard() {
 
   return (
     <section>
-      <h2 className="section-title">
+      <h2 className="text-xs font-bold text-text tracking-[0.06em] uppercase mb-3">
         {title}{data ? ` (${data.total})` : ''}
       </h2>
-      <p className="section-sub">{scopeLabel}</p>
-      {error && <div className="prop-empty">Couldn't load properties: {error}</div>}
-      {!error && data === null && <div className="prop-empty">Loading…</div>}
+      <p className="text-xs text-text-muted mt-1 mb-4">{scopeLabel}</p>
+      {error && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">Couldn't load properties: {error}</div>}
+      {!error && data === null && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">Loading…</div>}
       {!error && data !== null && (
         <PropertyList items={data.properties} variant="admin" showOwner />
       )}
