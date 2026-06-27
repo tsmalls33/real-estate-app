@@ -3,7 +3,7 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "modulePaths": ["<rootDir>/.."],
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".api-spec.ts$",
   "setupFiles": ["<rootDir>/setup-test-env.ts"],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
