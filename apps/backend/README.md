@@ -66,6 +66,44 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+## Integration tests (real Postgres)
+
+API integration tests (`*.e2e-spec.ts`) run against a real Postgres test
+database, `real-estate-test-db`, kept separate from the dev DB. Connection and
+auth env come from the committed `apps/backend/.env.test` (loaded by
+`tests/setup-test-env.ts` before the app boots).
+
+Just run (needs Docker):
+
+```bash
+$ pnpm --filter @RealEstate/backend run test:api
+```
+
+That's the everyday command. It's idempotent and self-contained — it starts the
+dev Postgres container, creates the test database if missing, applies migrations
+to it, then runs the suite. `resetDb` truncates between tests, so no manual
+cleanup; the truncate guard ensures it only ever touches `real-estate-test-db`,
+never the dev DB.
+
+Run a single spec (or subset) by passing a path/name filter, forwarded to jest:
+
+```bash
+$ pnpm --filter @RealEstate/backend run test:api app   # only specs matching "app"
+```
+
+If you'd rather drive the underlying steps manually, the equivalents are:
+
+```bash
+$ docker exec real-estate-database createdb -U postgres real-estate-test-db
+$ DATABASE_URL="postgresql://postgres:1234@localhost:5432/real-estate-test-db?schema=public" \
+    pnpm --filter @RealEstate/backend exec prisma migrate deploy
+$ pnpm --filter @RealEstate/backend run test:integration
+```
+
+In CI the `backend-integration` job provisions Postgres via a GitHub Actions
+`services:` container and applies migrations before running the suite (it does
+not use `test:api`).
+
 ## Database actions 
 
 ### Easy web DB interface
