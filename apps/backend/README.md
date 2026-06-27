@@ -85,8 +85,13 @@ to it, then runs the suite. `resetDb` truncates between tests, so no manual
 cleanup; the truncate guard ensures it only ever touches `real-estate-test-db`,
 never the dev DB.
 
-If you'd rather drive the steps manually (e.g. to run a single spec), the
-equivalents are:
+Run a single spec (or subset) by passing a path/name filter, forwarded to jest:
+
+```bash
+$ pnpm --filter @RealEstate/backend run test:api app   # only specs matching "app"
+```
+
+If you'd rather drive the underlying steps manually, the equivalents are:
 
 ```bash
 $ docker exec real-estate-database createdb -U postgres real-estate-test-db

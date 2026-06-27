@@ -35,4 +35,6 @@ pnpm exec prisma generate
 DATABASE_URL="$TEST_DB_URL" pnpm exec prisma migrate deploy
 
 # 5. Run the suite. Jest loads .env.test (via tests/setup-test-env.ts) itself.
-pnpm run test:integration
+#    Any args are forwarded to jest as a file/name filter, e.g.
+#    `pnpm run test:api app` runs only specs whose path matches "app".
+pnpm run test:integration -- "$@"
