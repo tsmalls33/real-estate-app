@@ -73,28 +73,31 @@ database, `real-estate-test-db`, kept separate from the dev DB. Connection and
 auth env come from the committed `apps/backend/.env.test` (loaded by
 `tests/setup-test-env.ts` before the app boots).
 
-One-time local setup (reuses the dev DB container; start it first with
-`pnpm run start:dev:db`):
+Just run (needs Docker):
 
 ```bash
-# create the test database inside the running dev Postgres container
-$ docker exec real-estate-database createdb -U postgres real-estate-test-db
-
-# apply migrations to it (Prisma auto-loads .env, so point DATABASE_URL at the
-# test DB explicitly — otherwise it would migrate the dev DB)
-$ DATABASE_URL="postgresql://postgres:1234@localhost:5432/real-estate-test-db?schema=public" \
-    pnpm --filter @RealEstate/backend exec prisma migrate deploy
+$ pnpm --filter @RealEstate/backend run test:api
 ```
 
-Then run the suite (re-run the migrate-deploy line above after pulling new
-migrations):
+That's the everyday command. It's idempotent and self-contained — it starts the
+dev Postgres container, creates the test database if missing, applies migrations
+to it, then runs the suite. `resetDb` truncates between tests, so no manual
+cleanup; the truncate guard ensures it only ever touches `real-estate-test-db`,
+never the dev DB.
+
+If you'd rather drive the steps manually (e.g. to run a single spec), the
+equivalents are:
 
 ```bash
+$ docker exec real-estate-database createdb -U postgres real-estate-test-db
+$ DATABASE_URL="postgresql://postgres:1234@localhost:5432/real-estate-test-db?schema=public" \
+    pnpm --filter @RealEstate/backend exec prisma migrate deploy
 $ pnpm --filter @RealEstate/backend run test:integration
 ```
 
 In CI the `backend-integration` job provisions Postgres via a GitHub Actions
-`services:` container and applies migrations before running the suite.
+`services:` container and applies migrations before running the suite (it does
+not use `test:api`).
 
 ## Database actions 
 
