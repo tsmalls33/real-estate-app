@@ -20,7 +20,7 @@ export default function Signup() {
     setError(null);
     setSubmitting(true);
     try {
-      const session = await authApi.signup({ email, password, firstName: firstName || undefined, lastName: lastName || undefined });
+      const session = await authApi.signup({ email, password, firstName, lastName });
       setTokens(session.accessToken, session.refreshToken);
       await refresh();
       navigate(landingForRole(session.user.role), { replace: true });
