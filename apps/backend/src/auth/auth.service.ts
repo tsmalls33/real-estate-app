@@ -41,6 +41,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    return this.issueTokensFor(user);
+  }
+
+  private async issueTokensFor(user: User): Promise<SignInResponseDto> {
     if (
       !this.jwtSecret ||
       !this.jwtRefreshSecret ||
@@ -82,7 +86,7 @@ export class AuthService {
     };
   }
 
-  async signUp(input: SignUpDto): Promise<User> {
+  async signUp(input: SignUpDto): Promise<SignInResponseDto> {
     const { email, password, firstName, lastName } = input;
 
     // Public sign-up: never trust the body for `role` or `id_tenant`.
@@ -97,7 +101,7 @@ export class AuthService {
       { type: 'ALL' },
     );
 
-    return newUser;
+    return this.issueTokensFor(newUser);
   }
 
   async refreshToken(refreshToken: string) {

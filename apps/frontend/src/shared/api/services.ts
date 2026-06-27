@@ -8,15 +8,22 @@ import type {
   UserRoles,
 } from '@RealEstate/types';
 
+// Session payload returned by both /auth/signin and /auth/signup. Shared so the
+// two endpoints can't drift out of sync.
+type AuthSession = { user: User; accessToken: string; refreshToken: string };
+
 export const authApi = {
   signin: (email: string, password: string) =>
-    api.post<Envelope<{ user: User; accessToken: string; refreshToken: string }>>(
+    api.post<Envelope<AuthSession>>(
       '/auth/signin',
       { email, password },
     ).then(r => r.data),
 
   signup: (input: { email: string; password: string; firstName?: string; lastName?: string }) =>
-    api.post<Envelope<User>>('/auth/signup', input).then(r => r.data),
+    api.post<Envelope<AuthSession>>(
+      '/auth/signup',
+      input,
+    ).then(r => r.data),
 };
 
 export const userApi = {
