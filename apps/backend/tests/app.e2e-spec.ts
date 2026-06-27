@@ -28,6 +28,10 @@ describe('AppController (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
+    // PrismaService is a bare `extends PrismaClient` with no onModuleDestroy,
+    // so app.close() won't disconnect it — do it explicitly to avoid leaking
+    // a DB handle that keeps Jest open/flaky in CI.
+    await prisma.$disconnect();
   });
 
   it('/ (GET)', () => {

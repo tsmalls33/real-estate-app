@@ -37,7 +37,10 @@ export async function resetDb(prisma: PrismaClient): Promise<void> {
 
   if (targets.length === 0) return;
 
-  const quoted = targets.map((name) => `"${name}"`).join(', ');
+  // Double any embedded quotes so identifiers are safely escaped for raw SQL.
+  const quoted = targets
+    .map((name) => `"${name.replace(/"/g, '""')}"`)
+    .join(', ');
   await prisma.$executeRawUnsafe(
     `TRUNCATE TABLE ${quoted} RESTART IDENTITY CASCADE`,
   );
