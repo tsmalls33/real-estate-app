@@ -66,6 +66,36 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+## Integration tests (real Postgres)
+
+API integration tests (`*.e2e-spec.ts`) run against a real Postgres test
+database, `real-estate-test-db`, kept separate from the dev DB. Connection and
+auth env come from the committed `apps/backend/.env.test` (loaded by
+`tests/setup-test-env.ts` before the app boots).
+
+One-time local setup (reuses the dev DB container; start it first with
+`pnpm run start:dev:db`):
+
+```bash
+# create the test database inside the running dev Postgres container
+$ docker exec real-estate-database createdb -U postgres real-estate-test-db
+
+# apply migrations to it (Prisma auto-loads .env, so point DATABASE_URL at the
+# test DB explicitly — otherwise it would migrate the dev DB)
+$ DATABASE_URL="postgresql://postgres:1234@localhost:5432/real-estate-test-db?schema=public" \
+    pnpm --filter @RealEstate/backend exec prisma migrate deploy
+```
+
+Then run the suite (re-run the migrate-deploy line above after pulling new
+migrations):
+
+```bash
+$ pnpm --filter @RealEstate/backend run test:integration
+```
+
+In CI the `backend-integration` job provisions Postgres via a GitHub Actions
+`services:` container and applies migrations before running the suite.
+
 ## Database actions 
 
 ### Easy web DB interface
