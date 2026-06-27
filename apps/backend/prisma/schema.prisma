@@ -16,6 +16,7 @@ model User {
   role         UserRoles @default(CLIENT)
   id_tenant    String?
   preferredThemeMode ThemeMode @default(SYSTEM)
+  preferredLanguage  Language  @default(EN)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   isDeleted    Boolean   @default(false)
@@ -248,6 +249,12 @@ enum ThemeMode {
   LIGHT
   DARK
   SYSTEM
+}
+
+enum Language {
+  EN
+  ES
+  CA
 }
 
 enum SaleType {

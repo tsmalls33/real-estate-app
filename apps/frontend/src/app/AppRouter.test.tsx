@@ -2,6 +2,27 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { UserRoles } from '@RealEstate/types';
 
+const translations: Record<string, string> = {
+  'auth.signIn.title': 'Sign in',
+  'shell.welcomeBack': 'Welcome back, {{name}}',
+  'shell.welcomeBackGeneric': 'Welcome back',
+  'errors.404.title': '404 — Not found',
+  'common.loading': 'Loading…',
+};
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, string>) => {
+      let val = translations[key] ?? key;
+      if (options) {
+        Object.entries(options).forEach(([k, v]) => { val = val.replace(`{{${k}}}`, v); });
+      }
+      return val;
+    },
+    i18n: { changeLanguage: vi.fn() },
+  }),
+}));
+
 vi.mock('../shared/api/services', () => ({
   userApi: { me: vi.fn() },
   propertyApi: { list: vi.fn() },

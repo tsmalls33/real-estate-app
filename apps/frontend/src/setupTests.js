@@ -3,6 +3,9 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
 
+// Initialize i18next so components that use useTranslation don't warn.
+import './shared/i18n/i18n';
+
 // jsdom runs on an opaque origin (about:blank), so its `localStorage` is an
 // empty stub with no Storage methods. Auth/tokens read and write localStorage,
 // so install a real in-memory implementation and reset it between tests.

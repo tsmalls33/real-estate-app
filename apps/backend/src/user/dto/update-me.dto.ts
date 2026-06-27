@@ -1,10 +1,15 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ThemeMode } from '@RealEstate/types';
+import { ThemeMode, Language } from '@RealEstate/types';
 
 export class UpdateMeDto {
-  @ApiProperty({ enum: ThemeMode, example: ThemeMode.SYSTEM })
+  @ApiProperty({ enum: ThemeMode, example: ThemeMode.SYSTEM, required: false })
   @IsEnum(ThemeMode)
-  @IsNotEmpty()
-  preferredThemeMode: ThemeMode;
+  @IsOptional()
+  preferredThemeMode?: ThemeMode;
+
+  @ApiProperty({ enum: Language, example: Language.EN, required: false })
+  @IsEnum(Language)
+  @IsOptional()
+  language?: Language;
 }

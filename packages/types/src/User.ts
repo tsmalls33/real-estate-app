@@ -16,6 +16,14 @@ export const ThemeMode = {
 
 export type ThemeMode = (typeof ThemeMode)[keyof typeof ThemeMode]
 
+export const Language = {
+  EN: 'EN',
+  ES: 'ES',
+  CA: 'CA',
+} as const;
+
+export type Language = (typeof Language)[keyof typeof Language]
+
 export class User {
   id_user!: string;
   email!: string;
@@ -63,10 +71,12 @@ export interface MeResponse {
   role: UserRoles;
   id_tenant?: string | null;
   preferredThemeMode: ThemeMode;
+  preferredLanguage: Language;
   tenant: MeTenantSummary | null;
 }
 
 export class UpdateMeDto {
   preferredThemeMode!: ThemeMode;
+  language?: Language;
 }
 

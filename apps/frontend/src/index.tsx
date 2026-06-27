@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './shared/styles/tokens.css';
+import './shared/i18n/i18n';
 import AppRouter from './app/AppRouter';
 import { SessionProvider } from './shared/theme/ThemeContext';
 import reportWebVitals from './reportWebVitals';

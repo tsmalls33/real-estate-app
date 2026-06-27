@@ -1,7 +1,17 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 import type { Property, PropertyOwnerSummary } from '@RealEstate/types';
+import { PropertyStatus } from '@RealEstate/types';
 import { formatPrice } from '../../format/price';
+
+const STATUS_KEY: Record<string, string> = {
+  [PropertyStatus.AVAILABLE_SALE]: 'availableSale',
+  [PropertyStatus.AVAILABLE_RENTAL]: 'availableRental',
+  [PropertyStatus.INACTIVE]: 'inactive',
+  [PropertyStatus.SOLD]: 'sold',
+  [PropertyStatus.UNDER_RENTAL]: 'underRental',
+};
 
 type Variant = 'admin' | 'client';
 
@@ -42,12 +52,6 @@ const CLASSES: Record<Variant, ClassSet> = {
   },
 };
 
-function ownerLabel(owner?: PropertyOwnerSummary | null): string {
-  if (!owner) return 'Unassigned';
-  const full = [owner.firstName, owner.lastName].filter(Boolean).join(' ').trim();
-  return full || owner.email;
-}
-
 type Props = {
   items: Property[];
   variant: Variant;
@@ -59,11 +63,20 @@ export default function PropertyList({
   items,
   variant,
   showOwner = false,
-  emptyLabel = 'No properties yet.',
+  emptyLabel,
 }: Props) {
+  const { t } = useTranslation();
+
+  function ownerLabel(owner?: PropertyOwnerSummary | null): string {
+    if (!owner) return t('propertyList.unassigned');
+    const full = [owner.firstName, owner.lastName].filter(Boolean).join(' ').trim();
+    return full || owner.email;
+  }
+
   const c = CLASSES[variant];
+  const resolvedEmpty = emptyLabel ?? t('propertyList.empty');
   if (items.length === 0) {
-    return <div className={c.empty}>{emptyLabel}</div>;
+    return <div className={c.empty}>{resolvedEmpty}</div>;
   }
   return (
     <div className={c.grid} data-variant={variant}>
@@ -79,7 +92,7 @@ export default function PropertyList({
               </div>
             )}
             <div className={c.row}>
-              <span className={c.status}>{p.status.replace('_', ' ')}</span>
+              <span className={c.status}>{t(`propertyStatus.${STATUS_KEY[p.status]}`)}</span>
               {price && <span>{price}</span>}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGauge, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
@@ -6,11 +7,12 @@ import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
 
 export default function ClientShell() {
+  const { t } = useTranslation();
   const { me } = useSession();
   const signOut = useSignOut();
 
-  const brandName = me?.tenant?.name ?? 'Owner Portal';
-  const greeting = me?.firstName ? `Welcome back, ${me.firstName}` : 'Welcome back';
+  const brandName = me?.tenant?.name ?? t('shell.ownerPortal');
+  const greeting = me?.firstName ? t('shell.welcomeBack', { name: me.firstName }) : t('shell.welcomeBackGeneric');
 
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
@@ -19,7 +21,7 @@ export default function ClientShell() {
           <div className="w-[36px] h-[36px] rounded-[10px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold tracking-[-0.02em]">{brandName[0]?.toUpperCase() ?? '·'}</div>
           <div>
             <div className="text-[14px] font-bold text-text tracking-[-0.01em]">{brandName}</div>
-            <div className="text-[10px] text-text-muted tracking-[0.16em] uppercase">Owner Portal</div>
+            <div className="text-[10px] text-text-muted tracking-[0.16em] uppercase">{t('shell.ownerPortal')}</div>
           </div>
         </div>
 
@@ -33,7 +35,7 @@ export default function ClientShell() {
               }`
             }
           >
-            <FontAwesomeIcon icon={faGauge} /> Overview
+            <FontAwesomeIcon icon={faGauge} /> {t('nav.overview')}
           </NavLink>
           <NavLink
             to="/client/settings"
@@ -43,7 +45,7 @@ export default function ClientShell() {
               }`
             }
           >
-            <FontAwesomeIcon icon={faGear} /> Settings
+            <FontAwesomeIcon icon={faGear} /> {t('nav.settings')}
           </NavLink>
         </nav>
 
@@ -53,7 +55,7 @@ export default function ClientShell() {
             className="bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text"
             onClick={signOut}
           >
-            Sign out
+            {t('nav.signOut')}
           </button>
         </div>
       </header>

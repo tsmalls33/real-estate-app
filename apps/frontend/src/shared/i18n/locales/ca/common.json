@@ -1,0 +1,158 @@
+{
+  "settings": {
+    "profile": {
+      "title": "Perfil",
+      "description": "Detalls del teu compte.",
+      "name": "Nom",
+      "email": "Correu electrònic",
+      "tenant": "Immobiliària"
+    },
+    "appearance": {
+      "title": "Aparença",
+      "description": "Tria com es veu el portal en aquest compte.",
+      "descriptionAdmin": "Només s'aplica al teu compte.",
+      "theme": "Tema"
+    },
+    "language": {
+      "label": "Idioma"
+    },
+    "tenantTheme": {
+      "title": "Tema de la immobiliària",
+      "description": "Els colors s'apliquen a tothom a {{tenant}}.",
+      "background": "Fons",
+      "brandPrimary": "Color principal",
+      "brandSecondary": "Color secundari",
+      "saveTheme": "Desar tema",
+      "saving": "Desant…",
+      "updated": "Tema actualitzat.",
+      "updateFailed": "Error en actualitzar el tema"
+    }
+  },
+  "theme": {
+    "light": "Clar",
+    "dark": "Fosc",
+    "system": "Sistema",
+    "label": "Mode de tema"
+  },
+  "language": {
+    "en": "Anglès",
+    "es": "Castellà",
+    "ca": "Català"
+  },
+  "common": {
+    "loading": "Carregant…",
+    "save": "Desar",
+    "saving": "Desant…",
+    "cancel": "Cancel·lar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Tancar",
+    "back": "Enrere",
+    "next": "Següent",
+    "submit": "Enviar",
+    "search": "Cercar",
+    "noResults": "Sense resultats.",
+    "error": "Alguna cosa ha anat malament.",
+    "notFound": "Pàgina no trobada.",
+    "emDash": "—"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "agent": "Agent",
+    "superadmin": "Superadministrador"
+  },
+  "nav": {
+    "dashboard": "Tauler",
+    "tenants": "Immobiliàries",
+    "settings": "Configuració",
+    "account": "Compte",
+    "workspace": "Espai de treball",
+    "platform": "Plataforma",
+    "overview": "Resum",
+    "signOut": "Tancar sessió"
+  },
+  "shell": {
+    "platformConsole": "Consola de plataforma",
+    "agencyPortal": "Portal d'agència",
+    "ownerPortal": "Portal del propietari",
+    "welcomeBack": "Benvingut de nou, {{name}}",
+    "welcomeBackGeneric": "Benvingut de nou"
+  },
+  "admin": {
+    "dashboard": {
+      "titleTenant": "Propietats",
+      "titleAll": "Totes les propietats",
+      "scopeTenant": "Propietats de {{tenant}}",
+      "scopeAll": "Totes les propietats de totes les immobiliàries",
+      "loadError": "No s'han pogut carregar les propietats: {{message}}"
+    },
+    "tenants": {
+      "title": "Immobiliàries",
+      "description": "Totes les agències de la plataforma.",
+      "loadError": "No s'han pogut carregar les immobiliàries: {{message}}",
+      "empty": "Encara no hi ha immobiliàries.",
+      "noDomain": "sense domini personalitzat",
+      "onPlan": "Amb pla",
+      "noPlan": "Sense pla"
+    }
+  },
+  "client": {
+    "dashboard": {
+      "title": "Les teves propietats",
+      "loadError": "No s'han pogut carregar les teves propietats: {{message}}",
+      "empty": "Encara no tens propietats."
+    }
+  },
+  "propertyStatus": {
+    "availableSale": "EN VENDA",
+    "availableRental": "EN LLOGUER",
+    "inactive": "INACTIVA",
+    "sold": "VENUDA",
+    "underRental": "LLOGADA"
+  },
+  "propertyList": {
+    "unassigned": "Sense assignar",
+    "empty": "Encara no hi ha propietats."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Iniciar sessió",
+      "description": "Benvingut de nou.",
+      "email": "Correu electrònic",
+      "password": "Contrasenya",
+      "submit": "Iniciar sessió",
+      "submitting": "Iniciant sessió…",
+      "failed": "Error en iniciar sessió",
+      "noAccount": "No tens compte?",
+      "createOne": "Crear-ne una"
+    },
+    "signUp": {
+      "title": "Crear compte",
+      "description": "Gestiona les teves propietats en un sol lloc.",
+      "firstName": "Nom",
+      "lastName": "Cognom",
+      "email": "Correu electrònic",
+      "password": "Contrasenya",
+      "submit": "Crear compte",
+      "submitting": "Creant compte…",
+      "failed": "Error en registrar-se",
+      "hasAccount": "Ja en tens un?",
+      "signIn": "Iniciar sessió"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "403 — Prohibit",
+      "message": "No tens permís per veure aquest recurs."
+    },
+    "404": {
+      "title": "404 — No trobat",
+      "message": "No hem pogut trobar el que buscaves."
+    },
+    "generic": {
+      "title": "Alguna cosa ha anat malament",
+      "message": "S'ha produït un error inesperat. Torna-ho a provar."
+    },
+    "backHome": "Tornar a l'inici"
+  }
+}

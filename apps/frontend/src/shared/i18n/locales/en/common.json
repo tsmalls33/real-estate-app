@@ -1,0 +1,158 @@
+{
+  "settings": {
+    "profile": {
+      "title": "Profile",
+      "description": "Your account details.",
+      "name": "Name",
+      "email": "Email",
+      "tenant": "Tenant"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how the portal looks on this account.",
+      "descriptionAdmin": "Applies to your account only.",
+      "theme": "Theme"
+    },
+    "language": {
+      "label": "Language"
+    },
+    "tenantTheme": {
+      "title": "Tenant theme",
+      "description": "Colors apply to everyone in {{tenant}}.",
+      "background": "Background",
+      "brandPrimary": "Brand primary",
+      "brandSecondary": "Brand secondary",
+      "saveTheme": "Save theme",
+      "saving": "Saving…",
+      "updated": "Theme updated.",
+      "updateFailed": "Failed to update theme"
+    }
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "label": "Theme mode"
+  },
+  "language": {
+    "en": "English",
+    "es": "Spanish",
+    "ca": "Catalan"
+  },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "noResults": "No results found.",
+    "error": "Something went wrong.",
+    "notFound": "Page not found.",
+    "emDash": "—"
+  },
+  "roles": {
+    "admin": "Admin",
+    "agent": "Agent",
+    "superadmin": "Superadmin"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tenants": "Tenants",
+    "settings": "Settings",
+    "account": "Account",
+    "workspace": "Workspace",
+    "platform": "Platform",
+    "overview": "Overview",
+    "signOut": "Sign out"
+  },
+  "shell": {
+    "platformConsole": "Platform Console",
+    "agencyPortal": "Agency Portal",
+    "ownerPortal": "Owner Portal",
+    "welcomeBack": "Welcome back, {{name}}",
+    "welcomeBackGeneric": "Welcome back"
+  },
+  "admin": {
+    "dashboard": {
+      "titleTenant": "Properties",
+      "titleAll": "All properties",
+      "scopeTenant": "Properties for {{tenant}}",
+      "scopeAll": "All properties across all tenants",
+      "loadError": "Couldn't load properties: {{message}}"
+    },
+    "tenants": {
+      "title": "Tenants",
+      "description": "All agencies on the platform.",
+      "loadError": "Couldn't load tenants: {{message}}",
+      "empty": "No tenants yet.",
+      "noDomain": "no custom domain",
+      "onPlan": "On plan",
+      "noPlan": "No plan"
+    }
+  },
+  "client": {
+    "dashboard": {
+      "title": "Your properties",
+      "loadError": "Couldn't load your properties: {{message}}",
+      "empty": "You don't have any properties yet."
+    }
+  },
+  "propertyStatus": {
+    "availableSale": "AVAILABLE SALE",
+    "availableRental": "AVAILABLE RENTAL",
+    "inactive": "INACTIVE",
+    "sold": "SOLD",
+    "underRental": "UNDER RENTAL"
+  },
+  "propertyList": {
+    "unassigned": "Unassigned",
+    "empty": "No properties yet."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "description": "Welcome back.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "failed": "Sign in failed",
+      "noAccount": "No account?",
+      "createOne": "Create one"
+    },
+    "signUp": {
+      "title": "Create account",
+      "description": "Manage your properties in one place.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "failed": "Sign up failed",
+      "hasAccount": "Already have one?",
+      "signIn": "Sign in"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "403 — Forbidden",
+      "message": "You don't have permission to view this resource."
+    },
+    "404": {
+      "title": "404 — Not found",
+      "message": "We couldn't find what you were looking for."
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again."
+    },
+    "backHome": "Back home"
+  }
+}
