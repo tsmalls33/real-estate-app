@@ -38,6 +38,60 @@ jobs:
       - name: Test backend
         run: pnpm --filter @RealEstate/backend run test
 
+  backend-integration:
+    runs-on: ubuntu-latest
+    # API integration tests run against a real Postgres. Kept as a dedicated
+    # job so the `backend` unit job stays DB-free.
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/real-estate-test-db?schema=public
+      BCRYPT_SALT_ROUNDS: "10"
+      JWT_SECRET: test-jwt-secret
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_SECRET: test-jwt-refresh-secret
+      JWT_REFRESH_EXPIRES_IN: 7d
+      PORT: "3001"
+      FRONTEND_URL: http://localhost:3000
+    services:
+      postgres:
+        image: postgres:17.5-alpine3.22
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: real-estate-test-db
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # pnpm 10 skips dependency build scripts, so generate @prisma/client
+      # explicitly before migrations or anything that imports it.
+      - name: Generate Prisma client
+        run: pnpm --filter @RealEstate/backend exec prisma generate
+
+      - name: Build types
+        run: pnpm --filter @RealEstate/types run build
+
+      # Apply committed migrations to the test DB (prod parity), after generate.
+      - name: Apply migrations
+        run: pnpm --filter @RealEstate/backend exec prisma migrate deploy
+
+      - name: Integration tests
+        run: pnpm --filter @RealEstate/backend run test:integration
+
   frontend:
     runs-on: ubuntu-latest
     steps:
