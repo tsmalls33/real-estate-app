@@ -16,7 +16,10 @@ export const authApi = {
     ).then(r => r.data),
 
   signup: (input: { email: string; password: string; firstName?: string; lastName?: string }) =>
-    api.post<Envelope<User>>('/auth/signup', input).then(r => r.data),
+    api.post<Envelope<{ user: User; accessToken: string; refreshToken: string }>>(
+      '/auth/signup',
+      input,
+    ).then(r => r.data),
 };
 
 export const userApi = {
