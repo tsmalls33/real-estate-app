@@ -30,7 +30,8 @@ function PRESETS(t: (key: string) => string): Record<Variant, { title: string; m
 
 function ErrorPanel({ variant = 'error', title, message, action }: ErrorPanelProps) {
   const { t } = useTranslation();
-  const preset = PRESETS(t)[variant] || PRESETS(t).error;
+  const presets = PRESETS(t);
+  const preset = presets[variant] || presets.error;
   return (
     <div className="bg-surface border border-border rounded-radius py-[32px] px-[28px] max-w-[520px] mx-auto my-[40px] text-center">
       <h2 className="text-[1.3rem] font-semibold mb-2">{title || preset.title}</h2>

@@ -76,7 +76,7 @@ export interface MeResponse {
 }
 
 export class UpdateMeDto {
-  preferredThemeMode!: ThemeMode;
+  preferredThemeMode?: ThemeMode;
   language?: Language;
 }
 

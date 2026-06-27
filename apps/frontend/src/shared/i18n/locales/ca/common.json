@@ -83,6 +83,7 @@
       "titleTenant": "Propietats",
       "titleAll": "Totes les propietats",
       "scopeTenant": "Propietats de {{tenant}}",
+      "scopeTenantFallback": "la teva immobiliària",
       "scopeAll": "Totes les propietats de totes les immobiliàries",
       "loadError": "No s'han pogut carregar les propietats: {{message}}"
     },

@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   const scopeLabel = me?.role === UserRoles.SUPERADMIN
     ? t('admin.dashboard.scopeAll')
-    : t('admin.dashboard.scopeTenant', { tenant: me?.tenant?.name ?? t('admin.dashboard.scopeAll') });
+    : t('admin.dashboard.scopeTenant', { tenant: me?.tenant?.name ?? t('admin.dashboard.scopeTenantFallback') });
 
   const title = me?.role === UserRoles.SUPERADMIN ? t('admin.dashboard.titleAll') : t('admin.dashboard.titleTenant');
 

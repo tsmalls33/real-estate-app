@@ -1,5 +1,6 @@
 import { api, type Envelope } from './client';
 import type {
+  Language,
   MeResponse,
   Property,
   Tenant,
@@ -34,7 +35,7 @@ export const userApi = {
     api.patch<Envelope<MeResponse>>('/user/me', { preferredThemeMode }).then(r => r.data),
 
   // Persist the current user's language preference.
-  updateLanguage: (language: string) =>
+  updateLanguage: (language: Language) =>
     api.patch<Envelope<MeResponse>>('/user/me', { language }).then(r => r.data),
 };
 

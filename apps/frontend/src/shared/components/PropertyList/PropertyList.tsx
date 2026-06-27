@@ -5,7 +5,7 @@ import type { Property, PropertyOwnerSummary } from '@RealEstate/types';
 import { PropertyStatus } from '@RealEstate/types';
 import { formatPrice } from '../../format/price';
 
-const STATUS_KEY: Record<string, string> = {
+const STATUS_KEY: Record<PropertyStatus, string> = {
   [PropertyStatus.AVAILABLE_SALE]: 'availableSale',
   [PropertyStatus.AVAILABLE_RENTAL]: 'availableRental',
   [PropertyStatus.INACTIVE]: 'inactive',
