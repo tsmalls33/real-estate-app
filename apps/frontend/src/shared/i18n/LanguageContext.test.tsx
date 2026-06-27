@@ -57,6 +57,17 @@ describe('LanguageContext', () => {
     expect(screen.getByTestId('lang')).toHaveTextContent(Language.ES);
   });
 
+  it('restores a stored Catalan preference without overwriting it', () => {
+    localStorage.setItem('preferred-language', Language.CA);
+    render(
+      <LanguageProvider preferredLanguage={null}>
+        <Consumer />
+      </LanguageProvider>,
+    );
+    expect(screen.getByTestId('lang')).toHaveTextContent(Language.CA);
+    expect(localStorage.getItem('preferred-language')).toBe(Language.CA);
+  });
+
   it('defaults to EN when nothing is stored', () => {
     render(
       <LanguageProvider preferredLanguage={null}>

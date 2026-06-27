@@ -17,11 +17,12 @@ const LanguageCtx = createContext<Ctx>({
   setLanguage: () => {},
 });
 
+const SUPPORTED_LANGUAGES = Object.values(LanguageEnum) as Language[];
+
 function readStoredLanguage(): Language {
   if (typeof localStorage === 'undefined') return LanguageEnum.EN;
   const v = localStorage.getItem(LANGUAGE_KEY);
-  if (v === LanguageEnum.EN || v === LanguageEnum.ES) return v as Language;
-  return LanguageEnum.EN;
+  return SUPPORTED_LANGUAGES.includes(v as Language) ? (v as Language) : LanguageEnum.EN;
 }
 
 export function LanguageProvider({ children, preferredLanguage }: { children: React.ReactNode; preferredLanguage?: Language | null }) {

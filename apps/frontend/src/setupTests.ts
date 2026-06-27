@@ -9,26 +9,25 @@ import './shared/i18n/i18n';
 // jsdom runs on an opaque origin (about:blank), so its `localStorage` is an
 // empty stub with no Storage methods. Auth/tokens read and write localStorage,
 // so install a real in-memory implementation and reset it between tests.
-class MemoryStorage {
-  constructor() {
-    this.store = new Map();
+class MemoryStorage implements Storage {
+  private store = new Map<string, string>();
+
+  getItem(key: string): string | null {
+    return this.store.has(key) ? (this.store.get(key) as string) : null;
   }
-  getItem(key) {
-    return this.store.has(key) ? this.store.get(key) : null;
-  }
-  setItem(key, value) {
+  setItem(key: string, value: string): void {
     this.store.set(key, String(value));
   }
-  removeItem(key) {
+  removeItem(key: string): void {
     this.store.delete(key);
   }
-  clear() {
+  clear(): void {
     this.store.clear();
   }
-  key(index) {
+  key(index: number): string | null {
     return Array.from(this.store.keys())[index] ?? null;
   }
-  get length() {
+  get length(): number {
     return this.store.size;
   }
 }
