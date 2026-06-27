@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserRoles } from '@RealEstate/types';
 import { tenantApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
 import ThemeToggle from '../../shared/components/ThemeToggle/ThemeToggle';
+import LanguageToggle from '../../shared/components/LanguageToggle/LanguageToggle';
 
 const DEFAULTS = {
   backgroundColor: '#FFFFFF',
@@ -20,6 +22,7 @@ function normalizeHex(value: string): string {
 }
 
 export default function Settings() {
+  const { t } = useTranslation();
   const { me, refresh } = useSession();
   const tenant = me?.tenant;
   const canEditTheme = me?.role === UserRoles.ADMIN || me?.role === UserRoles.SUPERADMIN;
@@ -57,9 +60,9 @@ export default function Settings() {
     try {
       await tenantApi.updateTheme(tenant.id_tenant, colors);
       await refresh();
-      setMsg({ kind: 'ok', text: 'Theme updated.' });
+      setMsg({ kind: 'ok', text: t('settings.tenantTheme.updated') });
     } catch (err: unknown) {
-      setMsg({ kind: 'err', text: err instanceof Error ? err.message : 'Failed to update theme' });
+      setMsg({ kind: 'err', text: err instanceof Error ? err.message : t('settings.tenantTheme.updateFailed') });
     } finally {
       setSaving(false);
     }
@@ -68,39 +71,43 @@ export default function Settings() {
   return (
     <div className="grid gap-[18px] max-w-[720px]">
       <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
-        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Profile</h3>
-        <p className="text-xs text-text-muted mb-4 mt-0">Your account details.</p>
+        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">{t('settings.profile.title')}</h3>
+        <p className="text-xs text-text-muted mb-4 mt-0">{t('settings.profile.description')}</p>
         <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
-          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Name</div>
-          <div className="text-text">{[me?.firstName, me?.lastName].filter(Boolean).join(' ') || '—'}</div>
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.name')}</div>
+          <div className="text-text">{[me?.firstName, me?.lastName].filter(Boolean).join(' ') || t('common.emDash')}</div>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
-          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Email</div>
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.email')}</div>
           <div className="text-text">{me?.email}</div>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
-          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Tenant</div>
-          <div className="text-text">{tenant?.name ?? '—'}</div>
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.tenant')}</div>
+          <div className="text-text">{tenant?.name ?? t('common.emDash')}</div>
         </div>
       </section>
 
       <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
-        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Appearance</h3>
-        <p className="text-xs text-text-muted mb-4 mt-0">Applies to your account only.</p>
+        <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">{t('settings.appearance.title')}</h3>
+        <p className="text-xs text-text-muted mb-4 mt-0">{t('settings.appearance.descriptionAdmin')}</p>
         <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
-          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">Theme</div>
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.appearance.theme')}</div>
           <div className="text-text"><ThemeToggle /></div>
+        </div>
+        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+          <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.language.label')}</div>
+          <div className="text-text"><LanguageToggle /></div>
         </div>
       </section>
 
       {canEditTheme && tenant && (
         <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
-          <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">Tenant theme</h3>
-          <p className="text-xs text-text-muted mb-4 mt-0">Colors apply to everyone in {tenant.name}.</p>
+          <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">{t('settings.tenantTheme.title')}</h3>
+          <p className="text-xs text-text-muted mb-4 mt-0">{t('settings.tenantTheme.description', { tenant: tenant.name })}</p>
           <form className="flex flex-col gap-[14px]" onSubmit={saveTheme}>
             {(['backgroundColor', 'brandColor', 'secondaryColor'] as ColorKey[]).map(key => {
-              const label = key === 'backgroundColor' ? 'Background'
-                : key === 'brandColor' ? 'Brand primary' : 'Brand secondary';
+              const label = key === 'backgroundColor' ? t('settings.tenantTheme.background')
+                : key === 'brandColor' ? t('settings.tenantTheme.brandPrimary') : t('settings.tenantTheme.brandSecondary');
               const draft = hexDrafts[key];
               const valid = HEX_RE.test(normalizeHex(draft));
               return (
@@ -120,7 +127,7 @@ export default function Settings() {
             })}
             <div className="flex gap-2 mt-2">
               <button type="submit" className="bg-brand-primary text-brand-on-primary border-0 px-4 py-[9px] rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed" disabled={saving || !allValid}>
-                {saving ? 'Saving…' : 'Save theme'}
+                {saving ? t('settings.tenantTheme.saving') : t('settings.tenantTheme.saveTheme')}
               </button>
             </div>
             {msg && <div className={`text-xs ${msg.kind === 'ok' ? 'text-success' : 'text-danger'}`}>{msg.text}</div>}

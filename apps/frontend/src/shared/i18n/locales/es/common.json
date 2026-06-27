@@ -1,0 +1,159 @@
+{
+  "settings": {
+    "profile": {
+      "title": "Perfil",
+      "description": "Detalles de tu cuenta.",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "tenant": "Inmobiliaria"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "description": "Elige cómo se ve el portal en esta cuenta.",
+      "descriptionAdmin": "Se aplica solo a tu cuenta.",
+      "theme": "Tema"
+    },
+    "language": {
+      "label": "Idioma"
+    },
+    "tenantTheme": {
+      "title": "Tema de la inmobiliaria",
+      "description": "Los colores se aplican a todos en {{tenant}}.",
+      "background": "Fondo",
+      "brandPrimary": "Color principal",
+      "brandSecondary": "Color secundario",
+      "saveTheme": "Guardar tema",
+      "saving": "Guardando…",
+      "updated": "Tema actualizado.",
+      "updateFailed": "Error al actualizar el tema"
+    }
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "label": "Modo de tema"
+  },
+  "language": {
+    "en": "Inglés",
+    "es": "Español",
+    "ca": "Catalán"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "noResults": "Sin resultados.",
+    "error": "Algo salió mal.",
+    "notFound": "Página no encontrada.",
+    "emDash": "—"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "agent": "Agente",
+    "superadmin": "Superadministrador"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "tenants": "Inmobiliarias",
+    "settings": "Configuración",
+    "account": "Cuenta",
+    "workspace": "Espacio de trabajo",
+    "platform": "Plataforma",
+    "overview": "Resumen",
+    "signOut": "Cerrar sesión"
+  },
+  "shell": {
+    "platformConsole": "Consola de plataforma",
+    "agencyPortal": "Portal de agencia",
+    "ownerPortal": "Portal del propietario",
+    "welcomeBack": "Bienvenido de nuevo, {{name}}",
+    "welcomeBackGeneric": "Bienvenido de nuevo"
+  },
+  "admin": {
+    "dashboard": {
+      "titleTenant": "Propiedades",
+      "titleAll": "Todas las propiedades",
+      "scopeTenant": "Propiedades de {{tenant}}",
+      "scopeTenantFallback": "tu inmobiliaria",
+      "scopeAll": "Todas las propiedades de todas las inmobiliarias",
+      "loadError": "No se pudieron cargar las propiedades: {{message}}"
+    },
+    "tenants": {
+      "title": "Inmobiliarias",
+      "description": "Todas las agencias en la plataforma.",
+      "loadError": "No se pudieron cargar las inmobiliarias: {{message}}",
+      "empty": "Aún no hay inmobiliarias.",
+      "noDomain": "sin dominio personalizado",
+      "onPlan": "Con plan",
+      "noPlan": "Sin plan"
+    }
+  },
+  "client": {
+    "dashboard": {
+      "title": "Tus propiedades",
+      "loadError": "No se pudieron cargar tus propiedades: {{message}}",
+      "empty": "Aún no tienes propiedades."
+    }
+  },
+  "propertyStatus": {
+    "availableSale": "EN VENTA",
+    "availableRental": "EN ALQUILER",
+    "inactive": "INACTIVA",
+    "sold": "VENDIDA",
+    "underRental": "ALQUILADA"
+  },
+  "propertyList": {
+    "unassigned": "Sin asignar",
+    "empty": "Aún no hay propiedades."
+  },
+  "auth": {
+    "signIn": {
+      "title": "Iniciar sesión",
+      "description": "Bienvenido de nuevo.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "failed": "Error al iniciar sesión",
+      "noAccount": "¿No tienes cuenta?",
+      "createOne": "Crear una"
+    },
+    "signUp": {
+      "title": "Crear cuenta",
+      "description": "Gestiona tus propiedades en un solo lugar.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta…",
+      "failed": "Error al registrarse",
+      "hasAccount": "¿Ya tienes una?",
+      "signIn": "Iniciar sesión"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "403 — Prohibido",
+      "message": "No tienes permiso para ver este recurso."
+    },
+    "404": {
+      "title": "404 — No encontrado",
+      "message": "No pudimos encontrar lo que buscabas."
+    },
+    "generic": {
+      "title": "Algo salió mal",
+      "message": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    },
+    "backHome": "Volver al inicio"
+  }
+}

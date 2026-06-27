@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Property } from '@RealEstate/types';
 import { UserRoles } from '@RealEstate/types';
 import { propertyApi } from '../../shared/api/services';
@@ -8,6 +9,7 @@ import PropertyList from '../../shared/components/PropertyList/PropertyList';
 type State = { properties: Property[]; total: number } | null;
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { me } = useSession();
   const [data, setData] = useState<State>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,10 +21,10 @@ export default function Dashboard() {
   }, []);
 
   const scopeLabel = me?.role === UserRoles.SUPERADMIN
-    ? 'All properties across all tenants'
-    : `Properties for ${me?.tenant?.name ?? 'your agency'}`;
+    ? t('admin.dashboard.scopeAll')
+    : t('admin.dashboard.scopeTenant', { tenant: me?.tenant?.name ?? t('admin.dashboard.scopeTenantFallback') });
 
-  const title = me?.role === UserRoles.SUPERADMIN ? 'All Properties' : 'Properties';
+  const title = me?.role === UserRoles.SUPERADMIN ? t('admin.dashboard.titleAll') : t('admin.dashboard.titleTenant');
 
   return (
     <section>
@@ -30,8 +32,8 @@ export default function Dashboard() {
         {title}{data ? ` (${data.total})` : ''}
       </h2>
       <p className="text-xs text-text-muted mt-1 mb-4">{scopeLabel}</p>
-      {error && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">Couldn't load properties: {error}</div>}
-      {!error && data === null && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">Loading…</div>}
+      {error && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">{t('admin.dashboard.loadError', { message: error })}</div>}
+      {!error && data === null && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">{t('common.loading')}</div>}
       {!error && data !== null && (
         <PropertyList items={data.properties} variant="admin" showOwner />
       )}

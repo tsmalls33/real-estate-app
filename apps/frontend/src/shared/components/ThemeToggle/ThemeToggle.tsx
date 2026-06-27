@@ -1,19 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import { ThemeMode } from '@RealEstate/types';
 import { useSession } from '../../theme/ThemeContext';
 
-const OPTIONS: { value: ThemeMode; label: string }[] = [
-  { value: ThemeMode.LIGHT, label: 'Light' },
-  { value: ThemeMode.DARK, label: 'Dark' },
-  { value: ThemeMode.SYSTEM, label: 'System' },
+const OPTIONS: { value: ThemeMode; labelKey: string }[] = [
+  { value: ThemeMode.LIGHT, labelKey: 'theme.light' },
+  { value: ThemeMode.DARK, labelKey: 'theme.dark' },
+  { value: ThemeMode.SYSTEM, labelKey: 'theme.system' },
 ];
 
 export default function ThemeToggle() {
+  const { t } = useTranslation();
   const { mode, setMode } = useSession();
   return (
     <div
       className="inline-flex gap-[2px] rounded-radius-sm border border-border bg-surface-2 p-[3px]"
       role="group"
-      aria-label="Theme mode"
+      aria-label={t('theme.label')}
     >
       {OPTIONS.map(o => (
         <button
@@ -27,7 +29,7 @@ export default function ThemeToggle() {
           aria-pressed={mode === o.value}
           onClick={() => setMode(o.value)}
         >
-          {o.label}
+          {t(o.labelKey)}
         </button>
       ))}
     </div>

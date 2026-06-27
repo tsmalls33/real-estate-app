@@ -6,7 +6,7 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { resetDb } from './utils/db';
 
-describe('AppController (e2e)', () => {
+describe('AppController (api)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
 
@@ -51,7 +51,7 @@ describe('AppController (e2e)', () => {
       .send({ email, password, firstName: 'Smoke', lastName: 'Test' })
       .expect(200); // auth.controller signUp is decorated @HttpCode(OK)
 
-    // Assert the DB row, NOT the response body: the e2e harness lacks the
+    // Assert the DB row, NOT the response body: the integration harness lacks the
     // global ResponseInterceptor so the envelope differs from prod, and the
     // signup response body is changing under a concurrent ticket.
     const user = await prisma.user.findUnique({ where: { email } });

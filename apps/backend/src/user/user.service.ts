@@ -94,7 +94,8 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     await this.userRepository.update(id_user, {
-      preferredThemeMode: input.preferredThemeMode,
+      ...(input.preferredThemeMode !== undefined && { preferredThemeMode: input.preferredThemeMode }),
+      ...(input.language !== undefined && { preferredLanguage: input.language }),
     });
     return this.findMe(id_user);
   }

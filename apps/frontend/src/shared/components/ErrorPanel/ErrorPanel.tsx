@@ -1,22 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type Variant = 'forbidden' | 'not-found' | 'error';
-
-const PRESETS: Record<Variant, { title: string; message: string }> = {
-  forbidden: {
-    title: '403 — Forbidden',
-    message: "You don't have permission to view this resource.",
-  },
-  'not-found': {
-    title: '404 — Not found',
-    message: "We couldn't find what you were looking for.",
-  },
-  error: {
-    title: 'Something went wrong',
-    message: 'An unexpected error occurred. Please try again.',
-  },
-};
 
 type ErrorPanelProps = {
   variant?: Variant;
@@ -25,13 +11,32 @@ type ErrorPanelProps = {
   action?: React.ReactNode;
 };
 
+function PRESETS(t: (key: string) => string): Record<Variant, { title: string; message: string }> {
+  return {
+    forbidden: {
+      title: t('errors.403.title'),
+      message: t('errors.403.message'),
+    },
+    'not-found': {
+      title: t('errors.404.title'),
+      message: t('errors.404.message'),
+    },
+    error: {
+      title: t('errors.generic.title'),
+      message: t('errors.generic.message'),
+    },
+  };
+}
+
 function ErrorPanel({ variant = 'error', title, message, action }: ErrorPanelProps) {
-  const preset = PRESETS[variant] || PRESETS.error;
+  const { t } = useTranslation();
+  const presets = PRESETS(t);
+  const preset = presets[variant] || presets.error;
   return (
     <div className="bg-surface border border-border rounded-radius py-[32px] px-[28px] max-w-[520px] mx-auto my-[40px] text-center">
       <h2 className="text-[1.3rem] font-semibold mb-2">{title || preset.title}</h2>
       <p className="text-text-muted mb-5">{message || preset.message}</p>
-      {action ?? <Link to="/" className="inline-block text-brand-secondary no-underline text-[0.95rem]">Back home</Link>}
+      {action ?? <Link to="/" className="inline-block text-brand-secondary no-underline text-[0.95rem]">{t('errors.backHome')}</Link>}
     </div>
   );
 }

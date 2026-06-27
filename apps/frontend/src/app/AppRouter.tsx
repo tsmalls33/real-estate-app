@@ -1,10 +1,12 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { UserRoles } from '@RealEstate/types';
+import { useTranslation } from 'react-i18next';
 import ErrorBoundary from '../shared/components/ErrorBoundary/ErrorBoundary';
 import ErrorPanel from '../shared/components/ErrorPanel/ErrorPanel';
 import { ProtectedRoute } from '../shared/auth/ProtectedRoute';
 import { useSession } from '../shared/theme/ThemeContext';
+import { LanguageProvider } from '../shared/i18n/LanguageContext';
 import { getAccessToken, getRole, landingForRole } from '../shared/auth/tokens';
 import Login from './auth/Login';
 import Signup from './auth/Signup';
@@ -26,11 +28,12 @@ function PublicOnly({ children }: { children: React.ReactElement }) {
 }
 
 function FullScreenLoader() {
-  return <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading…</div>;
+  const { t } = useTranslation();
+  return <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>{t('common.loading')}</div>;
 }
 
 export default function AppRouter() {
-  const { loading } = useSession();
+  const { loading, me } = useSession();
   const location = useLocation();
   if (loading && location.pathname !== '/signin' && location.pathname !== '/signup') {
     return <FullScreenLoader />;
@@ -38,8 +41,9 @@ export default function AppRouter() {
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={<FullScreenLoader />}>
-        <Routes>
+      <LanguageProvider preferredLanguage={me?.preferredLanguage}>
+        <Suspense fallback={<FullScreenLoader />}>
+          <Routes>
           <Route path="/" element={<HomeRedirect />} />
           <Route path="/signin" element={<PublicOnly><Login /></PublicOnly>} />
           <Route path="/signup" element={<PublicOnly><Signup /></PublicOnly>} />
@@ -64,6 +68,7 @@ export default function AppRouter() {
           <Route path="*" element={<ErrorPanel variant="not-found" />} />
         </Routes>
       </Suspense>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

@@ -59,16 +59,13 @@ $ pnpm run start:prod
 # unit tests
 $ pnpm run test
 
-# e2e tests
-$ pnpm run test:e2e
-
 # test coverage
 $ pnpm run test:cov
 ```
 
 ## Integration tests (real Postgres)
 
-API integration tests (`*.e2e-spec.ts`) run against a real Postgres test
+API integration tests (`*.api-spec.ts`) run against a real Postgres test
 database, `real-estate-test-db`, kept separate from the dev DB. Connection and
 auth env come from the committed `apps/backend/.env.test` (loaded by
 `tests/setup-test-env.ts` before the app boots).
