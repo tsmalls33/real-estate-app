@@ -23,9 +23,7 @@ export default function Signup() {
     setError(null);
     setSubmitting(true);
     try {
-      await authApi.signup({ email, password, firstName: firstName || undefined, lastName: lastName || undefined });
-      // Public signup gives no tokens — sign the user in immediately afterwards.
-      const session = await authApi.signin(email, password);
+      const session = await authApi.signup({ email, password, firstName, lastName });
       setTokens(session.accessToken, session.refreshToken);
       await refresh();
       navigate(landingForRole(session.user.role), { replace: true });

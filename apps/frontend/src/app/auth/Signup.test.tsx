@@ -35,9 +35,8 @@ beforeEach(() => {
 });
 
 describe('Signup', () => {
-  it('creates the user, auto-signs in, and navigates to the role landing', async () => {
-    vi.mocked(authApi.signup).mockResolvedValue({ id_user: 'new-1' } as never);
-    vi.mocked(authApi.signin).mockResolvedValue({
+  it('creates the user, sets tokens from the signup response, and navigates to the role landing', async () => {
+    vi.mocked(authApi.signup).mockResolvedValue({
       user: { role: UserRoles.CLIENT } as never,
       accessToken: 'access-1',
       refreshToken: 'refresh-1',
@@ -52,9 +51,11 @@ describe('Signup', () => {
     expect(authApi.signup).toHaveBeenCalledWith(
       expect.objectContaining({ email: 'new@acme.com', password: 'hunter2!!' }),
     );
-    expect(authApi.signin).toHaveBeenCalledWith('new@acme.com', 'hunter2!!');
+    // Signup now returns tokens directly — no second sign-in round-trip.
+    expect(authApi.signin).not.toHaveBeenCalled();
     expect(localStorage.getItem('accessToken')).toBe('access-1');
-    // auto-signin must refresh the session before landing on the portal.
+    expect(localStorage.getItem('refreshToken')).toBe('refresh-1');
+    // session must refresh before landing on the portal.
     expect(userApi.me).toHaveBeenCalled();
   });
 
