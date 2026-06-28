@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { MeResponse } from '@RealEstate/types';
 import { ThemeMode } from '@RealEstate/types';
-import { userApi } from '../api/services';
-import { clearTokens, getAccessToken } from '../auth/tokens';
+import { authApi, userApi } from '../api/services';
+import { clearTokens, getAccessToken, getRefreshToken } from '../auth/tokens';
 
 const THEME_MODE_KEY = 'theme-mode';
 
@@ -131,6 +131,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   // Logout clears auth + tenant vars (me -> null re-applies the neutral base via
   // the effect below) but preserves the theme-mode preference in localStorage.
   const logout = useCallback(() => {
+    // Best-effort server-side revocation (#42): capture the refresh token BEFORE
+    // clearing, then fire-and-forget. Local state clears regardless of outcome.
+    const refreshToken = getRefreshToken();
+    if (refreshToken) {
+      authApi.logout(refreshToken).catch(() => {});
+    }
     clearTokens();
     setMe(null);
   }, []);

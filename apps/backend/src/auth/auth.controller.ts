@@ -31,4 +31,12 @@ export class AuthController {
   async refreshToken(@Body() input: RefreshTokenDto) {
     return this.authService.refreshToken(input.refreshToken);
   }
+
+  // Best-effort sign-out: revokes the refresh token. Always 200, even for an
+  // invalid token, so the client can clear local state unconditionally.
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Body() input: RefreshTokenDto) {
+    await this.authService.logout(input.refreshToken);
+  }
 }

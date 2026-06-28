@@ -7,10 +7,11 @@ vi.mock('../api/services', () => ({
   userApi: { me: vi.fn() },
   propertyApi: { list: vi.fn() },
   tenantApi: { list: vi.fn(), updateTheme: vi.fn(), assignTheme: vi.fn() },
-  authApi: { signin: vi.fn(), signup: vi.fn() },
+  authApi: { signin: vi.fn(), signup: vi.fn(), logout: vi.fn() },
 }));
 
-import { userApi } from '../api/services';
+import { authApi, userApi } from '../api/services';
+import { getAccessToken, getRefreshToken } from '../auth/tokens';
 import { seedAuth, clearAuth } from '../../test-utils/auth';
 import { makeMe, makeTenantSummary, SAMPLE_THEME } from '../../test-utils/factories';
 import { SessionProvider, useSession } from './ThemeContext';
@@ -28,12 +29,13 @@ function brandVar() {
 }
 
 function Probe() {
-  const { me, loading, refresh } = useSession();
+  const { me, loading, refresh, logout } = useSession();
   return (
     <div>
       <div data-testid="loading">{String(loading)}</div>
       <div data-testid="me">{me ? me.email : 'null'}</div>
       <button onClick={() => refresh()}>refresh</button>
+      <button onClick={() => logout()}>logout</button>
     </div>
   );
 }
@@ -99,5 +101,38 @@ describe('SessionProvider', () => {
     await userEvent.click(screen.getByRole('button', { name: /refresh/i }));
     await waitFor(() => expect(brandVar()).toBe(''));
     CSS_VARS.forEach(v => expect(document.documentElement.style.getPropertyValue(v)).toBe(''));
+  });
+
+  it('logout revokes the refresh token server-side, then clears local state (#42)', async () => {
+    seedAuth(UserRoles.ADMIN);
+    vi.mocked(userApi.me).mockResolvedValue(makeMe());
+    vi.mocked(authApi.logout).mockResolvedValue(undefined);
+
+    renderProvider();
+    await waitFor(() => expect(screen.getByTestId('me')).not.toHaveTextContent('null'));
+
+    await userEvent.click(screen.getByRole('button', { name: /logout/i }));
+
+    // Captured the stored refresh token BEFORE clearing it.
+    expect(authApi.logout).toHaveBeenCalledWith('refresh-token');
+    await waitFor(() => expect(screen.getByTestId('me')).toHaveTextContent('null'));
+    expect(getAccessToken()).toBeNull();
+    expect(getRefreshToken()).toBeNull();
+  });
+
+  it('logout clears local state even when revocation fails (best-effort)', async () => {
+    seedAuth(UserRoles.ADMIN);
+    vi.mocked(userApi.me).mockResolvedValue(makeMe());
+    vi.mocked(authApi.logout).mockRejectedValue(new Error('network down'));
+
+    renderProvider();
+    await waitFor(() => expect(screen.getByTestId('me')).not.toHaveTextContent('null'));
+
+    await userEvent.click(screen.getByRole('button', { name: /logout/i }));
+
+    expect(authApi.logout).toHaveBeenCalledWith('refresh-token');
+    await waitFor(() => expect(screen.getByTestId('me')).toHaveTextContent('null'));
+    expect(getAccessToken()).toBeNull();
+    expect(getRefreshToken()).toBeNull();
   });
 });
