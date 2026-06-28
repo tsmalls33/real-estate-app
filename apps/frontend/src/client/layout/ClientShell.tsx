@@ -6,6 +6,7 @@ import { faGauge, faGear, faBars, faArrowRightFromBracket } from '@fortawesome/f
 import { useSession } from '../../shared/theme/ThemeContext';
 import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
+import { focusRing } from '../../shared/styles/focusRing';
 
 const navItem = (isActive: boolean) =>
   `relative flex items-center gap-[11px] py-[9px] px-[11px] rounded-[7px] text-[13px] cursor-pointer no-underline mb-[2px] transition-[background-color,color] duration-[120ms] ease-[ease] hover:bg-hover hover:text-text ${
@@ -36,7 +37,7 @@ export default function ClientShell() {
 
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
-      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border max-client:px-4">
+      <header role="banner" className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border max-client:px-4">
         <div className="hidden max-client:flex items-center gap-[10px] min-w-0">
           <button
             type="button"
@@ -65,29 +66,29 @@ export default function ClientShell() {
             to="/client"
             end
             className={({ isActive }) =>
-              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${
-                isActive ? 'text-brand-secondary font-semibold' : 'text-text-muted hover:text-text'
+              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${focusRing} ${
+                isActive ? 'bg-brand-secondary text-brand-on-secondary font-semibold' : 'text-text-muted hover:text-text'
               }`
             }
           >
-            <FontAwesomeIcon icon={faGauge} /> {t('nav.overview')}
+            <FontAwesomeIcon icon={faGauge} aria-hidden /> {t('nav.overview')}
           </NavLink>
           <NavLink
             to="/client/settings"
             className={({ isActive }) =>
-              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${
-                isActive ? 'text-brand-secondary font-semibold' : 'text-text-muted hover:text-text'
+              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${focusRing} ${
+                isActive ? 'bg-brand-secondary text-brand-on-secondary font-semibold' : 'text-text-muted hover:text-text'
               }`
             }
           >
-            <FontAwesomeIcon icon={faGear} /> {t('nav.settings')}
+            <FontAwesomeIcon icon={faGear} aria-hidden /> {t('nav.settings')}
           </NavLink>
         </nav>
 
         <div className="flex items-center gap-[12px] max-client:hidden">
           <div className="w-[36px] h-[36px] rounded-full bg-brand-secondary text-brand-on-secondary grid place-items-center font-bold text-[12px]">{initials(me?.firstName, me?.lastName, me?.email)}</div>
           <button
-            className="bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text"
+            className={`bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text ${focusRing}`}
             onClick={signOut}
           >
             {t('nav.signOut')}

@@ -13,6 +13,7 @@ export const authWrapStyle = {
   '--brand-primary': '#5B68E0',
   '--brand-primary-soft': 'rgba(91, 104, 224, 0.20)',
   '--brand-on-primary': '#FFFFFF',
+  '--focus-ring': '#8AB4FF',
   '--danger': '#E5707A',
   '--shadow-md': '0 18px 44px rgba(0, 0, 0, 0.5)',
   background:

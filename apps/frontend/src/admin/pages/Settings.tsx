@@ -5,6 +5,7 @@ import { tenantApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
 import ThemeToggle from '../../shared/components/ThemeToggle/ThemeToggle';
 import LanguageToggle from '../../shared/components/LanguageToggle/LanguageToggle';
+import { focusRing } from '../../shared/styles/focusRing';
 
 const DEFAULTS = {
   backgroundColor: '#FFFFFF',
@@ -115,10 +116,11 @@ export default function Settings() {
                   <label htmlFor={`${key}-picker`} className="text-[11px] font-semibold text-text-muted tracking-[0.06em] uppercase">{label}</label>
                   <div className="flex flex-wrap items-center gap-[10px]">
                     <input id={`${key}-picker`} type="color" value={colors[key]}
-                           className="w-[56px] h-[34px] p-0 border border-border-strong rounded-radius-sm bg-surface cursor-pointer"
+                           className={`w-[56px] h-[34px] p-0 border border-border-strong rounded-radius-sm bg-surface cursor-pointer ${focusRing}`}
                            onChange={e => onPicker(key, e.target.value)} />
                     <input type="text" value={draft} maxLength={7}
-                           className={`w-[110px] h-[34px] px-[10px] py-0 border rounded-radius-sm bg-surface text-text font-mono text-[13px] uppercase focus:outline-none focus:border-brand-primary ${valid ? 'border-border-strong' : 'border-danger'}`}
+                           aria-label={`${label} (hex)`}
+                           className={`w-[110px] h-[34px] px-[10px] py-0 border rounded-radius-sm bg-surface text-text font-mono text-[13px] uppercase focus:border-brand-primary ${focusRing} ${valid ? 'border-border-strong' : 'border-danger'}`}
                            spellCheck={false}
                            onChange={e => onHexChange(key, e.target.value)} />
                   </div>
@@ -126,11 +128,11 @@ export default function Settings() {
               );
             })}
             <div className="flex gap-2 mt-2">
-              <button type="submit" className="bg-brand-primary text-brand-on-primary border-0 px-4 py-[9px] rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed" disabled={saving || !allValid}>
+              <button type="submit" className={`bg-brand-primary text-brand-on-primary border-0 px-4 py-[9px] rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${focusRing}`} disabled={saving || !allValid}>
                 {saving ? t('settings.tenantTheme.saving') : t('settings.tenantTheme.saveTheme')}
               </button>
             </div>
-            {msg && <div className={`text-xs ${msg.kind === 'ok' ? 'text-success' : 'text-danger'}`}>{msg.text}</div>}
+            {msg && <div role="status" aria-live="polite" className={`text-xs ${msg.kind === 'ok' ? 'text-success' : 'text-danger'}`}>{msg.text}</div>}
           </form>
         </section>
       )}
