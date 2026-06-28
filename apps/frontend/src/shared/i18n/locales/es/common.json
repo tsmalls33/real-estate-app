@@ -54,7 +54,8 @@
     "noResults": "Sin resultados.",
     "error": "Algo salió mal.",
     "notFound": "Página no encontrada.",
-    "emDash": "—"
+    "emDash": "—",
+    "paginationCount": "{{from}}–{{to}} de {{total}}"
   },
   "roles": {
     "admin": "Administrador",
@@ -87,7 +88,16 @@
       "scopeTenantFallback": "tu inmobiliaria",
       "scopeAll": "Todas las propiedades de todas las inmobiliarias",
       "loadError": "No se pudieron cargar las propiedades: {{message}}",
-      "paginationCount": "{{from}}–{{to}} de {{total}}"
+      "searchPlaceholder": "Buscar propiedades…",
+      "filters": {
+        "all": "Todas",
+        "forSale": "En venta",
+        "forRent": "En alquiler",
+        "underRental": "Alquilada",
+        "sold": "Vendida",
+        "inactive": "Inactiva",
+        "reset": "Restablecer"
+      }
     },
     "tenants": {
       "title": "Inmobiliarias",

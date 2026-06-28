@@ -54,7 +54,8 @@
     "noResults": "No results found.",
     "error": "Something went wrong.",
     "notFound": "Page not found.",
-    "emDash": "—"
+    "emDash": "—",
+    "paginationCount": "{{from}}–{{to}} of {{total}}"
   },
   "roles": {
     "admin": "Admin",
@@ -87,7 +88,16 @@
       "scopeTenantFallback": "your agency",
       "scopeAll": "All properties across all tenants",
       "loadError": "Couldn't load properties: {{message}}",
-      "paginationCount": "{{from}}–{{to}} of {{total}}"
+      "searchPlaceholder": "Search properties…",
+      "filters": {
+        "all": "All",
+        "forSale": "For sale",
+        "forRent": "For rent",
+        "underRental": "Under rental",
+        "sold": "Sold",
+        "inactive": "Inactive",
+        "reset": "Reset"
+      }
     },
     "tenants": {
       "title": "Tenants",
