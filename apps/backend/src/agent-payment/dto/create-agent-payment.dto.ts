@@ -1,4 +1,11 @@
-import { IsBoolean, IsDateString, IsNumber, IsOptional, IsPositive, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateAgentPaymentDto as SharedCreateAgentPaymentDto } from '@RealEstate/types';

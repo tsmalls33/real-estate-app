@@ -1,31 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Tenant, Prisma } from '@prisma/client';
-import { TENANT_PUBLIC_SELECT, TENANT_WITH_USERS_SELECT } from './projections/tenant.projection';
+import {
+  TENANT_PUBLIC_SELECT,
+  TENANT_WITH_USERS_SELECT,
+} from './projections/tenant.projection';
 
 @Injectable()
 export class TenantRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.TenantCreateInput): Promise<Tenant> {
-    return await this.prisma.tenant.create({
+    return (await this.prisma.tenant.create({
       data,
       select: TENANT_PUBLIC_SELECT,
-    }) as Tenant;
+    })) as Tenant;
   }
 
   async findAll(): Promise<Tenant[]> {
-    return await this.prisma.tenant.findMany({
+    return (await this.prisma.tenant.findMany({
       where: { isDeleted: false },
       select: TENANT_PUBLIC_SELECT,
-    }) as Tenant[];
+    })) as Tenant[];
   }
 
-  async findById(id_tenant: string, includeUsers: boolean = false): Promise<Tenant | null> {
-    return await this.prisma.tenant.findFirst({
+  async findById(
+    id_tenant: string,
+    includeUsers: boolean = false,
+  ): Promise<Tenant | null> {
+    return (await this.prisma.tenant.findFirst({
       where: { id_tenant, isDeleted: false },
       select: includeUsers ? TENANT_WITH_USERS_SELECT : TENANT_PUBLIC_SELECT,
-    }) as Tenant | null;
+    })) as Tenant | null;
   }
 
   async existsByName(name: string): Promise<boolean> {
@@ -44,27 +50,30 @@ export class TenantRepository {
     return tenant !== null;
   }
 
-  async update(id_tenant: string, data: Prisma.TenantUpdateInput): Promise<Tenant> {
-    return await this.prisma.tenant.update({
+  async update(
+    id_tenant: string,
+    data: Prisma.TenantUpdateInput,
+  ): Promise<Tenant> {
+    return (await this.prisma.tenant.update({
       where: { id_tenant },
       data,
       select: TENANT_PUBLIC_SELECT,
-    }) as Tenant;
+    })) as Tenant;
   }
 
   async softDelete(id_tenant: string): Promise<Tenant> {
-    return await this.prisma.tenant.update({
+    return (await this.prisma.tenant.update({
       where: { id_tenant },
       data: { isDeleted: true },
       select: TENANT_PUBLIC_SELECT,
-    }) as Tenant;
+    })) as Tenant;
   }
 
   async assignTheme(id_tenant: string, id_theme: string): Promise<Tenant> {
-    return await this.prisma.tenant.update({
+    return (await this.prisma.tenant.update({
       where: { id_tenant },
       data: { id_theme },
       select: TENANT_PUBLIC_SELECT,
-    }) as Tenant;
+    })) as Tenant;
   }
 }

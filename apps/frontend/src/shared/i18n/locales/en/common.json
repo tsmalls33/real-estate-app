@@ -76,7 +76,8 @@
     "agencyPortal": "Agency Portal",
     "ownerPortal": "Owner Portal",
     "welcomeBack": "Welcome back, {{name}}",
-    "welcomeBackGeneric": "Welcome back"
+    "welcomeBackGeneric": "Welcome back",
+    "openMenu": "Open menu"
   },
   "admin": {
     "dashboard": {

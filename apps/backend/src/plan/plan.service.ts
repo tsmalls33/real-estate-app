@@ -29,7 +29,9 @@ export class PlanService {
   }
 
   async findAll(isActive?: boolean): Promise<PlanResponseDto[]> {
-    return this.planRepository.findAll(isActive) as unknown as Promise<PlanResponseDto[]>;
+    return this.planRepository.findAll(isActive) as unknown as Promise<
+      PlanResponseDto[]
+    >;
   }
 
   async findOne(id_plan: string): Promise<PlanResponseDto> {
@@ -82,6 +84,8 @@ export class PlanService {
         `Cannot delete plan: ${tenantCount} tenant(s) are currently using it`,
       );
 
-    return this.planRepository.softDelete(id_plan) as unknown as Promise<PlanResponseDto>;
+    return this.planRepository.softDelete(
+      id_plan,
+    ) as unknown as Promise<PlanResponseDto>;
   }
 }

@@ -32,13 +32,19 @@ describe('ReservationRepository', () => {
     it('returns true when an overlapping UPCOMING or ACTIVE reservation exists', async () => {
       mockPrisma.reservation.count.mockResolvedValue(1);
 
-      const result = await repository.checkOverlap(id_property, startDate, endDate);
+      const result = await repository.checkOverlap(
+        id_property,
+        startDate,
+        endDate,
+      );
 
       expect(result).toBe(true);
       expect(mockPrisma.reservation.count).toHaveBeenCalledWith({
         where: {
           id_property,
-          status: { in: [ReservationStatus.UPCOMING, ReservationStatus.ACTIVE] },
+          status: {
+            in: [ReservationStatus.UPCOMING, ReservationStatus.ACTIVE],
+          },
           startDate: { lt: endDate },
           endDate: { gt: startDate },
         },
@@ -48,7 +54,11 @@ describe('ReservationRepository', () => {
     it('returns false when no overlapping reservations exist', async () => {
       mockPrisma.reservation.count.mockResolvedValue(0);
 
-      const result = await repository.checkOverlap(id_property, startDate, endDate);
+      const result = await repository.checkOverlap(
+        id_property,
+        startDate,
+        endDate,
+      );
 
       expect(result).toBe(false);
     });
@@ -57,14 +67,21 @@ describe('ReservationRepository', () => {
       const excludeId = 'res-99';
       mockPrisma.reservation.count.mockResolvedValue(0);
 
-      const result = await repository.checkOverlap(id_property, startDate, endDate, excludeId);
+      const result = await repository.checkOverlap(
+        id_property,
+        startDate,
+        endDate,
+        excludeId,
+      );
 
       expect(result).toBe(false);
       expect(mockPrisma.reservation.count).toHaveBeenCalledWith({
         where: {
           id_property,
           id_reservation: { not: excludeId },
-          status: { in: [ReservationStatus.UPCOMING, ReservationStatus.ACTIVE] },
+          status: {
+            in: [ReservationStatus.UPCOMING, ReservationStatus.ACTIVE],
+          },
           startDate: { lt: endDate },
           endDate: { gt: startDate },
         },

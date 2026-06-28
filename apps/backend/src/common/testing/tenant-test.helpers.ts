@@ -22,7 +22,9 @@ export function mockJwtPayload(overrides?: Partial<JwtPayload>): JwtPayload {
   } as JwtPayload;
 }
 
-export function mockSuperadminPayload(overrides?: Partial<JwtPayload>): JwtPayload {
+export function mockSuperadminPayload(
+  overrides?: Partial<JwtPayload>,
+): JwtPayload {
   return {
     sub: 'superadmin-1',
     email: 'admin@test.com',

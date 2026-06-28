@@ -48,7 +48,11 @@ export class CostController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateCostDto, @CurrentTenant() scope: TenantScope) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateCostDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.costService.update(id, dto, scope);
   }
 

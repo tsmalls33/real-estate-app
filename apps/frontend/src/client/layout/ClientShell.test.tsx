@@ -32,6 +32,8 @@ function renderShell() {
   );
 }
 
+const backdrop = () => screen.queryByTestId('drawer-backdrop');
+
 beforeEach(() => {
   clearAuth();
   vi.clearAllMocks();
@@ -41,22 +43,60 @@ describe('ClientShell', () => {
   it('greets the user by name and shows their email', async () => {
     renderShell();
     expect(await screen.findByText('Welcome back, Cleo')).toBeInTheDocument();
-    expect(screen.getByText('user@acme.com')).toBeInTheDocument();
+    // Email shows in both the greeting and the drawer's account footer.
+    expect(screen.getAllByText('user@acme.com').length).toBeGreaterThan(0);
   });
 
   it('navigates between tabs', async () => {
     renderShell();
     expect(await screen.findByText('overview page')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('link', { name: /settings/i }));
+    // Settings appears in both the desktop tab row and the mobile drawer; either navigates.
+    const settingsLink = screen.getAllByRole('link', { name: /settings/i }).find(l => l.getAttribute('href')?.endsWith('/client/settings'));
+    await userEvent.click(settingsLink!);
     expect(await screen.findByText('settings page')).toBeInTheDocument();
   });
 
   it('signs out: clears tokens and navigates to /signin', async () => {
     renderShell();
-    await userEvent.click(await screen.findByRole('button', { name: /sign out/i }));
+    const [signOutBtn] = await screen.findAllByRole('button', { name: /sign out/i });
+    await userEvent.click(signOutBtn);
 
     expect(await screen.findByText('signin page')).toBeInTheDocument();
     expect(localStorage.getItem('accessToken')).toBeNull();
+  });
+
+  it('opens the drawer when the hamburger is tapped', async () => {
+    renderShell();
+    await screen.findByText('overview page');
+
+    expect(backdrop()).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(backdrop()).not.toBeNull();
+  });
+
+  it('dismisses the drawer on backdrop click', async () => {
+    renderShell();
+    await screen.findByRole('button', { name: /open menu/i });
+
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+    const overlay = backdrop();
+    expect(overlay).not.toBeNull();
+
+    await userEvent.click(overlay as Element);
+    expect(backdrop()).toBeNull();
+  });
+
+  it('dismisses the drawer on route change', async () => {
+    renderShell();
+    await screen.findByRole('button', { name: /open menu/i });
+
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(backdrop()).not.toBeNull();
+
+    const settingsLink = screen.getAllByRole('link', { name: /settings/i }).find(l => l.getAttribute('href')?.endsWith('/client/settings'));
+    await userEvent.click(settingsLink!);
+    expect(await screen.findByText('settings page')).toBeInTheDocument();
+    expect(backdrop()).toBeNull();
   });
 });

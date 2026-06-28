@@ -11,7 +11,12 @@ import { ReservationModule } from '../reservation/reservation.module';
 @Module({
   imports: [PrismaModule, CostModule, ReservationModule],
   controllers: [PropertyController],
-  providers: [PropertyService, PropertyRepository, PropertyStatsService, PropertyStatsRepository],
+  providers: [
+    PropertyService,
+    PropertyRepository,
+    PropertyStatsService,
+    PropertyStatsRepository,
+  ],
   exports: [PropertyService],
 })
 export class PropertyModule {}

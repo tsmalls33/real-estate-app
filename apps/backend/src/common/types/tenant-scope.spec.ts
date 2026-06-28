@@ -1,5 +1,9 @@
 import { NotFoundException } from '@nestjs/common';
-import { assertTenantMatch, tenantFilter, type TenantScope } from './tenant-scope';
+import {
+  assertTenantMatch,
+  tenantFilter,
+  type TenantScope,
+} from './tenant-scope';
 
 describe('tenant-scope utilities', () => {
   const allScope: TenantScope = { type: 'ALL' };
@@ -19,11 +23,15 @@ describe('tenant-scope utilities', () => {
     });
 
     it('throws NotFoundException for TENANT scope mismatch', () => {
-      expect(() => assertTenantMatch(tenantScope, 'tenant-other')).toThrow(NotFoundException);
+      expect(() => assertTenantMatch(tenantScope, 'tenant-other')).toThrow(
+        NotFoundException,
+      );
     });
 
     it('throws NotFoundException when record tenantId is null', () => {
-      expect(() => assertTenantMatch(tenantScope, null)).toThrow(NotFoundException);
+      expect(() => assertTenantMatch(tenantScope, null)).toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -57,8 +65,14 @@ describe('tenant-scope utilities', () => {
     });
 
     it('TENANT scope nested spread adds relation filter', () => {
-      const where = { isDeleted: false, ...tenantFilter(tenantScope, 'property') };
-      expect(where).toEqual({ isDeleted: false, property: { id_tenant: 'tenant-abc' } });
+      const where = {
+        isDeleted: false,
+        ...tenantFilter(tenantScope, 'property'),
+      };
+      expect(where).toEqual({
+        isDeleted: false,
+        property: { id_tenant: 'tenant-abc' },
+      });
     });
   });
 });

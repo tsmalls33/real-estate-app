@@ -29,7 +29,10 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Get()
-  findAll(@Query() query: GetClientsQueryParams, @CurrentTenant() scope: TenantScope) {
+  findAll(
+    @Query() query: GetClientsQueryParams,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.clientService.findAll(query, scope);
   }
 
@@ -44,7 +47,11 @@ export class ClientController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateClientDto, @CurrentTenant() scope: TenantScope) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateClientDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.clientService.update(id, dto, scope);
   }
 

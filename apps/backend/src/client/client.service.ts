@@ -1,10 +1,18 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ClientRepository } from './client.repository';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { GetClientsQueryParams } from './dto/get-clients-query-params';
-import { type TenantScope, assertTenantMatch, resolveTenantId } from '../common/types/tenant-scope';
+import {
+  type TenantScope,
+  assertTenantMatch,
+  resolveTenantId,
+} from '../common/types/tenant-scope';
 
 @Injectable()
 export class ClientService {

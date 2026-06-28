@@ -7,7 +7,7 @@ import { COST_SELECT } from './projections/cost.projection';
 
 @Injectable()
 export class CostRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.CostUncheckedCreateInput) {
     return this.prisma.cost.create({ data, select: COST_SELECT });
@@ -71,7 +71,9 @@ export class CostRepository {
     });
   }
 
-  async findReservationProperty(id_reservation: string): Promise<string | null> {
+  async findReservationProperty(
+    id_reservation: string,
+  ): Promise<string | null> {
     const res = await this.prisma.reservation.findUnique({
       where: { id_reservation },
       select: { id_property: true },

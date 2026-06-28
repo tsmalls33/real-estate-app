@@ -12,8 +12,14 @@ export class PropertyStatsService {
 
   async upsert(id_property: string, dto: CreatePropertyStatsDto) {
     const exists = await this.propertyRepository.existsById(id_property);
-    if (!exists) throw new NotFoundException(`Property with id '${id_property}' not found`);
+    if (!exists)
+      throw new NotFoundException(
+        `Property with id '${id_property}' not found`,
+      );
 
-    return this.propertyStatsRepository.upsert(id_property, { ...dto, id_property });
+    return this.propertyStatsRepository.upsert(id_property, {
+      ...dto,
+      id_property,
+    });
   }
 }

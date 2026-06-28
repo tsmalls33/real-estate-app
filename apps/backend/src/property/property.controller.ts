@@ -20,7 +20,10 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentTenant } from '../common/decorators/current-tenant.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ResponseMessage } from '../common/decorators/response-message.decorator';
-import { tenantScopeForUser, type TenantScope } from '../common/types/tenant-scope';
+import {
+  tenantScopeForUser,
+  type TenantScope,
+} from '../common/types/tenant-scope';
 import type { JwtPayload } from '../common/types/jwt-payload.interface';
 import { UserRoles } from '@RealEstate/types';
 import { CreatePropertyDto } from './dto/create-property.dto';
