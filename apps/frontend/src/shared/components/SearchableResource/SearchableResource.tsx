@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import SearchFilterBar from './SearchFilterBar';
@@ -28,9 +28,12 @@ export default function SearchableResource<T>({
   // Local copy drives the input immediately; debounced into the URL below.
   const [qInput, setQInput] = useState(urlQ);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
   // Sync local state when URL changes externally (browser back/forward).
   useEffect(() => {
     setQInput(urlQ);
+    clearTimeout(debounceRef.current);
   }, [urlQ]);
 
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
@@ -38,7 +41,8 @@ export default function SearchableResource<T>({
   // Debounce the search text into the URL; any search change also resets the page.
   useEffect(() => {
     if (qInput === urlQ) return;
-    const id = setTimeout(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
       setSearchParams(
         prev => {
           if (qInput.trim()) prev.set(config.searchParam, qInput.trim());
@@ -49,7 +53,7 @@ export default function SearchableResource<T>({
         { replace: true },
       );
     }, DEBOUNCE_MS);
-    return () => clearTimeout(id);
+    return () => clearTimeout(debounceRef.current);
   }, [qInput, urlQ, config.searchParam, setSearchParams]);
 
   const value: SearchFilterValue = useMemo(() => {
@@ -65,7 +69,11 @@ export default function SearchableResource<T>({
         group => (next[group.param] ?? '') !== (searchParams.get(group.param) ?? ''),
       );
       if (changed.length > 0) {
+        clearTimeout(debounceRef.current);
         setSearchParams(prev => {
+          const q = qInput.trim();
+          if (q) prev.set(config.searchParam, q);
+          else prev.delete(config.searchParam);
           for (const group of changed) {
             const v = next[group.param] ?? '';
             if (v) prev.set(group.param, v);
@@ -76,7 +84,7 @@ export default function SearchableResource<T>({
         });
       }
     },
-    [qInput, searchParams, config.filterGroups, setSearchParams],
+    [qInput, config, searchParams, setSearchParams],
   );
 
   const query: ResourceQuery = useMemo(() => {
@@ -107,7 +115,7 @@ export default function SearchableResource<T>({
         if (!cancelled) setState({ items: res.items, total: res.total, loading: false, error: null });
       })
       .catch((err: Error) => {
-        if (!cancelled) setState({ items: [], total: 0, loading: false, error: err.message });
+        if (!cancelled) setState({ items: [], total: 0, loading: false, error: err });
       });
     return () => {
       cancelled = true;

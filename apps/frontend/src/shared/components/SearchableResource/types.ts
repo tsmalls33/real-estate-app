@@ -40,7 +40,7 @@ export interface SearchableResourceState<T> {
   items: T[];
   total: number;
   loading: boolean;
-  error: string | null;
+  error: Error | null;
 }
 
 export interface SearchableResourceProps<T> {

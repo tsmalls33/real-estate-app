@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { Property } from '@RealEstate/types';
 import { UserRoles } from '@RealEstate/types';
+import { ApiError } from '../../shared/api/client';
 import { propertyApi } from '../../shared/api/services';
 import PropertyList from '../../shared/components/PropertyList/PropertyList';
 import { useSession } from '../../shared/theme/ThemeContext';
@@ -49,7 +50,7 @@ export default function Dashboard() {
       )}
     >
       {({ items, loading, error }) => {
-        if (error) return <ErrorPanel variant="network-error" />;
+        if (error) return <ErrorPanel variant={error instanceof ApiError ? 'api-error' : 'network-error'} />;
         if (loading) return (
           <div role="status" aria-label={t('common.loading')}>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1">
