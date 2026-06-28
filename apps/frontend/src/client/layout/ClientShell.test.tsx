@@ -99,4 +99,28 @@ describe('ClientShell', () => {
     expect(await screen.findByText('settings page')).toBeInTheDocument();
     expect(backdrop()).toBeNull();
   });
+
+  describe('accessibility', () => {
+    it('exposes banner, navigation, and main landmarks', async () => {
+      renderShell();
+      expect(await screen.findByRole('banner')).toBeInTheDocument();
+      expect(screen.getAllByRole('navigation').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByRole('main')).toBeInTheDocument();
+    });
+
+    it('marks the active nav link with aria-current="page"', async () => {
+      renderShell();
+      const overviewLinks = await screen.findAllByRole('link', { name: /overview/i });
+      const activeOverview = overviewLinks.find(l => l.getAttribute('aria-current') === 'page');
+      expect(activeOverview).toBeTruthy();
+      const settingsLinks = screen.getAllByRole('link', { name: /settings/i });
+      settingsLinks.forEach(l => expect(l.getAttribute('aria-current')).toBeNull());
+    });
+
+    it('hides decorative nav icons from the accessibility tree', async () => {
+      const { container } = renderShell();
+      await screen.findByText('overview page');
+      expect(container.querySelectorAll('svg[aria-hidden="true"]').length).toBeGreaterThanOrEqual(2);
+    });
+  });
 });

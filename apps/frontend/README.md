@@ -68,3 +68,43 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Accessibility
+
+Component-level a11y (landmarks, `aria-current`, decorative-icon hiding, focus
+visibility) is asserted in the Vitest specs and runs with `pnpm test`. Static
+JSX a11y rules come from `eslint-plugin-jsx-a11y/recommended`, wired into the
+`eslintConfig` in `package.json`.
+
+> Note: CRA's ESLint pass is disabled in CI (`DISABLE_ESLINT_PLUGIN`) because
+> react-scripts 5 can't drive the ESLint 9 hoisted into the workspace, so the
+> `jsx-a11y` rules are not yet a CI gate. Standing up a dedicated frontend lint
+> runner is tracked separately. To run the a11y rules locally against the
+> workspace ESLint 9 with a flat config:
+>
+> ```js
+> // eslint.a11y.mjs
+> import jsxA11y from 'eslint-plugin-jsx-a11y';
+> import tsParser from '@typescript-eslint/parser';
+> export default [
+>   { files: ['src/**/*.{tsx,jsx}'], ...jsxA11y.flatConfigs.recommended,
+>     languageOptions: { parser: tsParser, parserOptions: { ecmaFeatures: { jsx: true } } } },
+> ];
+> ```
+> ```bash
+> npx eslint --config eslint.a11y.mjs "src/**/*.tsx"
+> ```
+
+### Manual pass (axe-core + keyboard)
+
+Two acceptance checks for issue #57 are manual and must be run against the dev
+build (`pnpm dev`) before sign-off — they are not automated here:
+
+1. **axe-core** — open DevTools on the admin dashboard, client dashboard, and
+   settings pages and run an [axe DevTools](https://www.deque.com/axe/devtools/)
+   scan (or `axe.run()` from the console). Resolve any serious/critical issues.
+   Target: Lighthouse accessibility score ≥ 95 on those three views.
+2. **Keyboard-only walkthrough** — with the mouse unused, complete both flows
+   (sign in → dashboard → settings → sign out) for admin and client. Every
+   interactive element must take focus with a visible ring and nothing should
+   trap focus.

@@ -40,6 +40,7 @@ module.exports = {
         'danger-soft': 'var(--danger-soft)',
         info: 'var(--info)',
         hover: 'var(--hover)',
+        'focus-ring': 'var(--focus-ring)',
       },
       borderRadius: {
         radius: 'var(--radius)',

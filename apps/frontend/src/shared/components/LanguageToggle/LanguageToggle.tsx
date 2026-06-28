@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Language } from '@RealEstate/types';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { focusRing } from '../../styles/focusRing';
 
 type Variant = 'default' | 'flags';
 
@@ -43,7 +44,7 @@ export default function LanguageToggle({ variant = 'default' }: Props) {
         <button
           key={o.value}
           type="button"
-          className={`cursor-pointer rounded-[5px] border-0 text-xs font-semibold transition-colors duration-[120ms] ease-[ease] ${
+          className={`cursor-pointer rounded-[5px] border-0 text-xs font-semibold transition-colors duration-[120ms] ease-[ease] ${focusRing} ${
             language === o.value
               ? 'bg-surface text-text shadow-sm'
               : 'bg-transparent text-text-muted hover:text-text'

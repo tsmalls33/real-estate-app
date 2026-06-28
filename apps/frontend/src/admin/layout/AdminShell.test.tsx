@@ -106,6 +106,30 @@ describe('AdminShell', () => {
     expect(localStorage.getItem('accessToken')).toBeNull();
     expect(localStorage.getItem('refreshToken')).toBeNull();
   });
+
+  describe('accessibility', () => {
+    it('exposes banner, navigation, and main landmarks', async () => {
+      renderShell(UserRoles.ADMIN);
+      expect(await screen.findByRole('banner')).toBeInTheDocument();
+      expect(screen.getByRole('navigation')).toBeInTheDocument();
+      expect(screen.getByRole('main')).toBeInTheDocument();
+    });
+
+    it('marks the active nav link with aria-current="page"', async () => {
+      renderShell(UserRoles.ADMIN);
+      const dashboard = await screen.findByRole('link', { name: /dashboard/i });
+      expect(dashboard).toHaveAttribute('aria-current', 'page');
+      expect(screen.getByRole('link', { name: /settings/i })).not.toHaveAttribute('aria-current');
+    });
+
+    it('hides decorative nav icons from the accessibility tree', async () => {
+      const { container } = renderShell(UserRoles.ADMIN);
+      await screen.findByRole('link', { name: /dashboard/i });
+      // Each nav item pairs a FontAwesome icon with a visible text label; the
+      // icon must be aria-hidden so it is not read twice.
+      expect(container.querySelectorAll('svg[aria-hidden="true"]').length).toBeGreaterThanOrEqual(2);
+    });
+  });
 });
 
 // Sanity: fakeToken encodes a decodable role, so guards see the same role the

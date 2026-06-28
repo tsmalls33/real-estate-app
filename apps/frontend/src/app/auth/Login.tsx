@@ -5,6 +5,7 @@ import { authApi } from '../../shared/api/services';
 import { setTokens, landingForRole } from '../../shared/auth/tokens';
 import { useSession } from '../../shared/theme/ThemeContext';
 import { authWrapStyle } from './authWrapStyle';
+import { focusRing } from '../../shared/styles/focusRing';
 
 import LanguageToggle from '../../shared/components/LanguageToggle/LanguageToggle';
 
@@ -51,28 +52,28 @@ export default function Login() {
         <div className="flex flex-col gap-1.5 mb-3.5">
           <label htmlFor="email" className="text-[11px] text-text-muted tracking-[0.04em] uppercase font-semibold">{t('auth.signIn.email')}</label>
           <input id="email" type="email" autoComplete="email" required
-                 className="h-[38px] px-3 border border-border-strong rounded-radius-sm bg-surface text-text outline-none transition-colors duration-[120ms] focus:border-brand-primary"
+                 className={`h-[38px] px-3 border border-border-strong rounded-radius-sm bg-surface text-text transition-colors duration-[120ms] focus:border-brand-primary ${focusRing}`}
                  value={email} onChange={e => setEmail(e.target.value)} />
         </div>
 
         <div className="flex flex-col gap-1.5 mb-3.5">
           <label htmlFor="password" className="text-[11px] text-text-muted tracking-[0.04em] uppercase font-semibold">{t('auth.signIn.password')}</label>
           <input id="password" type="password" autoComplete="current-password" required
-                 className="h-[38px] px-3 border border-border-strong rounded-radius-sm bg-surface text-text outline-none transition-colors duration-[120ms] focus:border-brand-primary"
+                 className={`h-[38px] px-3 border border-border-strong rounded-radius-sm bg-surface text-text transition-colors duration-[120ms] focus:border-brand-primary ${focusRing}`}
                  value={password} onChange={e => setPassword(e.target.value)} />
         </div>
 
         <button
-          className="w-full h-10 mt-1.5 bg-brand-primary text-brand-on-primary border-0 rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          className={`w-full h-10 mt-1.5 bg-brand-primary text-brand-on-primary border-0 rounded-radius-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${focusRing}`}
           type="submit" disabled={submitting}
         >
           {submitting ? t('auth.signIn.submitting') : t('auth.signIn.submit')}
         </button>
 
-        {error && <div className="mt-2.5 text-xs text-danger">{error}</div>}
+        {error && <div role="alert" className="mt-2.5 text-xs text-danger">{error}</div>}
 
         <div className="mt-[18px] text-center text-xs text-text-muted">
-          {t('auth.signIn.noAccount')} <Link to="/signup" className="text-brand-primary font-semibold">{t('auth.signIn.createOne')}</Link>
+          {t('auth.signIn.noAccount')} <Link to="/signup" className={`text-brand-primary font-semibold ${focusRing}`}>{t('auth.signIn.createOne')}</Link>
         </div>
       </form>
     </div>

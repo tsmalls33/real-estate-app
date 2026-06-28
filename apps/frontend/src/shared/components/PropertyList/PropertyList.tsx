@@ -35,7 +35,7 @@ const CLASSES: Record<Variant, ClassSet> = {
     addr: 'text-xs text-text-muted',
     row: 'flex items-center justify-between mt-1.5 text-xs text-text-muted',
     status:
-      'px-2.5 py-[3px] rounded-full bg-brand-secondary-soft text-brand-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
+      'px-2.5 py-[3px] rounded-full bg-brand-secondary text-brand-on-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
     empty:
       'border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface',
   },
@@ -46,7 +46,7 @@ const CLASSES: Record<Variant, ClassSet> = {
     addr: 'text-xs text-text-muted',
     row: 'flex justify-between items-center mt-1.5 text-xs text-text-muted',
     status:
-      'px-2.5 py-[3px] rounded-full bg-brand-secondary-soft text-brand-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
+      'px-2.5 py-[3px] rounded-full bg-brand-secondary text-brand-on-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
     empty:
       'border border-dashed border-border-strong rounded-[14px] py-9 px-5 text-center text-text-muted bg-surface',
   },
@@ -88,7 +88,7 @@ export default function PropertyList({
             <div className={c.addr}>{p.propertyAddress}</div>
             {showOwner && (
               <div className="text-[11px] text-text-muted tracking-[0.04em] uppercase font-semibold">
-                <FontAwesomeIcon icon={faUser} /> {ownerLabel(p.owner)}
+                <FontAwesomeIcon icon={faUser} aria-hidden /> {ownerLabel(p.owner)}
               </div>
             )}
             <div className={c.row}>
