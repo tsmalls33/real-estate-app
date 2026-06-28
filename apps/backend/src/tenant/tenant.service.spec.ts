@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { TenantService } from './tenant.service';
 import { TenantRepository } from './tenant.repository';
@@ -72,7 +76,9 @@ describe('TenantService', () => {
         customDomain: createTenantDto.customDomain,
       });
 
-      expect(mockTenantRepository.existsByName).toHaveBeenCalledWith(createTenantDto.name);
+      expect(mockTenantRepository.existsByName).toHaveBeenCalledWith(
+        createTenantDto.name,
+      );
       expect(mockTenantRepository.create).toHaveBeenCalledWith({
         name: createTenantDto.name,
         customDomain: createTenantDto.customDomain,
@@ -85,7 +91,9 @@ describe('TenantService', () => {
       await expect(service.create(createTenantDto)).rejects.toThrow(
         ConflictException,
       );
-      expect(mockTenantRepository.existsByName).toHaveBeenCalledWith(createTenantDto.name);
+      expect(mockTenantRepository.existsByName).toHaveBeenCalledWith(
+        createTenantDto.name,
+      );
       expect(mockTenantRepository.create).not.toHaveBeenCalled();
     });
   });
@@ -107,12 +115,17 @@ describe('TenantService', () => {
 
       const result = await service.findOne('tenant123');
       expect(result).toEqual(tenant);
-      expect(mockTenantRepository.findById).toHaveBeenCalledWith('tenant123', false);
+      expect(mockTenantRepository.findById).toHaveBeenCalledWith(
+        'tenant123',
+        false,
+      );
     });
 
     it('should throw NotFoundException if tenant not found', async () => {
       mockTenantRepository.findById.mockResolvedValue(null);
-      await expect(service.findOne('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -136,20 +149,27 @@ describe('TenantService', () => {
     });
 
     it('should throw BadRequestException if no fields provided', async () => {
-      await expect(service.update('tenant123', {})).rejects.toThrow(BadRequestException);
+      await expect(service.update('tenant123', {})).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw NotFoundException if tenant not found', async () => {
       mockTenantRepository.existsByName.mockResolvedValue(false);
       mockTenantRepository.existsById.mockResolvedValue(false);
-      await expect(service.update('nonexistent', updateTenantDto)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update('nonexistent', updateTenantDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
     it('should soft delete a tenant', async () => {
       mockTenantRepository.existsById.mockResolvedValue(true);
-      mockTenantRepository.softDelete.mockResolvedValue({ id_tenant: 'tenant123', name: 'Test' });
+      mockTenantRepository.softDelete.mockResolvedValue({
+        id_tenant: 'tenant123',
+        name: 'Test',
+      });
 
       const result = await service.remove('tenant123');
       expect(result).toEqual({ id_tenant: 'tenant123', name: 'Test' });
@@ -158,7 +178,9 @@ describe('TenantService', () => {
 
     it('should throw NotFoundException if tenant not found', async () => {
       mockTenantRepository.existsById.mockResolvedValue(false);
-      await expect(service.remove('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -177,12 +199,17 @@ describe('TenantService', () => {
       const result = await service.assignTheme('tenant123', 'theme1');
       expect(result).toEqual({ id_tenant: 'tenant123', id_theme: 'theme1' });
       expect(mockThemeService.findOne).toHaveBeenCalledWith('theme1');
-      expect(mockTenantRepository.assignTheme).toHaveBeenCalledWith('tenant123', 'theme1');
+      expect(mockTenantRepository.assignTheme).toHaveBeenCalledWith(
+        'tenant123',
+        'theme1',
+      );
     });
 
     it('should throw NotFoundException if tenant not found', async () => {
       mockTenantRepository.findById.mockResolvedValue(null);
-      await expect(service.assignTheme('nonexistent', 'theme1')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.assignTheme('nonexistent', 'theme1'),
+      ).rejects.toThrow(NotFoundException);
       expect(mockThemeService.findOne).not.toHaveBeenCalled();
     });
 
@@ -199,19 +226,29 @@ describe('TenantService', () => {
         }),
       );
 
-      await expect(service.assignTheme('tenant123', 'theme1')).rejects.toThrow(ConflictException);
+      await expect(service.assignTheme('tenant123', 'theme1')).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
   describe('updateAssignedTheme', () => {
     it('should patch the existing theme fields', async () => {
       mockTenantRepository.findById
-        .mockResolvedValueOnce({ id_tenant: 'tenant123', name: 'Test', id_theme: 'theme1' })
+        .mockResolvedValueOnce({
+          id_tenant: 'tenant123',
+          name: 'Test',
+          id_theme: 'theme1',
+        })
         .mockResolvedValueOnce({ id_tenant: 'tenant123', id_theme: 'theme1' });
 
-      const result = await service.updateAssignedTheme('tenant123', { brandColor: '#123456' });
+      const result = await service.updateAssignedTheme('tenant123', {
+        brandColor: '#123456',
+      });
       expect(result).toEqual({ id_tenant: 'tenant123', id_theme: 'theme1' });
-      expect(mockThemeService.update).toHaveBeenCalledWith('theme1', { brandColor: '#123456' });
+      expect(mockThemeService.update).toHaveBeenCalledWith('theme1', {
+        brandColor: '#123456',
+      });
     });
 
     it('should throw BadRequestException if no fields provided', async () => {
@@ -220,7 +257,9 @@ describe('TenantService', () => {
         name: 'Test',
         id_theme: 'theme1',
       });
-      await expect(service.updateAssignedTheme('tenant123', {})).rejects.toThrow(BadRequestException);
+      await expect(
+        service.updateAssignedTheme('tenant123', {}),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if tenant not found', async () => {

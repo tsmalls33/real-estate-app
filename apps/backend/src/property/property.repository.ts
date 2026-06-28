@@ -21,7 +21,9 @@ import {
 export class PropertyRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Prisma.PropertyUncheckedCreateInput): Promise<PropertyListItem> {
+  async create(
+    data: Prisma.PropertyUncheckedCreateInput,
+  ): Promise<PropertyListItem> {
     return presentOwner(
       await this.prisma.property.create({
         data,

@@ -1,7 +1,16 @@
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreatePropertyStatsDto as SharedCreatePropertyStatsDto, PropertyType } from '@RealEstate/types';
+import {
+  CreatePropertyStatsDto as SharedCreatePropertyStatsDto,
+  PropertyType,
+} from '@RealEstate/types';
 
 export class CreatePropertyStatsDto implements SharedCreatePropertyStatsDto {
   @ApiProperty({ example: 2 })

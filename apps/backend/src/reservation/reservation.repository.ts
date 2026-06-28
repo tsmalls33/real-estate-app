@@ -6,7 +6,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 @Injectable()
 export class ReservationRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.ReservationUncheckedCreateInput) {
     return this.prisma.reservation.create({ data, select: RESERVATION_SELECT });

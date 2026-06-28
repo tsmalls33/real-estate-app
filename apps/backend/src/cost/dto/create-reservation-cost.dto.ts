@@ -6,7 +6,9 @@ import {
   CreateReservationCostDto as SharedCreateReservationCostDto,
 } from '@RealEstate/types';
 
-export class CreateReservationCostDto implements SharedCreateReservationCostDto {
+export class CreateReservationCostDto
+  implements SharedCreateReservationCostDto
+{
   @ApiProperty({ enum: CostType })
   @IsEnum(CostType)
   costType: CostType;

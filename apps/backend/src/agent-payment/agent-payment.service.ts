@@ -8,7 +8,10 @@ import { AgentPaymentRepository } from './agent-payment.repository';
 import { CreateAgentPaymentDto } from './dto/create-agent-payment.dto';
 import { UpdateAgentPaymentDto } from './dto/update-agent-payment.dto';
 import { GetAgentPaymentsQueryParams } from './dto/get-agent-payments-query-params';
-import { type TenantScope, assertTenantMatch } from '../common/types/tenant-scope';
+import {
+  type TenantScope,
+  assertTenantMatch,
+} from '../common/types/tenant-scope';
 
 @Injectable()
 export class AgentPaymentService {
@@ -66,7 +69,11 @@ export class AgentPaymentService {
     return payment;
   }
 
-  async update(id_agent_payment: string, dto: UpdateAgentPaymentDto, scope?: TenantScope) {
+  async update(
+    id_agent_payment: string,
+    dto: UpdateAgentPaymentDto,
+    scope?: TenantScope,
+  ) {
     const payment =
       await this.agentPaymentRepository.findById(id_agent_payment);
     if (!payment)

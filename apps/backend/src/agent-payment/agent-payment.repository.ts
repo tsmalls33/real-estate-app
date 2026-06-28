@@ -24,8 +24,7 @@ export class AgentPaymentRepository {
     page: number;
     limit: number;
   }) {
-    const { isPaid, id_user, scope, startDate, endDate, page, limit } =
-      params;
+    const { isPaid, id_user, scope, startDate, endDate, page, limit } = params;
 
     const where: Prisma.AgentPaymentWhereInput = {
       isDeleted: false,
