@@ -3,20 +3,36 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { Property } from '@RealEstate/types';
 import { UserRoles } from '@RealEstate/types';
+import { ApiError } from '../../shared/api/client';
 import { propertyApi } from '../../shared/api/services';
 import { useSession } from '../../shared/theme/ThemeContext';
 import PropertyList from '../../shared/components/PropertyList/PropertyList';
+import ErrorPanel, { type Variant as ErrorVariant } from '../../shared/components/ErrorPanel/ErrorPanel';
 
 const LIMIT = 12;
 
 type State = { properties: Property[]; total: number } | null;
+type ErrorState = { variant: ErrorVariant; message: string };
+
+function SkeletonCard() {
+  return (
+    <div className="bg-surface border border-border rounded-radius py-4 px-[18px] shadow-sm flex flex-col gap-2" aria-hidden>
+      <div className="skeleton h-[14px] w-3/4 rounded" />
+      <div className="skeleton h-[12px] w-1/2 rounded" />
+      <div className="flex items-center justify-between mt-1.5">
+        <div className="skeleton h-[10px] w-[80px] rounded-full" />
+        <div className="skeleton h-[12px] w-[60px] rounded" />
+      </div>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { t } = useTranslation();
   const { me } = useSession();
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<State>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorState | null>(null);
 
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
 
@@ -25,7 +41,10 @@ export default function Dashboard() {
     setError(null);
     propertyApi.list({ page, limit: LIMIT })
       .then(setData)
-      .catch((err: Error) => setError(err.message));
+      .catch((err: Error) => setError({
+        variant: err instanceof ApiError ? 'api-error' : 'network-error',
+        message: err.message,
+      }));
   }, [page]);
 
   const setPage = useCallback((p: number) => {
@@ -53,8 +72,14 @@ export default function Dashboard() {
         {title}{data ? ` (${data.total})` : ''}
       </h2>
       <p className="text-xs text-text-muted mt-1 mb-4">{scopeLabel}</p>
-      {error && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">{t('admin.dashboard.loadError', { message: error })}</div>}
-      {!error && data === null && <div className="border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface">{t('common.loading')}</div>}
+      {error && <ErrorPanel variant={error.variant} />}
+      {!error && data === null && (
+        <div role="status" aria-label={t('common.loading')}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1">
+            {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
+          </div>
+        </div>
+      )}
       {!error && data !== null && (
         <PropertyList items={data.properties} variant="admin" showOwner />
       )}
