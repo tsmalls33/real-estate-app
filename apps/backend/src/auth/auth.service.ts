@@ -175,11 +175,15 @@ export class AuthService {
     }
 
     const tokenHash = this.hashToken(refreshToken);
-    await this.prismaService.revokedRefreshToken.upsert({
-      where: { tokenHash },
-      create: { tokenHash },
-      update: {},
-    });
+    try {
+      await this.prismaService.revokedRefreshToken.upsert({
+        where: { tokenHash },
+        create: { tokenHash },
+        update: {},
+      });
+    } catch (e) {
+      console.error('logout revocation failed', e);
+    }
   }
 
   private hashToken(token: string): string {
