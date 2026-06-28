@@ -52,7 +52,10 @@ describe('AgentPaymentService – tenant scoping', () => {
     it('should return payment when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(basePayment as any);
 
-      const result = await service.findOne(PAYMENT_ID, mockTenantScope(TENANT_A));
+      const result = await service.findOne(
+        PAYMENT_ID,
+        mockTenantScope(TENANT_A),
+      );
       expect(result).toEqual(basePayment);
     });
 
@@ -78,9 +81,16 @@ describe('AgentPaymentService – tenant scoping', () => {
   describe('update', () => {
     it('should update when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(basePayment as any);
-      mockRepo.update.mockResolvedValue({ ...basePayment, isPaid: true } as any);
+      mockRepo.update.mockResolvedValue({
+        ...basePayment,
+        isPaid: true,
+      } as any);
 
-      const result = await service.update(PAYMENT_ID, { isPaid: true }, mockTenantScope(TENANT_A));
+      const result = await service.update(
+        PAYMENT_ID,
+        { isPaid: true },
+        mockTenantScope(TENANT_A),
+      );
       expect(result.isPaid).toBe(true);
     });
 
@@ -94,9 +104,16 @@ describe('AgentPaymentService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to update any payment', async () => {
       mockRepo.findById.mockResolvedValue(basePayment as any);
-      mockRepo.update.mockResolvedValue({ ...basePayment, isPaid: true } as any);
+      mockRepo.update.mockResolvedValue({
+        ...basePayment,
+        isPaid: true,
+      } as any);
 
-      const result = await service.update(PAYMENT_ID, { isPaid: true }, mockSuperadminScope());
+      const result = await service.update(
+        PAYMENT_ID,
+        { isPaid: true },
+        mockSuperadminScope(),
+      );
       expect(result.isPaid).toBe(true);
     });
   });
@@ -107,9 +124,14 @@ describe('AgentPaymentService – tenant scoping', () => {
   describe('remove', () => {
     it('should remove when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(basePayment as any);
-      mockRepo.softDelete.mockResolvedValue({ ...basePayment, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...basePayment,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(PAYMENT_ID, mockTenantScope(TENANT_A))).resolves.not.toThrow();
+      await expect(
+        service.remove(PAYMENT_ID, mockTenantScope(TENANT_A)),
+      ).resolves.not.toThrow();
     });
 
     it('should throw NotFoundException for cross-tenant remove', async () => {
@@ -122,9 +144,14 @@ describe('AgentPaymentService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to remove any payment', async () => {
       mockRepo.findById.mockResolvedValue(basePayment as any);
-      mockRepo.softDelete.mockResolvedValue({ ...basePayment, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...basePayment,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(PAYMENT_ID, mockSuperadminScope())).resolves.not.toThrow();
+      await expect(
+        service.remove(PAYMENT_ID, mockSuperadminScope()),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -132,14 +159,22 @@ describe('AgentPaymentService – tenant scoping', () => {
   // create
   // ---------------------------------------------------------------------------
   describe('create', () => {
-    const dto = { dueDate: '2026-04-01', amount: 300, isPaid: false, id_user: 'user-1' };
+    const dto = {
+      dueDate: '2026-04-01',
+      amount: 300,
+      isPaid: false,
+      id_user: 'user-1',
+    };
 
     it('should inherit id_tenant from the target user when tenant matches', async () => {
       mockRepo.findUserTenant.mockResolvedValue(TENANT_A);
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_agent_payment: 'new-1' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_agent_payment: 'new-1' }) as any,
+      );
 
       await service.create(dto as any, mockTenantScope(TENANT_A));
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_A }),
       );
@@ -171,10 +206,13 @@ describe('AgentPaymentService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to create, inheriting the user tenant', async () => {
       mockRepo.findUserTenant.mockResolvedValue(TENANT_B);
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_agent_payment: 'new-2' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_agent_payment: 'new-2' }) as any,
+      );
 
       await service.create(dto as any, mockSuperadminScope());
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_B }),
       );

@@ -8,9 +8,13 @@ import { TENANT_A } from '../testing/tenant-test.helpers';
  * with `createParamDecorator`. Works by applying the decorator to a
  * dummy class method parameter and reading the resulting metadata.
  */
-function getParamDecoratorFactory(decorator: Function) {
+function getParamDecoratorFactory(
+  decorator: (...args: any[]) => ParameterDecorator,
+) {
   class Test {
-    test(@decorator() _value: unknown) {}
+    test(@decorator() _value: unknown) {
+      void _value;
+    }
   }
 
   const metadata = Reflect.getMetadata(ROUTE_ARGS_METADATA, Test, 'test');

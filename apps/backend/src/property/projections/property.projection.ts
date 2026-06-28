@@ -71,8 +71,12 @@ export const PROPERTY_DETAIL_SELECT = {
   },
 } satisfies Prisma.PropertySelect;
 
-type RawPropertyListItem = Prisma.PropertyGetPayload<{ select: typeof PROPERTY_LIST_SELECT }>;
-type RawPropertyDetail = Prisma.PropertyGetPayload<{ select: typeof PROPERTY_DETAIL_SELECT }>;
+type RawPropertyListItem = Prisma.PropertyGetPayload<{
+  select: typeof PROPERTY_LIST_SELECT;
+}>;
+type RawPropertyDetail = Prisma.PropertyGetPayload<{
+  select: typeof PROPERTY_DETAIL_SELECT;
+}>;
 
 // Public shapes: the raw owner (with isDeleted) is replaced by the trimmed
 // PropertyOwnerSummary, or null when the owner is absent or soft-deleted.
@@ -97,6 +101,7 @@ export function presentOwner<T extends { owner: RawOwner | null }>(
   if (!owner || owner.isDeleted) {
     return { ...rest, owner: null };
   }
-  const { isDeleted: _isDeleted, ...summary } = owner;
+  const { isDeleted, ...summary } = owner;
+  void isDeleted;
   return { ...rest, owner: summary };
 }

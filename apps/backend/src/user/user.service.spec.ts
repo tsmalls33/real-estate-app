@@ -87,13 +87,17 @@ describe('UserService – tenant scoping', () => {
 
     it('should auto-set id_tenant from TENANT scope', async () => {
       mockUserRepo.existsByEmail.mockResolvedValue(false);
-      mockUserRepo.create.mockResolvedValue({ ...baseUser, email: 'new@test.com' } as any);
+      mockUserRepo.create.mockResolvedValue({
+        ...baseUser,
+        email: 'new@test.com',
+      } as any);
 
       await service.createUser(
         { ...dto, id_tenant: TENANT_B } as any,
         mockTenantScope(TENANT_A),
       );
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           tenant: { connect: { id_tenant: TENANT_A } },
@@ -103,10 +107,14 @@ describe('UserService – tenant scoping', () => {
 
     it('should use body id_tenant for SUPERADMIN', async () => {
       mockUserRepo.existsByEmail.mockResolvedValue(false);
-      mockUserRepo.create.mockResolvedValue({ ...baseUser, email: 'new@test.com' } as any);
+      mockUserRepo.create.mockResolvedValue({
+        ...baseUser,
+        email: 'new@test.com',
+      } as any);
 
       await service.createUser(dto as any, mockSuperadminScope());
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           tenant: { connect: { id_tenant: TENANT_A } },
@@ -116,13 +124,21 @@ describe('UserService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to create user with no tenant', async () => {
       mockUserRepo.existsByEmail.mockResolvedValue(false);
-      mockUserRepo.create.mockResolvedValue({ ...baseUser, id_tenant: null } as any);
+      mockUserRepo.create.mockResolvedValue({
+        ...baseUser,
+        id_tenant: null,
+      } as any);
 
       await service.createUser(
-        { email: 'new@test.com', password: 'Str0ngP@ssw0rd!', firstName: 'X' } as any,
+        {
+          email: 'new@test.com',
+          password: 'Str0ngP@ssw0rd!',
+          firstName: 'X',
+        } as any,
         mockSuperadminScope(),
       );
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           tenant: undefined,
@@ -164,9 +180,16 @@ describe('UserService – tenant scoping', () => {
   describe('update', () => {
     it('should update when tenant matches', async () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
-      mockUserRepo.update.mockResolvedValue({ ...baseUser, firstName: 'Updated' } as any);
+      mockUserRepo.update.mockResolvedValue({
+        ...baseUser,
+        firstName: 'Updated',
+      } as any);
 
-      const result = await service.update(USER_ID, { firstName: 'Updated' }, mockTenantScope(TENANT_A));
+      const result = await service.update(
+        USER_ID,
+        { firstName: 'Updated' },
+        mockTenantScope(TENANT_A),
+      );
       expect(result.firstName).toBe('Updated');
     });
 
@@ -174,15 +197,26 @@ describe('UserService – tenant scoping', () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
 
       await expect(
-        service.update(USER_ID, { firstName: 'Hacker' }, mockTenantScope(TENANT_B)),
+        service.update(
+          USER_ID,
+          { firstName: 'Hacker' },
+          mockTenantScope(TENANT_B),
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should allow SUPERADMIN to update any user', async () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
-      mockUserRepo.update.mockResolvedValue({ ...baseUser, firstName: 'Admin' } as any);
+      mockUserRepo.update.mockResolvedValue({
+        ...baseUser,
+        firstName: 'Admin',
+      } as any);
 
-      const result = await service.update(USER_ID, { firstName: 'Admin' }, mockSuperadminScope());
+      const result = await service.update(
+        USER_ID,
+        { firstName: 'Admin' },
+        mockSuperadminScope(),
+      );
       expect(result.firstName).toBe('Admin');
     });
 
@@ -194,6 +228,7 @@ describe('UserService – tenant scoping', () => {
       await service.update(USER_ID, input as any, mockTenantScope(TENANT_A));
 
       // The service should have deleted id_tenant from the input before passing to repo
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.update).toHaveBeenCalledWith(
         USER_ID,
         expect.not.objectContaining({ id_tenant: expect.anything() }),
@@ -216,6 +251,7 @@ describe('UserService – tenant scoping', () => {
         preferredThemeMode: 'DARK',
       } as any);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.update).toHaveBeenCalledWith(USER_ID, {
         preferredThemeMode: 'DARK',
       });
@@ -228,6 +264,7 @@ describe('UserService – tenant scoping', () => {
       await expect(
         service.updateMe(USER_ID, { preferredThemeMode: 'DARK' } as any),
       ).rejects.toThrow(NotFoundException);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockUserRepo.update).not.toHaveBeenCalled();
     });
   });
@@ -238,9 +275,14 @@ describe('UserService – tenant scoping', () => {
   describe('remove', () => {
     it('should remove when tenant matches', async () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
-      mockUserRepo.softDelete.mockResolvedValue({ ...baseUser, isDeleted: true } as any);
+      mockUserRepo.softDelete.mockResolvedValue({
+        ...baseUser,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(USER_ID, mockTenantScope(TENANT_A))).resolves.not.toThrow();
+      await expect(
+        service.remove(USER_ID, mockTenantScope(TENANT_A)),
+      ).resolves.not.toThrow();
     });
 
     it('should throw NotFoundException for cross-tenant remove', async () => {
@@ -253,9 +295,14 @@ describe('UserService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to remove any user', async () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
-      mockUserRepo.softDelete.mockResolvedValue({ ...baseUser, isDeleted: true } as any);
+      mockUserRepo.softDelete.mockResolvedValue({
+        ...baseUser,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(USER_ID, mockSuperadminScope())).resolves.not.toThrow();
+      await expect(
+        service.remove(USER_ID, mockSuperadminScope()),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -267,7 +314,10 @@ describe('UserService – tenant scoping', () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
       mockUserRepo.findAgentPayments.mockResolvedValue([]);
 
-      const result = await service.findAgentPayments(USER_ID, mockTenantScope(TENANT_A));
+      const result = await service.findAgentPayments(
+        USER_ID,
+        mockTenantScope(TENANT_A),
+      );
       expect(result).toEqual([]);
     });
 
@@ -283,7 +333,10 @@ describe('UserService – tenant scoping', () => {
       mockUserRepo.findById.mockResolvedValue(baseUser as any);
       mockUserRepo.findAgentPayments.mockResolvedValue([]);
 
-      const result = await service.findAgentPayments(USER_ID, mockSuperadminScope());
+      const result = await service.findAgentPayments(
+        USER_ID,
+        mockSuperadminScope(),
+      );
       expect(result).toEqual([]);
     });
   });
