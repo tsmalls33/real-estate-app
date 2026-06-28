@@ -12,7 +12,12 @@
   --border-strong:     #D3D8E1;
   --text:              #1B2230;
   --text-muted:        #6B7280;
-  --text-faint:        #AEB4BF;
+  --text-faint:        #6B7178;
+
+  /* Keyboard focus indicator. Deliberately NOT brand-derived: tenant brand is
+     unbounded for contrast, and the issue calls out brand-primary outlines as
+     failing AA. A fixed accessible blue that reads on both surfaces. */
+  --focus-ring:        #2563EB;
 
   --brand-primary-soft:    rgba(44, 51, 80, 0.08);
   --brand-primary-tint:    #E7E9F0;
@@ -48,7 +53,9 @@
   --border-strong:     #333A45;
   --text:              #E6E9EF;
   --text-muted:        #9AA1AD;
-  --text-faint:        #5B626D;
+  --text-faint:        #8C92A0;
+
+  --focus-ring:        #8AB4FF;
 
   /* Neutral brand fallback for the platform console in dark mode (tenants
      override brand inline with their own hex; SUPERADMIN falls back here).

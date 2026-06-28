@@ -7,9 +7,10 @@ import { UserRoles } from '@RealEstate/types';
 import { useSession } from '../../shared/theme/ThemeContext';
 import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
+import { focusRing } from '../../shared/styles/focusRing';
 
 const navItem = (isActive: boolean) =>
-  `relative flex items-center gap-[11px] py-[9px] px-[11px] rounded-[7px] text-[13px] cursor-pointer no-underline mb-[2px] transition-[background-color,color] duration-[120ms] ease-[ease] hover:bg-hover hover:text-text ${
+  `relative flex items-center gap-[11px] py-[9px] px-[11px] rounded-[7px] text-[13px] cursor-pointer no-underline mb-[2px] transition-[background-color,color] duration-[120ms] ease-[ease] hover:bg-hover hover:text-text ${focusRing} ${
     isActive
       ? "bg-hover text-text font-semibold before:content-[''] before:absolute before:left-0 before:top-[7px] before:bottom-[7px] before:w-[2px] before:rounded-[2px] before:bg-brand-secondary"
       : 'text-text-muted'
@@ -42,7 +43,7 @@ export default function AdminShell() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-2">
-      <header className="h-[56px] flex items-stretch bg-surface border-b border-border">
+      <header role="banner" className="h-[56px] flex items-stretch bg-surface border-b border-border">
         <div className="w-[236px] flex-shrink-0 flex items-center gap-[11px] px-[16px] shadow-[inset_0_-2px_0_var(--brand-secondary)] max-admin:w-auto max-admin:px-[12px] max-admin:shadow-none">
           <div className="w-[30px] h-[30px] rounded-[8px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold text-[14px] tracking-[-0.02em] flex-shrink-0">{tenantName[0]?.toUpperCase() ?? '·'}</div>
           <div>
@@ -72,7 +73,7 @@ export default function AdminShell() {
               <div className="text-[10px] text-text-muted tracking-[0.04em] uppercase">{roleLabel}</div>
             </div>
             <div className="w-[30px] h-[30px] rounded-full bg-brand-primary text-brand-on-primary grid place-items-center font-bold text-[11px] flex-shrink-0">{initials(me?.firstName, me?.lastName, me?.email)}</div>
-            <button className="bg-transparent border border-border-strong text-text-muted text-[11px] py-[7px] px-[12px] rounded-[999px] cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text hover:border-text-muted" onClick={signOut}>{t('nav.signOut')}</button>
+            <button className={`bg-transparent border border-border-strong text-text-muted text-[11px] py-[7px] px-[12px] rounded-[999px] cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text hover:border-text-muted ${focusRing}`} onClick={signOut}>{t('nav.signOut')}</button>
           </div>
         </div>
       </header>
@@ -97,16 +98,16 @@ export default function AdminShell() {
           <nav className="flex flex-col max-admin:flex-1">
             <div className="text-[9px] tracking-[0.15em] text-text-faint uppercase pt-[12px] px-[10px] pb-[6px] font-semibold">{t('nav.workspace')}</div>
             <NavLink to="/admin" end className={({isActive}) => navItem(isActive)}>
-              <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGauge} /></span> {t('nav.dashboard')}
+              <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGauge} aria-hidden /></span> {t('nav.dashboard')}
             </NavLink>
             {isSuper && (
               <NavLink to="/admin/tenants" className={({isActive}) => navItem(isActive)}>
-                <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faBuilding} /></span> {t('nav.tenants')}
+                <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faBuilding} aria-hidden /></span> {t('nav.tenants')}
               </NavLink>
             )}
             <div className="text-[9px] tracking-[0.15em] text-text-faint uppercase pt-[12px] px-[10px] pb-[6px] font-semibold">{t('nav.account')}</div>
             <NavLink to="/admin/settings" className={({isActive}) => navItem(isActive)}>
-              <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGear} /></span> {t('nav.settings')}
+              <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGear} aria-hidden /></span> {t('nav.settings')}
             </NavLink>
           </nav>
 
