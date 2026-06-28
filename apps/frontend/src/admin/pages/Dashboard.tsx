@@ -74,8 +74,10 @@ export default function Dashboard() {
       <p className="text-xs text-text-muted mt-1 mb-4">{scopeLabel}</p>
       {error && <ErrorPanel variant={error.variant} {...(error.variant === 'api-error' ? { message: error.message } : {})} />}
       {!error && data === null && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1">
-          {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
+        <div role="status" aria-label={t('common.loading')}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1">
+            {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
+          </div>
         </div>
       )}
       {!error && data !== null && (

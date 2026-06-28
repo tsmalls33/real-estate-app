@@ -19,8 +19,8 @@ describe('Skeleton', () => {
     expect(el).toHaveClass('h-[14px]', 'w-full');
   });
 
-  it('has role="status" and aria-label', () => {
-    render(<Skeleton />);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+  it('renders aria-hidden on skeleton divs', () => {
+    const { container } = render(<Skeleton />);
+    expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
   });
 });

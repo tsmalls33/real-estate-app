@@ -30,6 +30,7 @@ export default function ErrorBanner({ message, variant = 'error', onDismiss }: P
       <span className="flex-1">{message}</span>
       {onDismiss && (
         <button
+          type="button"
           onClick={onDismiss}
           className="bg-transparent border-0 cursor-pointer opacity-60 hover:opacity-100 p-0 leading-none"
           aria-label={t('common.close')}
