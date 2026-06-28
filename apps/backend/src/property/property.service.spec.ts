@@ -51,7 +51,10 @@ describe('PropertyService – tenant scoping', () => {
     it('should return property when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
 
-      const result = await service.findOne(PROPERTY_ID, mockTenantScope(TENANT_A));
+      const result = await service.findOne(
+        PROPERTY_ID,
+        mockTenantScope(TENANT_A),
+      );
       expect(result).toEqual(baseProperty);
     });
 
@@ -77,9 +80,16 @@ describe('PropertyService – tenant scoping', () => {
   describe('update', () => {
     it('should update when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
-      mockRepo.update.mockResolvedValue({ ...baseProperty, propertyName: 'Updated' } as any);
+      mockRepo.update.mockResolvedValue({
+        ...baseProperty,
+        propertyName: 'Updated',
+      } as any);
 
-      const result = await service.update(PROPERTY_ID, { propertyName: 'Updated' }, mockTenantScope(TENANT_A));
+      const result = await service.update(
+        PROPERTY_ID,
+        { propertyName: 'Updated' },
+        mockTenantScope(TENANT_A),
+      );
       expect(result.propertyName).toBe('Updated');
     });
 
@@ -87,15 +97,26 @@ describe('PropertyService – tenant scoping', () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
 
       await expect(
-        service.update(PROPERTY_ID, { propertyName: 'Hacked' }, mockTenantScope(TENANT_B)),
+        service.update(
+          PROPERTY_ID,
+          { propertyName: 'Hacked' },
+          mockTenantScope(TENANT_B),
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should allow SUPERADMIN to update any property', async () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
-      mockRepo.update.mockResolvedValue({ ...baseProperty, propertyName: 'Admin Updated' } as any);
+      mockRepo.update.mockResolvedValue({
+        ...baseProperty,
+        propertyName: 'Admin Updated',
+      } as any);
 
-      const result = await service.update(PROPERTY_ID, { propertyName: 'Admin Updated' }, mockSuperadminScope());
+      const result = await service.update(
+        PROPERTY_ID,
+        { propertyName: 'Admin Updated' },
+        mockSuperadminScope(),
+      );
       expect(result.propertyName).toBe('Admin Updated');
     });
   });
@@ -106,9 +127,14 @@ describe('PropertyService – tenant scoping', () => {
   describe('remove', () => {
     it('should remove when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
-      mockRepo.softDelete.mockResolvedValue({ ...baseProperty, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseProperty,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(PROPERTY_ID, mockTenantScope(TENANT_A))).resolves.not.toThrow();
+      await expect(
+        service.remove(PROPERTY_ID, mockTenantScope(TENANT_A)),
+      ).resolves.not.toThrow();
     });
 
     it('should throw NotFoundException for cross-tenant remove', async () => {
@@ -121,9 +147,14 @@ describe('PropertyService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to remove any property', async () => {
       mockRepo.findById.mockResolvedValue(baseProperty as any);
-      mockRepo.softDelete.mockResolvedValue({ ...baseProperty, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseProperty,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(PROPERTY_ID, mockSuperadminScope())).resolves.not.toThrow();
+      await expect(
+        service.remove(PROPERTY_ID, mockSuperadminScope()),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -167,20 +198,29 @@ describe('PropertyService – tenant scoping', () => {
     };
 
     it('should auto-set id_tenant from TENANT scope (ignoring dto value)', async () => {
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_property: 'new-1' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_property: 'new-1' }) as any,
+      );
 
-      await service.create({ ...dto, id_tenant: TENANT_B }, mockTenantScope(TENANT_A));
+      await service.create(
+        { ...dto, id_tenant: TENANT_B },
+        mockTenantScope(TENANT_A),
+      );
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_A }),
       );
     });
 
     it('should use body id_tenant for SUPERADMIN', async () => {
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_property: 'new-2' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_property: 'new-2' }) as any,
+      );
 
       await service.create(dto, mockSuperadminScope());
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_A }),
       );
@@ -188,7 +228,10 @@ describe('PropertyService – tenant scoping', () => {
 
     it('should throw BadRequestException when SUPERADMIN provides no id_tenant', async () => {
       await expect(
-        service.create({ propertyName: 'X', propertyAddress: 'Y' }, mockSuperadminScope()),
+        service.create(
+          { propertyName: 'X', propertyAddress: 'Y' },
+          mockSuperadminScope(),
+        ),
       ).rejects.toThrow(BadRequestException);
     });
   });

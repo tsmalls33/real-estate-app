@@ -38,10 +38,7 @@ describe('CostService – tenant scoping', () => {
     } as unknown as jest.Mocked<CostRepository>;
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CostService,
-        { provide: CostRepository, useValue: mockRepo },
-      ],
+      providers: [CostService, { provide: CostRepository, useValue: mockRepo }],
     }).compile();
 
     service = module.get<CostService>(CostService);
@@ -57,6 +54,7 @@ describe('CostService – tenant scoping', () => {
 
       await service.findAll({} as any, scope);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.findAll).toHaveBeenCalledWith(expect.anything(), scope);
     });
   });
@@ -95,7 +93,12 @@ describe('CostService – tenant scoping', () => {
   // create
   // ---------------------------------------------------------------------------
   describe('create', () => {
-    const dto = { costType: 'MAINTENANCE' as any, date: '2026-01-15', amount: 100, id_property: PROPERTY_ID };
+    const dto = {
+      costType: 'MAINTENANCE' as any,
+      date: '2026-01-15',
+      amount: 100,
+      id_property: PROPERTY_ID,
+    };
 
     it('should verify property tenant and allow matching tenant', async () => {
       mockRepo.findPropertyTenant.mockResolvedValue(TENANT_A);
@@ -133,7 +136,11 @@ describe('CostService – tenant scoping', () => {
       mockRepo.findPropertyTenant.mockResolvedValue(TENANT_A);
       mockRepo.update.mockResolvedValue({ ...baseCost, amount: 200 } as any);
 
-      const result = await service.update(COST_ID, { amount: 200 }, mockTenantScope(TENANT_A));
+      const result = await service.update(
+        COST_ID,
+        { amount: 200 },
+        mockTenantScope(TENANT_A),
+      );
       expect(result.amount).toBe(200);
     });
 
@@ -151,7 +158,11 @@ describe('CostService – tenant scoping', () => {
       mockRepo.findPropertyTenant.mockResolvedValue(TENANT_A);
       mockRepo.update.mockResolvedValue({ ...baseCost, amount: 200 } as any);
 
-      const result = await service.update(COST_ID, { amount: 200 }, mockSuperadminScope());
+      const result = await service.update(
+        COST_ID,
+        { amount: 200 },
+        mockSuperadminScope(),
+      );
       expect(result.amount).toBe(200);
     });
   });
@@ -163,9 +174,14 @@ describe('CostService – tenant scoping', () => {
     it('should remove when property tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseCost as any);
       mockRepo.findPropertyTenant.mockResolvedValue(TENANT_A);
-      mockRepo.softDelete.mockResolvedValue({ ...baseCost, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseCost,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(COST_ID, mockTenantScope(TENANT_A))).resolves.not.toThrow();
+      await expect(
+        service.remove(COST_ID, mockTenantScope(TENANT_A)),
+      ).resolves.not.toThrow();
     });
 
     it('should throw NotFoundException for cross-tenant remove', async () => {
@@ -180,9 +196,14 @@ describe('CostService – tenant scoping', () => {
     it('should allow SUPERADMIN to remove any cost', async () => {
       mockRepo.findById.mockResolvedValue(baseCost as any);
       mockRepo.findPropertyTenant.mockResolvedValue(TENANT_A);
-      mockRepo.softDelete.mockResolvedValue({ ...baseCost, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseCost,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(COST_ID, mockSuperadminScope())).resolves.not.toThrow();
+      await expect(
+        service.remove(COST_ID, mockSuperadminScope()),
+      ).resolves.not.toThrow();
     });
   });
 });

@@ -94,8 +94,12 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     await this.userRepository.update(id_user, {
-      ...(input.preferredThemeMode !== undefined && { preferredThemeMode: input.preferredThemeMode }),
-      ...(input.language !== undefined && { preferredLanguage: input.language }),
+      ...(input.preferredThemeMode !== undefined && {
+        preferredThemeMode: input.preferredThemeMode,
+      }),
+      ...(input.language !== undefined && {
+        preferredLanguage: input.language,
+      }),
     });
     return this.findMe(id_user);
   }
@@ -146,7 +150,8 @@ export class UserService {
     // Strip `id_tenant` via destructuring instead of mutating `input`.
     const updateInput =
       scope?.type === 'TENANT'
-        ? (({ id_tenant: _ignored, ...rest }) => rest)(input)
+        ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          (({ id_tenant: _ignored, ...rest }) => rest)(input)
         : input;
 
     return await this.userRepository.update(id_user, updateInput);

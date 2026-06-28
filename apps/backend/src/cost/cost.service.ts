@@ -8,14 +8,18 @@ import { CostRepository } from './cost.repository';
 import { CreateCostDto } from './dto/create-cost.dto';
 import { GetCostsQueryParams } from './dto/get-costs-query-params';
 import { UpdateCostDto } from './dto/update-cost.dto';
-import { type TenantScope, assertTenantMatch } from '../common/types/tenant-scope';
+import {
+  type TenantScope,
+  assertTenantMatch,
+} from '../common/types/tenant-scope';
 
 @Injectable()
 export class CostService {
-  constructor(private readonly costRepository: CostRepository) { }
+  constructor(private readonly costRepository: CostRepository) {}
 
   async create(data: CreateCostDto, scope?: TenantScope) {
-    let { id_property, id_reservation } = data;
+    let id_property = data.id_property;
+    const id_reservation = data.id_reservation;
 
     if (id_reservation) {
       const reservationProperty =
@@ -100,11 +104,7 @@ export class CostService {
     // If the update moves the cost to a different property, the NEW property
     // must also be in-scope. Prevents a tenant-scoped caller from relocating
     // their own cost onto another tenant's property.
-    if (
-      scope &&
-      dto.id_property &&
-      dto.id_property !== existing.id_property
-    ) {
+    if (scope && dto.id_property && dto.id_property !== existing.id_property) {
       await this.verifyPropertyTenant(dto.id_property, scope);
     }
 
@@ -156,7 +156,8 @@ export class CostService {
   }
 
   private async verifyPropertyTenant(id_property: string, scope: TenantScope) {
-    const propertyTenant = await this.costRepository.findPropertyTenant(id_property);
+    const propertyTenant =
+      await this.costRepository.findPropertyTenant(id_property);
     assertTenantMatch(scope, propertyTenant);
   }
 }

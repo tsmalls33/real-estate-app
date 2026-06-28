@@ -6,8 +6,8 @@ export class PropertyResponseDto {
   propertyAddress!: string;
   propertyDescription?: string | null;
   coverImage?: string | null;
-  agentFeePercentage?: any | null;
-  salePrice?: any | null;
+  agentFeePercentage?: any;
+  salePrice?: any;
   saleType?: SaleType | null;
   rentalMode?: RentalMode | null;
   id_owner?: string | null;
