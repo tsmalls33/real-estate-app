@@ -43,7 +43,7 @@ export default function AdminShell() {
   return (
     <div className="flex flex-col min-h-screen bg-surface-2">
       <header className="h-[56px] flex items-stretch bg-surface border-b border-border">
-        <div className="w-[236px] flex-shrink-0 flex items-center gap-[11px] px-[16px] shadow-[inset_0_-2px_0_var(--brand-secondary)] max-[899px]:w-auto max-[899px]:px-[12px] max-[899px]:shadow-none">
+        <div className="w-[236px] flex-shrink-0 flex items-center gap-[11px] px-[16px] shadow-[inset_0_-2px_0_var(--brand-secondary)] max-admin:w-auto max-admin:px-[12px] max-admin:shadow-none">
           <div className="w-[30px] h-[30px] rounded-[8px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold text-[14px] tracking-[-0.02em] flex-shrink-0">{tenantName[0]?.toUpperCase() ?? '·'}</div>
           <div>
             <div className="text-[13.5px] font-bold text-text tracking-[-0.01em] leading-[1.1]">{tenantName}</div>
@@ -54,20 +54,20 @@ export default function AdminShell() {
         <button
           type="button"
           aria-label={t('shell.openMenu')}
-          className="hidden max-[899px]:grid max-[899px]:order-first place-items-center w-[44px] flex-shrink-0 text-text-muted hover:text-text"
+          className="hidden max-admin:grid max-admin:order-first place-items-center w-[44px] flex-shrink-0 text-text-muted hover:text-text"
           onClick={() => setDrawerOpen(true)}
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
 
-        <div className="flex-1 flex items-center justify-between px-[24px] min-w-0 max-[899px]:hidden">
+        <div className="flex-1 flex items-center justify-between px-[24px] min-w-0 max-admin:hidden">
           <div>
             <span className="text-[13px] font-bold text-text tracking-[-0.01em]">{pageMeta.title}</span>
             <span className="text-[11px] text-text-muted tracking-[0.06em] uppercase ml-[8px]">{pageMeta.sub}</span>
           </div>
 
           <div className="flex items-center gap-[12px]">
-            <div className="text-right leading-[1.15] max-[899px]:hidden">
+            <div className="text-right leading-[1.15] max-admin:hidden">
               <div className="text-[12px] font-semibold text-text">{me?.firstName ?? me?.email}</div>
               <div className="text-[10px] text-text-muted tracking-[0.04em] uppercase">{roleLabel}</div>
             </div>
@@ -80,20 +80,21 @@ export default function AdminShell() {
       <div className="flex-1 flex gap-[12px] p-[12px] min-h-0">
         {drawerOpen && (
           <div
-            className="hidden max-[899px]:block fixed inset-0 z-40 bg-black/40"
+            className="hidden max-admin:block fixed inset-0 z-40 bg-black/40"
             aria-hidden="true"
+            data-testid="drawer-backdrop"
             onClick={() => setDrawerOpen(false)}
           />
         )}
-        <aside className={`w-[224px] flex-shrink-0 bg-surface border border-border rounded-[12px] p-[10px] max-[899px]:fixed max-[899px]:inset-y-0 max-[899px]:left-0 max-[899px]:z-50 max-[899px]:w-[260px] max-[899px]:rounded-none max-[899px]:flex max-[899px]:flex-col max-[899px]:transition-transform max-[899px]:duration-[200ms] ${drawerOpen ? 'max-[899px]:translate-x-0' : 'max-[899px]:-translate-x-full'}`}>
-          <div className="hidden max-[899px]:flex items-center gap-[11px] px-[10px] pb-[14px] mb-[4px] border-b border-border">
+        <aside className={`w-[224px] flex-shrink-0 bg-surface border border-border rounded-[12px] p-[10px] max-admin:fixed max-admin:inset-y-0 max-admin:left-0 max-admin:z-50 max-admin:w-[260px] max-admin:rounded-none max-admin:flex max-admin:flex-col max-admin:transition-transform max-admin:duration-[200ms] ${drawerOpen ? 'max-admin:translate-x-0' : 'max-admin:-translate-x-full max-admin:invisible'}`}>
+          <div className="hidden max-admin:flex items-center gap-[11px] px-[10px] pb-[14px] mb-[4px] border-b border-border">
             <div className="w-[30px] h-[30px] rounded-[8px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold text-[14px] tracking-[-0.02em] flex-shrink-0">{tenantName[0]?.toUpperCase() ?? '·'}</div>
             <div className="min-w-0">
               <div className="text-[13.5px] font-bold text-text tracking-[-0.01em] leading-[1.1] truncate">{tenantName}</div>
               <div className="text-[9px] text-text-faint tracking-[0.15em] uppercase mt-[2px]">{isSuper ? t('shell.platformConsole') : t('shell.agencyPortal')}</div>
             </div>
           </div>
-          <nav className="flex flex-col max-[899px]:flex-1">
+          <nav className="flex flex-col max-admin:flex-1">
             <div className="text-[9px] tracking-[0.15em] text-text-faint uppercase pt-[12px] px-[10px] pb-[6px] font-semibold">{t('nav.workspace')}</div>
             <NavLink to="/admin" end className={({isActive}) => navItem(isActive)}>
               <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGauge} /></span> {t('nav.dashboard')}
@@ -109,7 +110,7 @@ export default function AdminShell() {
             </NavLink>
           </nav>
 
-          <div className="hidden max-[899px]:block px-[10px] pt-[14px] mt-[4px] border-t border-border">
+          <div className="hidden max-admin:block px-[10px] pt-[14px] mt-[4px] border-t border-border">
             <div className="flex items-center gap-[10px] pb-[12px]">
               <div className="w-[32px] h-[32px] rounded-full bg-brand-primary text-brand-on-primary grid place-items-center font-bold text-[11px] flex-shrink-0">{initials(me?.firstName, me?.lastName, me?.email)}</div>
               <div className="leading-[1.15] min-w-0">

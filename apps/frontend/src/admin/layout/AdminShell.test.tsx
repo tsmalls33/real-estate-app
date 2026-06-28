@@ -32,9 +32,7 @@ function renderShell(role: UserRoles) {
   );
 }
 
-// The off-canvas backdrop is only in the DOM while the drawer is open, so its
-// presence is the cleanest proxy for the drawer's open state.
-const backdrop = (container: HTMLElement) => container.querySelector('[class*="bg-black"]');
+const backdrop = () => screen.queryByTestId('drawer-backdrop');
 
 beforeEach(() => {
   clearAuth();
@@ -60,41 +58,41 @@ describe('AdminShell', () => {
   });
 
   it('opens the sidebar drawer when the hamburger is tapped', async () => {
-    const { container } = renderShell(UserRoles.ADMIN);
+    renderShell(UserRoles.ADMIN);
     await screen.findByRole('link', { name: /settings/i });
 
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
     expect(screen.getByRole('complementary').className).toContain('-translate-x-full');
 
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
 
-    expect(backdrop(container)).not.toBeNull();
+    expect(backdrop()).not.toBeNull();
     expect(screen.getByRole('complementary').className).toContain('translate-x-0');
   });
 
   it('dismisses the drawer on backdrop click', async () => {
-    const { container } = renderShell(UserRoles.ADMIN);
+    renderShell(UserRoles.ADMIN);
     await screen.findByRole('button', { name: /open menu/i });
 
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
-    const overlay = backdrop(container);
+    const overlay = backdrop();
     expect(overlay).not.toBeNull();
 
     await userEvent.click(overlay as Element);
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
   });
 
   it('dismisses the drawer on route change', async () => {
-    const { container } = renderShell(UserRoles.ADMIN);
+    renderShell(UserRoles.ADMIN);
     await screen.findByRole('button', { name: /open menu/i });
 
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
-    expect(backdrop(container)).not.toBeNull();
+    expect(backdrop()).not.toBeNull();
 
     await userEvent.click(screen.getByRole('link', { name: /settings/i }));
 
     expect(await screen.findByText('settings page')).toBeInTheDocument();
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
   });
 
   it('signs out: clears tokens and navigates to /signin', async () => {

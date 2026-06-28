@@ -29,7 +29,7 @@ type ClassSet = {
 // secondary brand); the variant selects the matching class set.
 const CLASSES: Record<Variant, ClassSet> = {
   admin: {
-    grid: 'grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-[599px]:grid-cols-1',
+    grid: 'grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1',
     card: 'bg-surface border border-border rounded-radius py-4 px-[18px] shadow-sm flex flex-col gap-2',
     name: 'text-[14px] font-bold text-text tracking-[-0.01em]',
     addr: 'text-xs text-text-muted',
@@ -40,7 +40,7 @@ const CLASSES: Record<Variant, ClassSet> = {
       'border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface',
   },
   client: {
-    grid: 'grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-[599px]:grid-cols-1',
+    grid: 'grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-card:grid-cols-1',
     card: 'bg-surface border border-border rounded-[14px] py-[18px] px-5 shadow-sm flex flex-col gap-2.5',
     name: 'text-[15px] font-bold text-text tracking-[-0.01em]',
     addr: 'text-xs text-text-muted',

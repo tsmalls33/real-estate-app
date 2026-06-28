@@ -32,9 +32,7 @@ function renderShell() {
   );
 }
 
-// The off-canvas backdrop is only in the DOM while the drawer is open, so its
-// presence is the cleanest proxy for the drawer's open state.
-const backdrop = (container: HTMLElement) => container.querySelector('[class*="bg-black"]');
+const backdrop = () => screen.queryByTestId('drawer-backdrop');
 
 beforeEach(() => {
   clearAuth();
@@ -54,7 +52,8 @@ describe('ClientShell', () => {
     expect(await screen.findByText('overview page')).toBeInTheDocument();
 
     // Settings appears in both the desktop tab row and the mobile drawer; either navigates.
-    await userEvent.click(screen.getAllByRole('link', { name: /settings/i })[0]);
+    const settingsLink = screen.getAllByRole('link', { name: /settings/i }).find(l => l.getAttribute('href')?.endsWith('/client/settings'));
+    await userEvent.click(settingsLink!);
     expect(await screen.findByText('settings page')).toBeInTheDocument();
   });
 
@@ -68,35 +67,36 @@ describe('ClientShell', () => {
   });
 
   it('opens the drawer when the hamburger is tapped', async () => {
-    const { container } = renderShell();
+    renderShell();
     await screen.findByText('overview page');
 
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
-    expect(backdrop(container)).not.toBeNull();
+    expect(backdrop()).not.toBeNull();
   });
 
   it('dismisses the drawer on backdrop click', async () => {
-    const { container } = renderShell();
+    renderShell();
     await screen.findByRole('button', { name: /open menu/i });
 
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
-    const overlay = backdrop(container);
+    const overlay = backdrop();
     expect(overlay).not.toBeNull();
 
     await userEvent.click(overlay as Element);
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
   });
 
   it('dismisses the drawer on route change', async () => {
-    const { container } = renderShell();
+    renderShell();
     await screen.findByRole('button', { name: /open menu/i });
 
     await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
-    expect(backdrop(container)).not.toBeNull();
+    expect(backdrop()).not.toBeNull();
 
-    await userEvent.click(screen.getAllByRole('link', { name: /settings/i })[0]);
+    const settingsLink = screen.getAllByRole('link', { name: /settings/i }).find(l => l.getAttribute('href')?.endsWith('/client/settings'));
+    await userEvent.click(settingsLink!);
     expect(await screen.findByText('settings page')).toBeInTheDocument();
-    expect(backdrop(container)).toBeNull();
+    expect(backdrop()).toBeNull();
   });
 });
