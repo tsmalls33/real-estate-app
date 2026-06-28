@@ -25,6 +25,11 @@ export const authApi = {
       '/auth/signup',
       input,
     ).then(r => r.data),
+
+  // Revoke the refresh token server-side on sign-out. Best-effort: callers
+  // clear local state regardless of the result.
+  logout: (refreshToken: string) =>
+    api.post<Envelope<null>>('/auth/logout', { refreshToken }).then(() => undefined),
 };
 
 export const userApi = {

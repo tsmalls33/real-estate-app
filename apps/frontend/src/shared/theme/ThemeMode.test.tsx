@@ -7,7 +7,7 @@ vi.mock('../api/services', () => ({
   userApi: { me: vi.fn(), updateThemeMode: vi.fn(() => Promise.resolve()) },
   propertyApi: { list: vi.fn() },
   tenantApi: { list: vi.fn(), updateTheme: vi.fn(), assignTheme: vi.fn() },
-  authApi: { signin: vi.fn(), signup: vi.fn() },
+  authApi: { signin: vi.fn(), signup: vi.fn(), logout: vi.fn().mockResolvedValue(undefined) },
 }));
 
 import { userApi } from '../api/services';

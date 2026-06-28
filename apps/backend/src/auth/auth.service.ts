@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInDto, SignInResponseDto } from './dto/signin.dto';
@@ -123,6 +124,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
+    // Reject tokens revoked via /auth/logout (denylist keyed by sha256 hash).
+    const revoked = await this.prismaService.revokedRefreshToken.findUnique({
+      where: { tokenHash: this.hashToken(refreshToken) },
+    });
+    if (revoked) {
+      throw new UnauthorizedException('Refresh token has been revoked');
+    }
+
     const currentUser = await this.userService.findOne(verifiedToken.sub);
     const payload = {
       sub: currentUser.id_user,
@@ -147,6 +156,34 @@ export class AuthService {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     };
+  }
+
+  // Best-effort sign-out: revoke the refresh token server-side. Public endpoint,
+  // so verify the signature first and denylist only valid tokens — this stops an
+  // unauthenticated caller from flooding the (unpruned) table with garbage.
+  // Idempotent: a repeated logout of the same token is a no-op.
+  async logout(refreshToken: string): Promise<void> {
+    if (!this.jwtRefreshSecret) {
+      throw new Error('JWT secrets are not configured');
+    }
+
+    try {
+      await this.verifyToken(this.jwtRefreshSecret, refreshToken);
+    } catch {
+      // Invalid/expired token: nothing to revoke. Succeed silently (no info leak).
+      return;
+    }
+
+    const tokenHash = this.hashToken(refreshToken);
+    await this.prismaService.revokedRefreshToken.upsert({
+      where: { tokenHash },
+      create: { tokenHash },
+      update: {},
+    });
+  }
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
   }
 
   async generateToken(

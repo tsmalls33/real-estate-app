@@ -238,6 +238,16 @@ model FeeRule {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
+// Refresh-token denylist (#42). On logout the refresh token's sha256 hash is
+// stored here; /auth/refresh rejects any token whose hash is present. The hash
+// is a global key — no tenant scoping. Pruning of naturally-expired rows is out
+// of scope.
+model RevokedRefreshToken {
+  id_revoked_refresh_token String   @id @default(uuid())
+  tokenHash                String   @unique
+  createdAt                DateTime @default(now())
+}
+
 enum UserRoles {
   ADMIN
   SUPERADMIN
