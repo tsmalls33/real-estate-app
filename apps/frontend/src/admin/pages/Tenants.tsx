@@ -34,7 +34,7 @@ export default function Tenants() {
         </div>
       )}
       {!error && tenants && tenants.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-[599px]:grid-cols-1">
           {tenants.map(tenant => (
             <div
               key={tenant.id_tenant}

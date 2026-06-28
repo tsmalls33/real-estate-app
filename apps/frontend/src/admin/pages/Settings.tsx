@@ -73,15 +73,15 @@ export default function Settings() {
       <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
         <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">{t('settings.profile.title')}</h3>
         <p className="text-xs text-text-muted mb-4 mt-0">{t('settings.profile.description')}</p>
-        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+        <div className="grid grid-cols-[140px_1fr] max-[599px]:grid-cols-1 gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
           <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.name')}</div>
           <div className="text-text">{[me?.firstName, me?.lastName].filter(Boolean).join(' ') || t('common.emDash')}</div>
         </div>
-        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+        <div className="grid grid-cols-[140px_1fr] max-[599px]:grid-cols-1 gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
           <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.email')}</div>
           <div className="text-text">{me?.email}</div>
         </div>
-        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+        <div className="grid grid-cols-[140px_1fr] max-[599px]:grid-cols-1 gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
           <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.profile.tenant')}</div>
           <div className="text-text">{tenant?.name ?? t('common.emDash')}</div>
         </div>
@@ -90,11 +90,11 @@ export default function Settings() {
       <section className="bg-surface border border-border rounded-radius px-6 py-[22px]">
         <h3 className="text-[13px] font-bold tracking-[-0.01em] text-text mb-1 mt-0">{t('settings.appearance.title')}</h3>
         <p className="text-xs text-text-muted mb-4 mt-0">{t('settings.appearance.descriptionAdmin')}</p>
-        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+        <div className="grid grid-cols-[140px_1fr] max-[599px]:grid-cols-1 gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
           <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.appearance.theme')}</div>
           <div className="text-text"><ThemeToggle /></div>
         </div>
-        <div className="grid grid-cols-[140px_1fr] gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
+        <div className="grid grid-cols-[140px_1fr] max-[599px]:grid-cols-1 gap-3 items-center text-[13px] py-2 border-t border-border first-of-type:border-t-0 first-of-type:pt-0">
           <div className="text-text-muted text-[11px] tracking-[0.06em] uppercase font-semibold">{t('settings.language.label')}</div>
           <div className="text-text"><LanguageToggle /></div>
         </div>
@@ -111,9 +111,9 @@ export default function Settings() {
               const draft = hexDrafts[key];
               const valid = HEX_RE.test(normalizeHex(draft));
               return (
-                <div key={key} className="grid grid-cols-[160px_1fr] items-center gap-3">
+                <div key={key} className="grid grid-cols-[160px_1fr] max-[599px]:grid-cols-1 items-center gap-3">
                   <label htmlFor={`${key}-picker`} className="text-[11px] font-semibold text-text-muted tracking-[0.06em] uppercase">{label}</label>
-                  <div className="flex items-center gap-[10px]">
+                  <div className="flex flex-wrap items-center gap-[10px]">
                     <input id={`${key}-picker`} type="color" value={colors[key]}
                            className="w-[56px] h-[34px] p-0 border border-border-strong rounded-radius-sm bg-surface cursor-pointer"
                            onChange={e => onPicker(key, e.target.value)} />

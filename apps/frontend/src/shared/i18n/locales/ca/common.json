@@ -76,7 +76,8 @@
     "agencyPortal": "Portal d'agència",
     "ownerPortal": "Portal del propietari",
     "welcomeBack": "Benvingut de nou, {{name}}",
-    "welcomeBackGeneric": "Benvingut de nou"
+    "welcomeBackGeneric": "Benvingut de nou",
+    "openMenu": "Obrir menú"
   },
   "admin": {
     "dashboard": {

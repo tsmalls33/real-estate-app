@@ -16,7 +16,7 @@ export default function ClientShell() {
 
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
-      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border">
+      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border max-[699px]:flex-wrap max-[699px]:gap-3 max-[699px]:px-4">
         <div className="flex items-center gap-[12px]">
           <div className="w-[36px] h-[36px] rounded-[10px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold tracking-[-0.02em]">{brandName[0]?.toUpperCase() ?? '·'}</div>
           <div>
@@ -25,7 +25,7 @@ export default function ClientShell() {
           </div>
         </div>
 
-        <nav className="flex gap-[4px]">
+        <nav className="flex gap-[4px] max-[699px]:order-last max-[699px]:w-full max-[699px]:overflow-x-auto">
           <NavLink
             to="/client"
             end
@@ -60,12 +60,12 @@ export default function ClientShell() {
         </div>
       </header>
 
-      <div className="pt-[24px] px-[32px] pb-[8px]">
+      <div className="pt-[24px] px-[32px] pb-[8px] max-[699px]:px-4">
         <div className="text-[22px] font-bold text-text tracking-[-0.02em]">{greeting}</div>
         <div className="text-[12px] text-text-muted mt-[4px]">{me?.email}</div>
       </div>
 
-      <main className="pt-[12px] px-[32px] pb-[40px] flex-1">
+      <main className="pt-[12px] px-[32px] pb-[40px] flex-1 max-[699px]:px-4">
         <Outlet />
       </main>
     </div>
