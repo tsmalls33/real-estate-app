@@ -46,12 +46,11 @@ export const userApi = {
 
 export const propertyApi = {
   list: (params?: { page?: number; limit?: number }) => {
-    const qs = params
-      ? '?' + Object.entries(params)
-          .filter(([, v]) => v !== undefined)
-          .map(([k, v]) => `${k}=${v}`)
-          .join('&')
-      : '';
+    const qs = params ? '?' + new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)]),
+      ),
+    ).toString() : '';
     return api.get<Envelope<{ properties: Property[]; total: number }>>(`/properties${qs}`).then(r => r.data);
   },
 };

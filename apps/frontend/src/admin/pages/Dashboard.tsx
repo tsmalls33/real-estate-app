@@ -21,6 +21,8 @@ export default function Dashboard() {
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
 
   useEffect(() => {
+    setData(null);
+    setError(null);
     propertyApi.list({ page, limit: LIMIT })
       .then(setData)
       .catch((err: Error) => setError(err.message));
@@ -41,8 +43,9 @@ export default function Dashboard() {
   const title = me?.role === UserRoles.SUPERADMIN ? t('admin.dashboard.titleAll') : t('admin.dashboard.titleTenant');
 
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 0;
-  const from = data ? (page - 1) * LIMIT + 1 : 0;
-  const to = data ? Math.min(page * LIMIT, data.total) : 0;
+  const hasItems = data !== null && data.properties.length > 0;
+  const from = hasItems ? (page - 1) * LIMIT + 1 : 0;
+  const to = hasItems ? Math.min(page * LIMIT, data.total) : 0;
 
   return (
     <section>
@@ -57,14 +60,14 @@ export default function Dashboard() {
       )}
       {!error && data !== null && totalPages > 1 && (
         <div className="flex items-center justify-between mt-5 text-xs text-text-muted">
-          <span>{from}–{to} of {data.total}</span>
+          <span>{t('admin.dashboard.paginationCount', { from, to, total: data.total })}</span>
           <div className="flex items-center gap-1">
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
               className="px-2 py-1 rounded hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              Prev
+              {t('common.back')}
             </button>
             {renderPages(totalPages, page, setPage)}
             <button
@@ -72,7 +75,7 @@ export default function Dashboard() {
               onClick={() => setPage(page + 1)}
               className="px-2 py-1 rounded hover:bg-surface-alt disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              Next
+              {t('common.next')}
             </button>
           </div>
         </div>
@@ -103,7 +106,9 @@ function renderPages(totalPages: number, current: number, go: (p: number) => voi
       <button
         key={p}
         onClick={() => go(p)}
-        className={`px-2 py-1 rounded hover:bg-surface-alt ${
+        disabled={p === current}
+        aria-current={p === current ? 'page' : undefined}
+        className={`px-2 py-1 rounded hover:bg-surface-alt disabled:cursor-not-allowed ${
           p === current ? 'font-bold text-text' : ''
         }`}
       >
