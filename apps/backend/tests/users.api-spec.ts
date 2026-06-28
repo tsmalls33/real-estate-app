@@ -84,9 +84,9 @@ describe('Users (api)', () => {
         .set(...authHeader(admin.accessToken))
         .expect(200);
 
-      expect(res.body).toHaveProperty('users');
       expect(Array.isArray(res.body.users)).toBe(true);
-      expect(res.body).toHaveProperty('total');
+      expect(res.body.users.length).toBeGreaterThanOrEqual(1);
+      expect(res.body.total).toBeGreaterThanOrEqual(1);
       expect(res.body).toHaveProperty('page');
       expect(res.body).toHaveProperty('limit');
     });

@@ -69,7 +69,9 @@ describe('Tenants / Plans (api)', () => {
         .set(...authHeader(superadmin.accessToken))
         .expect(200);
 
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
+      // Clean DB + helper creates no plans → exactly the one posted above
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0].name).toBe('Basic');
     });
   });
 
@@ -99,7 +101,7 @@ describe('Tenants / Plans (api)', () => {
     it('SUPERADMIN can list tenants', async () => {
       const superadmin = await createUserWithRole(app, prisma, UserRoles.SUPERADMIN);
 
-      await request(app.getHttpServer())
+      const created = await request(app.getHttpServer())
         .post('/tenant')
         .set(...authHeader(superadmin.accessToken))
         .send({ name: 'Agency Alpha' })
@@ -110,8 +112,12 @@ describe('Tenants / Plans (api)', () => {
         .set(...authHeader(superadmin.accessToken))
         .expect(200);
 
+      // createUserWithRole also creates a tenant, so assert the posted one is
+      // actually returned rather than a bare count
       expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
+      expect(
+        res.body.find((t) => t.id_tenant === created.body.id_tenant),
+      ).toBeDefined();
     });
 
     it('SUPERADMIN can get a tenant by id', async () => {

@@ -112,16 +112,24 @@ describe('Properties (api)', () => {
     });
 
     it('CLIENT can list own properties (role override)', async () => {
-      const { accessToken, userId } = await signUpAs(app, { email: 'client-own@test.com' });
+      const { accessToken, user } = await signUpAs(app, { email: 'client-own@test.com' });
       const admin = await createUserWithRole(app, prisma, UserRoles.ADMIN, {
         email: 'admin-for-client@test.com',
       });
 
-      // Create property with CLIENT as owner
+      // Create property owned by the CLIENT
+      const owned = await request(app.getHttpServer())
+        .post('/properties')
+        .set(...authHeader(admin.accessToken))
+        .send({ ...propertyPayload, id_owner: user.id_user })
+        .expect(201);
+
+      // Create a second property owned by someone else (the admin) to prove
+      // the role override filters by id_owner and excludes it
       await request(app.getHttpServer())
         .post('/properties')
         .set(...authHeader(admin.accessToken))
-        .send({ ...propertyPayload, id_owner: userId })
+        .send({ ...propertyPayload, propertyName: 'Other Villa', id_owner: admin.userId })
         .expect(201);
 
       const res = await request(app.getHttpServer())
@@ -129,8 +137,8 @@ describe('Properties (api)', () => {
         .set(...authHeader(accessToken))
         .expect(200);
 
-      expect(res.body).toHaveProperty('properties');
-      expect(Array.isArray(res.body.properties)).toBe(true);
+      expect(res.body.properties).toHaveLength(1);
+      expect(res.body.properties[0].id_property).toBe(owned.body.id_property);
     });
   });
 

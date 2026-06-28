@@ -23,12 +23,12 @@ export async function createUserWithRole(
   app: INestApplication<App>,
   prisma: PrismaService,
   role: UserRoles,
-  overrides: Partial<{ email: string; tenantId?: string }> = {},
+  overrides: Partial<{ email: string }> = {},
 ): Promise<TestUserSession> {
   const email =
     overrides.email ?? `${role.toLowerCase()}-${Date.now()}@example.com`;
 
-  // Create tenant (and plan for SUPERADMIN context)
+  // Create tenant
   const tenant = await prisma.tenant.create({
     data: { name: `Tenant-${role}-${Date.now()}` },
   });
