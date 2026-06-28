@@ -118,7 +118,8 @@ function buildShortTermStays(
     let dateCancelled: Date | null = null;
     if (rng() < 0.07) {
       status = ReservationStatus.CANCELLED;
-      dateCancelled = addDays(start, -randInt(rng, 2, 11));
+      const d = addDays(start, -randInt(rng, 2, 11));
+      dateCancelled = d < now ? d : now;
     } else if (end < now) {
       status = ReservationStatus.COMPLETED;
     } else if (start <= now && now < end) {
