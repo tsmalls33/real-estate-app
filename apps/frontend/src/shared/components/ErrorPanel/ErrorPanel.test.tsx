@@ -23,6 +23,21 @@ describe('ErrorPanel', () => {
     expect(screen.getByRole('link', { name: 'Back home' })).toBeInTheDocument();
   });
 
+  it('renders preset copy for network-error variant', () => {
+    renderPanel(<ErrorPanel variant="network-error" />);
+    expect(screen.getByRole('heading', { name: 'Network error' })).toBeInTheDocument();
+  });
+
+  it('renders preset copy for api-error variant', () => {
+    renderPanel(<ErrorPanel variant="api-error" />);
+    expect(screen.getByRole('heading', { name: 'Server error' })).toBeInTheDocument();
+  });
+
+  it('renders preset copy for validation-error variant', () => {
+    renderPanel(<ErrorPanel variant="validation-error" />);
+    expect(screen.getByRole('heading', { name: 'Validation error' })).toBeInTheDocument();
+  });
+
   it('lets custom title/message/action override the preset', () => {
     renderPanel(
       <ErrorPanel variant="error" title="Boom" message="It broke" action={<button>Retry</button>} />,

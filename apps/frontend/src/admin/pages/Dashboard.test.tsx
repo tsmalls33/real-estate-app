@@ -56,6 +56,7 @@ describe('Admin Dashboard', () => {
 
     renderWithSession(<Dashboard />);
 
-    expect(await screen.findByText(/couldn't load properties: boom/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Network error' })).toBeInTheDocument();
+    expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument();
   });
 });

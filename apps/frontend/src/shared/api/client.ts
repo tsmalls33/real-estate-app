@@ -7,7 +7,7 @@ function handleUnauthorized() {
   window.location.href = '/signin';
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
     super(message);

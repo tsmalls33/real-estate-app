@@ -48,6 +48,7 @@ describe('Tenants', () => {
   it('surfaces a load error', async () => {
     vi.mocked(tenantApi.list).mockRejectedValue(new Error('nope'));
     renderWithSession(<Tenants />);
-    expect(await screen.findByText(/couldn't load tenants: nope/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Network error' })).toBeInTheDocument();
+    expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument();
   });
 });

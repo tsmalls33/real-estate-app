@@ -156,6 +156,18 @@
       "title": "Something went wrong",
       "message": "An unexpected error occurred. Please try again."
     },
+    "network": {
+      "title": "Network error",
+      "message": "Could not reach the server. Please check your connection."
+    },
+    "api": {
+      "title": "Server error",
+      "message": "The server returned an error. Please try again."
+    },
+    "validation": {
+      "title": "Validation error",
+      "message": "Some fields have invalid values."
+    },
     "backHome": "Back home"
   }
 }

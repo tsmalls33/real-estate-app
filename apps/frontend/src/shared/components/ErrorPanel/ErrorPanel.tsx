@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-type Variant = 'forbidden' | 'not-found' | 'error';
+export type Variant = 'forbidden' | 'not-found' | 'error' | 'network-error' | 'api-error' | 'validation-error';
 
 type ErrorPanelProps = {
   variant?: Variant;
@@ -24,6 +24,18 @@ function PRESETS(t: (key: string) => string): Record<Variant, { title: string; m
     error: {
       title: t('errors.generic.title'),
       message: t('errors.generic.message'),
+    },
+    'network-error': {
+      title: t('errors.network.title'),
+      message: t('errors.network.message'),
+    },
+    'api-error': {
+      title: t('errors.api.title'),
+      message: t('errors.api.message'),
+    },
+    'validation-error': {
+      title: t('errors.validation.title'),
+      message: t('errors.validation.message'),
     },
   };
 }

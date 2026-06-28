@@ -50,6 +50,7 @@ describe('Client Dashboard', () => {
 
     renderWithSession(<Dashboard />);
 
-    expect(await screen.findByText(/couldn't load your properties: down/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Network error' })).toBeInTheDocument();
+    expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument();
   });
 });

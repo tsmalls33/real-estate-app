@@ -156,6 +156,18 @@
       "title": "Algo salió mal",
       "message": "Ocurrió un error inesperado. Inténtalo de nuevo."
     },
+    "network": {
+      "title": "Error de red",
+      "message": "No se pudo conectar con el servidor. Comprueba tu conexión."
+    },
+    "api": {
+      "title": "Error del servidor",
+      "message": "El servidor devolvió un error. Inténtalo de nuevo."
+    },
+    "validation": {
+      "title": "Error de validación",
+      "message": "Algunos campos tienen valores no válidos."
+    },
     "backHome": "Volver al inicio"
   }
 }

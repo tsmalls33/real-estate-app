@@ -156,6 +156,18 @@
       "title": "Alguna cosa ha anat malament",
       "message": "S'ha produït un error inesperat. Torna-ho a provar."
     },
+    "network": {
+      "title": "Error de xarxa",
+      "message": "No s'ha pogut connectar amb el servidor. Comprova la connexió."
+    },
+    "api": {
+      "title": "Error del servidor",
+      "message": "El servidor ha retornat un error. Torna-ho a provar."
+    },
+    "validation": {
+      "title": "Error de validació",
+      "message": "Alguns camps tenen valors no vàlids."
+    },
     "backHome": "Tornar a l'inici"
   }
 }
