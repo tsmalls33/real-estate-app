@@ -86,7 +86,8 @@
       "scopeTenant": "Propiedades de {{tenant}}",
       "scopeTenantFallback": "tu inmobiliaria",
       "scopeAll": "Todas las propiedades de todas las inmobiliarias",
-      "loadError": "No se pudieron cargar las propiedades: {{message}}"
+      "loadError": "No se pudieron cargar las propiedades: {{message}}",
+      "paginationCount": "{{from}}–{{to}} de {{total}}"
     },
     "tenants": {
       "title": "Inmobiliarias",

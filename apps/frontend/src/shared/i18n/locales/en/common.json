@@ -86,7 +86,8 @@
       "scopeTenant": "Properties for {{tenant}}",
       "scopeTenantFallback": "your agency",
       "scopeAll": "All properties across all tenants",
-      "loadError": "Couldn't load properties: {{message}}"
+      "loadError": "Couldn't load properties: {{message}}",
+      "paginationCount": "{{from}}–{{to}} of {{total}}"
     },
     "tenants": {
       "title": "Tenants",

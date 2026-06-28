@@ -45,8 +45,14 @@ export const userApi = {
 };
 
 export const propertyApi = {
-  list: () =>
-    api.get<Envelope<{ properties: Property[]; total: number }>>('/properties').then(r => r.data),
+  list: (params?: { page?: number; limit?: number }) => {
+    const qs = params ? '?' + new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)]),
+      ),
+    ).toString() : '';
+    return api.get<Envelope<{ properties: Property[]; total: number }>>(`/properties${qs}`).then(r => r.data);
+  },
 };
 
 export const tenantApi = {
