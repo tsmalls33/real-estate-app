@@ -28,6 +28,11 @@ export default function SearchableResource<T>({
   // Local copy drives the input immediately; debounced into the URL below.
   const [qInput, setQInput] = useState(urlQ);
 
+  // Sync local state when URL changes externally (browser back/forward).
+  useEffect(() => {
+    setQInput(urlQ);
+  }, [urlQ]);
+
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
 
   // Debounce the search text into the URL; any search change also resets the page.
@@ -36,7 +41,7 @@ export default function SearchableResource<T>({
     const id = setTimeout(() => {
       setSearchParams(
         prev => {
-          if (qInput) prev.set(config.searchParam, qInput);
+          if (qInput.trim()) prev.set(config.searchParam, qInput.trim());
           else prev.delete(config.searchParam);
           prev.delete('page');
           return prev;
