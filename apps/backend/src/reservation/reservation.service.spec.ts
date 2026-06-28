@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReservationStatus } from '@prisma/client';
 import { CreateReservationDto, Platform } from './dto/create-reservation.dto';
@@ -90,14 +94,20 @@ describe('ReservationService', () => {
     it('should throw NotFoundException when the property does not exist', async () => {
       mockRepo.propertyExists.mockResolvedValue(false);
 
-      await expect(service.create(PROPERTY_ID, dto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(PROPERTY_ID, dto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw BadRequestException when endDate equals startDate', async () => {
       mockRepo.propertyExists.mockResolvedValue(true);
 
       await expect(
-        service.create(PROPERTY_ID, { ...dto, startDate: new Date('2026-03-10'), endDate: new Date('2026-03-10') }),
+        service.create(PROPERTY_ID, {
+          ...dto,
+          startDate: new Date('2026-03-10'),
+          endDate: new Date('2026-03-10'),
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -105,7 +115,11 @@ describe('ReservationService', () => {
       mockRepo.propertyExists.mockResolvedValue(true);
 
       await expect(
-        service.create(PROPERTY_ID, { ...dto, startDate: new Date('2026-03-15'), endDate: new Date('2026-03-10') }),
+        service.create(PROPERTY_ID, {
+          ...dto,
+          startDate: new Date('2026-03-15'),
+          endDate: new Date('2026-03-10'),
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -113,16 +127,26 @@ describe('ReservationService', () => {
       mockRepo.propertyExists.mockResolvedValue(true);
       mockRepo.checkOverlap.mockResolvedValue(true);
 
-      await expect(service.create(PROPERTY_ID, dto)).rejects.toThrow(ConflictException);
+      await expect(service.create(PROPERTY_ID, dto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should NOT throw when a new reservation starts exactly when an existing one ends (back-to-back)', async () => {
       mockRepo.propertyExists.mockResolvedValue(true);
       mockRepo.checkOverlap.mockResolvedValue(false);
-      mockRepo.create.mockResolvedValue({ ...baseReservation, startDate: new Date('2026-03-15'), endDate: new Date('2026-03-20') });
+      mockRepo.create.mockResolvedValue({
+        ...baseReservation,
+        startDate: new Date('2026-03-15'),
+        endDate: new Date('2026-03-20'),
+      });
 
       await expect(
-        service.create(PROPERTY_ID, { ...dto, startDate: new Date('2026-03-15'), endDate: new Date('2026-03-20') }),
+        service.create(PROPERTY_ID, {
+          ...dto,
+          startDate: new Date('2026-03-15'),
+          endDate: new Date('2026-03-20'),
+        }),
       ).resolves.not.toThrow();
     });
 
@@ -145,7 +169,9 @@ describe('ReservationService', () => {
     it('should throw NotFoundException when the reservation does not exist', async () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(null);
 
-      await expect(service.findOne(RESERVATION_ID)).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(RESERVATION_ID)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should return the reservation when it exists', async () => {
@@ -154,7 +180,8 @@ describe('ReservationService', () => {
       const result = await service.findOne(RESERVATION_ID);
 
       // findOne strips the property relation
-      const { property: _p, ...expected } = reservationWithTenant;
+      const { property, ...expected } = reservationWithTenant;
+      void property;
       expect(result).toEqual(expected);
     });
   });
@@ -166,9 +193,9 @@ describe('ReservationService', () => {
     it('should throw NotFoundException when the reservation does not exist', async () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(null);
 
-      await expect(service.update(RESERVATION_ID, { guestName: 'Bob' })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update(RESERVATION_ID, { guestName: 'Bob' }),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw BadRequestException when the reservation is CANCELLED', async () => {
@@ -177,9 +204,9 @@ describe('ReservationService', () => {
         status: ReservationStatus.CANCELLED,
       });
 
-      await expect(service.update(RESERVATION_ID, { guestName: 'Bob' })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.update(RESERVATION_ID, { guestName: 'Bob' }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException when the reservation is COMPLETED', async () => {
@@ -188,16 +215,19 @@ describe('ReservationService', () => {
         status: ReservationStatus.COMPLETED,
       });
 
-      await expect(service.update(RESERVATION_ID, { guestName: 'Bob' })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.update(RESERVATION_ID, { guestName: 'Bob' }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException when updated endDate equals updated startDate', async () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
 
       await expect(
-        service.update(RESERVATION_ID, { startDate: new Date('2026-04-01'), endDate: new Date('2026-04-01') }),
+        service.update(RESERVATION_ID, {
+          startDate: new Date('2026-04-01'),
+          endDate: new Date('2026-04-01'),
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -205,7 +235,10 @@ describe('ReservationService', () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
 
       await expect(
-        service.update(RESERVATION_ID, { startDate: new Date('2026-04-05'), endDate: new Date('2026-04-01') }),
+        service.update(RESERVATION_ID, {
+          startDate: new Date('2026-04-05'),
+          endDate: new Date('2026-04-01'),
+        }),
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -214,18 +247,28 @@ describe('ReservationService', () => {
       mockRepo.checkOverlap.mockResolvedValue(true);
 
       await expect(
-        service.update(RESERVATION_ID, { startDate: new Date('2026-04-01'), endDate: new Date('2026-04-10') }),
+        service.update(RESERVATION_ID, {
+          startDate: new Date('2026-04-01'),
+          endDate: new Date('2026-04-10'),
+        }),
       ).rejects.toThrow(ConflictException);
     });
 
     it('should NOT throw when updated dates are back-to-back with another reservation', async () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
       mockRepo.checkOverlap.mockResolvedValue(false);
-      const updated = { ...baseReservation, startDate: new Date('2026-03-15'), endDate: new Date('2026-03-20') };
+      const updated = {
+        ...baseReservation,
+        startDate: new Date('2026-03-15'),
+        endDate: new Date('2026-03-20'),
+      };
       mockRepo.update.mockResolvedValue(updated);
 
       await expect(
-        service.update(RESERVATION_ID, { startDate: new Date('2026-03-15'), endDate: new Date('2026-03-20') }),
+        service.update(RESERVATION_ID, {
+          startDate: new Date('2026-03-15'),
+          endDate: new Date('2026-03-20'),
+        }),
       ).resolves.not.toThrow();
     });
 
@@ -254,33 +297,60 @@ describe('ReservationService', () => {
     });
 
     it('should allow UPCOMING -> ACTIVE transition', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
-      mockRepo.updateStatus.mockResolvedValue({ ...baseReservation, status: ReservationStatus.ACTIVE });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.UPCOMING,
+      });
+      mockRepo.updateStatus.mockResolvedValue({
+        ...baseReservation,
+        status: ReservationStatus.ACTIVE,
+      });
 
-      const result = await service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE);
+      const result = await service.updateStatus(
+        RESERVATION_ID,
+        ForwardReservationStatus.ACTIVE,
+      );
 
       expect(result.status).toBe(ReservationStatus.ACTIVE);
     });
 
     it('should allow ACTIVE -> COMPLETED transition', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.ACTIVE });
-      mockRepo.updateStatus.mockResolvedValue({ ...baseReservation, status: ReservationStatus.COMPLETED });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.ACTIVE,
+      });
+      mockRepo.updateStatus.mockResolvedValue({
+        ...baseReservation,
+        status: ReservationStatus.COMPLETED,
+      });
 
-      const result = await service.updateStatus(RESERVATION_ID, ForwardReservationStatus.COMPLETED);
+      const result = await service.updateStatus(
+        RESERVATION_ID,
+        ForwardReservationStatus.COMPLETED,
+      );
 
       expect(result.status).toBe(ReservationStatus.COMPLETED);
     });
 
     it('should throw BadRequestException for UPCOMING -> COMPLETED (skipping ACTIVE)', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.UPCOMING,
+      });
 
       await expect(
-        service.updateStatus(RESERVATION_ID, ForwardReservationStatus.COMPLETED),
+        service.updateStatus(
+          RESERVATION_ID,
+          ForwardReservationStatus.COMPLETED,
+        ),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for ACTIVE -> ACTIVE (no-op forward)', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.ACTIVE });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.ACTIVE,
+      });
 
       await expect(
         service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE),
@@ -288,7 +358,10 @@ describe('ReservationService', () => {
     });
 
     it('should throw BadRequestException when transitioning from COMPLETED', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.COMPLETED });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.COMPLETED,
+      });
 
       await expect(
         service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE),
@@ -296,7 +369,10 @@ describe('ReservationService', () => {
     });
 
     it('should throw BadRequestException when transitioning from CANCELLED', async () => {
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.CANCELLED });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.CANCELLED,
+      });
 
       await expect(
         service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE),
@@ -311,7 +387,9 @@ describe('ReservationService', () => {
     it('should throw NotFoundException when the reservation does not exist', async () => {
       mockRepo.findByIdWithTenant.mockResolvedValue(null);
 
-      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(NotFoundException);
+      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw BadRequestException when the reservation is already CANCELLED', async () => {
@@ -320,7 +398,9 @@ describe('ReservationService', () => {
         status: ReservationStatus.CANCELLED,
       });
 
-      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(BadRequestException);
+      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException when the reservation is COMPLETED', async () => {
@@ -329,7 +409,9 @@ describe('ReservationService', () => {
         status: ReservationStatus.COMPLETED,
       });
 
-      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(BadRequestException);
+      await expect(service.cancel(RESERVATION_ID)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should cancel an UPCOMING reservation', async () => {
@@ -338,7 +420,10 @@ describe('ReservationService', () => {
         status: ReservationStatus.CANCELLED,
         dateCancelled: new Date(),
       };
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.UPCOMING,
+      });
       mockRepo.cancel.mockResolvedValue(cancelled);
 
       const result = await service.cancel(RESERVATION_ID);
@@ -353,7 +438,10 @@ describe('ReservationService', () => {
         status: ReservationStatus.CANCELLED,
         dateCancelled: new Date(),
       };
-      mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.ACTIVE });
+      mockRepo.findByIdWithTenant.mockResolvedValue({
+        ...reservationWithTenant,
+        status: ReservationStatus.ACTIVE,
+      });
       mockRepo.cancel.mockResolvedValue(cancelled);
 
       const result = await service.cancel(RESERVATION_ID);
@@ -371,8 +459,12 @@ describe('ReservationService', () => {
       it('should return reservation when tenant matches', async () => {
         mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
 
-        const result = await service.findOne(RESERVATION_ID, mockTenantScope(TENANT_A));
-        const { property: _p, ...expected } = reservationWithTenant;
+        const result = await service.findOne(
+          RESERVATION_ID,
+          mockTenantScope(TENANT_A),
+        );
+        const { property, ...expected } = reservationWithTenant;
+        void property;
         expect(result).toEqual(expected);
       });
 
@@ -387,8 +479,12 @@ describe('ReservationService', () => {
       it('should allow SUPERADMIN to bypass tenant check', async () => {
         mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
 
-        const result = await service.findOne(RESERVATION_ID, mockSuperadminScope());
-        const { property: _p, ...expected } = reservationWithTenant;
+        const result = await service.findOne(
+          RESERVATION_ID,
+          mockSuperadminScope(),
+        );
+        const { property, ...expected } = reservationWithTenant;
+        void property;
         expect(result).toEqual(expected);
       });
     });
@@ -397,9 +493,16 @@ describe('ReservationService', () => {
     describe('update', () => {
       it('should update when tenant matches', async () => {
         mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
-        mockRepo.update.mockResolvedValue({ ...baseReservation, guestName: 'Bob' });
+        mockRepo.update.mockResolvedValue({
+          ...baseReservation,
+          guestName: 'Bob',
+        });
 
-        const result = await service.update(RESERVATION_ID, { guestName: 'Bob' }, mockTenantScope(TENANT_A));
+        const result = await service.update(
+          RESERVATION_ID,
+          { guestName: 'Bob' },
+          mockTenantScope(TENANT_A),
+        );
         expect(result.guestName).toBe('Bob');
       });
 
@@ -407,15 +510,26 @@ describe('ReservationService', () => {
         mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
 
         await expect(
-          service.update(RESERVATION_ID, { guestName: 'Bob' }, mockTenantScope(TENANT_B)),
+          service.update(
+            RESERVATION_ID,
+            { guestName: 'Bob' },
+            mockTenantScope(TENANT_B),
+          ),
         ).rejects.toThrow(NotFoundException);
       });
 
       it('should allow SUPERADMIN to update any reservation', async () => {
         mockRepo.findByIdWithTenant.mockResolvedValue(reservationWithTenant);
-        mockRepo.update.mockResolvedValue({ ...baseReservation, guestName: 'Admin' });
+        mockRepo.update.mockResolvedValue({
+          ...baseReservation,
+          guestName: 'Admin',
+        });
 
-        const result = await service.update(RESERVATION_ID, { guestName: 'Admin' }, mockSuperadminScope());
+        const result = await service.update(
+          RESERVATION_ID,
+          { guestName: 'Admin' },
+          mockSuperadminScope(),
+        );
         expect(result.guestName).toBe('Admin');
       });
     });
@@ -423,26 +537,53 @@ describe('ReservationService', () => {
     // updateStatus
     describe('updateStatus', () => {
       it('should update status when tenant matches', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
-        mockRepo.updateStatus.mockResolvedValue({ ...baseReservation, status: ReservationStatus.ACTIVE });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
+        mockRepo.updateStatus.mockResolvedValue({
+          ...baseReservation,
+          status: ReservationStatus.ACTIVE,
+        });
 
-        const result = await service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE, mockTenantScope(TENANT_A));
+        const result = await service.updateStatus(
+          RESERVATION_ID,
+          ForwardReservationStatus.ACTIVE,
+          mockTenantScope(TENANT_A),
+        );
         expect(result.status).toBe(ReservationStatus.ACTIVE);
       });
 
       it('should throw NotFoundException for cross-tenant status update', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
 
         await expect(
-          service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE, mockTenantScope(TENANT_B)),
+          service.updateStatus(
+            RESERVATION_ID,
+            ForwardReservationStatus.ACTIVE,
+            mockTenantScope(TENANT_B),
+          ),
         ).rejects.toThrow(NotFoundException);
       });
 
       it('should allow SUPERADMIN to update status on any reservation', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
-        mockRepo.updateStatus.mockResolvedValue({ ...baseReservation, status: ReservationStatus.ACTIVE });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
+        mockRepo.updateStatus.mockResolvedValue({
+          ...baseReservation,
+          status: ReservationStatus.ACTIVE,
+        });
 
-        const result = await service.updateStatus(RESERVATION_ID, ForwardReservationStatus.ACTIVE, mockSuperadminScope());
+        const result = await service.updateStatus(
+          RESERVATION_ID,
+          ForwardReservationStatus.ACTIVE,
+          mockSuperadminScope(),
+        );
         expect(result.status).toBe(ReservationStatus.ACTIVE);
       });
     });
@@ -450,15 +591,28 @@ describe('ReservationService', () => {
     // cancel
     describe('cancel', () => {
       it('should cancel when tenant matches', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
-        mockRepo.cancel.mockResolvedValue({ ...baseReservation, status: ReservationStatus.CANCELLED, dateCancelled: new Date() });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
+        mockRepo.cancel.mockResolvedValue({
+          ...baseReservation,
+          status: ReservationStatus.CANCELLED,
+          dateCancelled: new Date(),
+        });
 
-        const result = await service.cancel(RESERVATION_ID, mockTenantScope(TENANT_A));
+        const result = await service.cancel(
+          RESERVATION_ID,
+          mockTenantScope(TENANT_A),
+        );
         expect(result.status).toBe(ReservationStatus.CANCELLED);
       });
 
       it('should throw NotFoundException for cross-tenant cancel', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
 
         await expect(
           service.cancel(RESERVATION_ID, mockTenantScope(TENANT_B)),
@@ -466,10 +620,20 @@ describe('ReservationService', () => {
       });
 
       it('should allow SUPERADMIN to cancel any reservation', async () => {
-        mockRepo.findByIdWithTenant.mockResolvedValue({ ...reservationWithTenant, status: ReservationStatus.UPCOMING });
-        mockRepo.cancel.mockResolvedValue({ ...baseReservation, status: ReservationStatus.CANCELLED, dateCancelled: new Date() });
+        mockRepo.findByIdWithTenant.mockResolvedValue({
+          ...reservationWithTenant,
+          status: ReservationStatus.UPCOMING,
+        });
+        mockRepo.cancel.mockResolvedValue({
+          ...baseReservation,
+          status: ReservationStatus.CANCELLED,
+          dateCancelled: new Date(),
+        });
 
-        const result = await service.cancel(RESERVATION_ID, mockSuperadminScope());
+        const result = await service.cancel(
+          RESERVATION_ID,
+          mockSuperadminScope(),
+        );
         expect(result.status).toBe(ReservationStatus.CANCELLED);
       });
     });

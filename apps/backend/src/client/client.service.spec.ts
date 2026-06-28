@@ -50,7 +50,10 @@ describe('ClientService – tenant scoping', () => {
     it('should return client when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
 
-      const result = await service.findOne(CLIENT_ID, mockTenantScope(TENANT_A));
+      const result = await service.findOne(
+        CLIENT_ID,
+        mockTenantScope(TENANT_A),
+      );
       expect(result).toEqual(baseClient);
     });
 
@@ -76,9 +79,16 @@ describe('ClientService – tenant scoping', () => {
   describe('update', () => {
     it('should update when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
-      mockRepo.update.mockResolvedValue({ ...baseClient, firstName: 'Jane' } as any);
+      mockRepo.update.mockResolvedValue({
+        ...baseClient,
+        firstName: 'Jane',
+      } as any);
 
-      const result = await service.update(CLIENT_ID, { firstName: 'Jane' }, mockTenantScope(TENANT_A));
+      const result = await service.update(
+        CLIENT_ID,
+        { firstName: 'Jane' },
+        mockTenantScope(TENANT_A),
+      );
       expect(result.firstName).toBe('Jane');
     });
 
@@ -86,15 +96,26 @@ describe('ClientService – tenant scoping', () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
 
       await expect(
-        service.update(CLIENT_ID, { firstName: 'Hacker' }, mockTenantScope(TENANT_B)),
+        service.update(
+          CLIENT_ID,
+          { firstName: 'Hacker' },
+          mockTenantScope(TENANT_B),
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should allow SUPERADMIN to update any client', async () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
-      mockRepo.update.mockResolvedValue({ ...baseClient, firstName: 'Admin' } as any);
+      mockRepo.update.mockResolvedValue({
+        ...baseClient,
+        firstName: 'Admin',
+      } as any);
 
-      const result = await service.update(CLIENT_ID, { firstName: 'Admin' }, mockSuperadminScope());
+      const result = await service.update(
+        CLIENT_ID,
+        { firstName: 'Admin' },
+        mockSuperadminScope(),
+      );
       expect(result.firstName).toBe('Admin');
     });
   });
@@ -105,9 +126,14 @@ describe('ClientService – tenant scoping', () => {
   describe('remove', () => {
     it('should remove when tenant matches', async () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
-      mockRepo.softDelete.mockResolvedValue({ ...baseClient, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseClient,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(CLIENT_ID, mockTenantScope(TENANT_A))).resolves.not.toThrow();
+      await expect(
+        service.remove(CLIENT_ID, mockTenantScope(TENANT_A)),
+      ).resolves.not.toThrow();
     });
 
     it('should throw NotFoundException for cross-tenant remove', async () => {
@@ -120,9 +146,14 @@ describe('ClientService – tenant scoping', () => {
 
     it('should allow SUPERADMIN to remove any client', async () => {
       mockRepo.findById.mockResolvedValue(baseClient as any);
-      mockRepo.softDelete.mockResolvedValue({ ...baseClient, isDeleted: true } as any);
+      mockRepo.softDelete.mockResolvedValue({
+        ...baseClient,
+        isDeleted: true,
+      } as any);
 
-      await expect(service.remove(CLIENT_ID, mockSuperadminScope())).resolves.not.toThrow();
+      await expect(
+        service.remove(CLIENT_ID, mockSuperadminScope()),
+      ).resolves.not.toThrow();
     });
   });
 
@@ -137,20 +168,29 @@ describe('ClientService – tenant scoping', () => {
     };
 
     it('should auto-set id_tenant from TENANT scope', async () => {
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_client: 'new-1' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_client: 'new-1' }) as any,
+      );
 
-      await service.create({ ...dto, id_tenant: TENANT_B }, mockTenantScope(TENANT_A));
+      await service.create(
+        { ...dto, id_tenant: TENANT_B },
+        mockTenantScope(TENANT_A),
+      );
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_A }),
       );
     });
 
     it('should use body id_tenant for SUPERADMIN', async () => {
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_client: 'new-2' } as any));
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_client: 'new-2' }) as any,
+      );
 
       await service.create(dto, mockSuperadminScope());
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ id_tenant: TENANT_A }),
       );
@@ -168,11 +208,17 @@ describe('ClientService – tenant scoping', () => {
   // ---------------------------------------------------------------------------
   describe('create without scope', () => {
     it('should pass through without tenant enforcement', async () => {
-      const dto: CreateClientDto = { firstName: 'Internal', id_tenant: TENANT_A };
-      mockRepo.create.mockImplementation(async (data) => ({ ...data, id_client: 'int-1' } as any));
+      const dto: CreateClientDto = {
+        firstName: 'Internal',
+        id_tenant: TENANT_A,
+      };
+      mockRepo.create.mockImplementation(
+        (data) => ({ ...data, id_client: 'int-1' }) as any,
+      );
 
       await expect(service.create(dto)).resolves.not.toThrow();
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ firstName: 'Internal', id_tenant: TENANT_A }),
       );
