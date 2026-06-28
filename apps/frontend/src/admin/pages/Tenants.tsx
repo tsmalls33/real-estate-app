@@ -33,7 +33,7 @@ export default function Tenants() {
     <section>
       <h2 className="text-xs font-bold text-text tracking-[0.06em] uppercase mb-3">{t('admin.tenants.title')}</h2>
       <p className="text-xs text-text-muted mt-1 mb-4">{t('admin.tenants.description')}</p>
-      {error && <ErrorPanel variant={error.variant} {...(error.variant === 'api-error' ? { message: error.message } : {})} />}
+      {error && <ErrorPanel variant={error.variant} />}
       {!error && tenants === null && (
         <div role="status" aria-label={t('common.loading')}>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1">

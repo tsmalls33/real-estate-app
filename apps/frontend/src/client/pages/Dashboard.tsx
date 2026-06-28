@@ -36,7 +36,7 @@ export default function Dashboard() {
   return (
     <section>
       <h2 className="text-[13px] font-bold text-text tracking-[-0.01em] mb-3">{t('client.dashboard.title')}</h2>
-      {error && <ErrorPanel variant={error.variant} {...(error.variant === 'api-error' ? { message: error.message } : {})} />}
+      {error && <ErrorPanel variant={error.variant} />}
       {!error && properties === null && (
         <div role="status" aria-label={t('common.loading')}>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-card:grid-cols-1">
