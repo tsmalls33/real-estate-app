@@ -3,6 +3,7 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "modulePaths": ["<rootDir>/.."],
+  "maxWorkers": 1,
   "testRegex": ".api-spec.ts$",
   "setupFiles": ["<rootDir>/setup-test-env.ts"],
   "transform": {
