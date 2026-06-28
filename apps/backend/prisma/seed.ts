@@ -6,6 +6,8 @@ import { seedTenants } from './seed/tenant.seed';
 import { seedUsers } from './seed/user.seed';
 import { seedPlans } from './seed/plan.seed';
 import { seedProperties } from './seed/property.seed';
+import { seedReservations } from './seed/reservation.seed';
+import { seedCosts } from './seed/cost.seed';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +17,9 @@ async function main() {
   await seedTenants(prisma);
   await seedUsers(prisma);
   await seedPlans(prisma);
-  await seedProperties(prisma)
+  await seedProperties(prisma);
+  await seedReservations(prisma);
+  await seedCosts(prisma);
 }
 
 main()
