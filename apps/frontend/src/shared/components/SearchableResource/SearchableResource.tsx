@@ -28,7 +28,7 @@ export default function SearchableResource<T>({
   // Local copy drives the input immediately; debounced into the URL below.
   const [qInput, setQInput] = useState(urlQ);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Sync local state when URL changes externally (browser back/forward).
   useEffect(() => {
