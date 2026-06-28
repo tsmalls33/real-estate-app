@@ -1,23 +1,58 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGauge, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faGauge, faGear, faBars, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
 import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
+
+const navItem = (isActive: boolean) =>
+  `relative flex items-center gap-[11px] py-[9px] px-[11px] rounded-[7px] text-[13px] cursor-pointer no-underline mb-[2px] transition-[background-color,color] duration-[120ms] ease-[ease] hover:bg-hover hover:text-text ${
+    isActive
+      ? "bg-hover text-text font-semibold before:content-[''] before:absolute before:left-0 before:top-[7px] before:bottom-[7px] before:w-[2px] before:rounded-[2px] before:bg-brand-secondary"
+      : 'text-text-muted'
+  }`;
 
 export default function ClientShell() {
   const { t } = useTranslation();
   const { me } = useSession();
   const signOut = useSignOut();
+  const location = useLocation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
   const brandName = me?.tenant?.name ?? t('shell.ownerPortal');
   const greeting = me?.firstName ? t('shell.welcomeBack', { name: me.firstName }) : t('shell.welcomeBackGeneric');
 
+  const TITLES: Record<string, string> = {
+    '/client': t('nav.overview'),
+    '/client/settings': t('nav.settings'),
+  };
+  const pageTitle = TITLES[location.pathname] ?? '';
+
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
-      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border max-[699px]:flex-wrap max-[699px]:gap-3 max-[699px]:px-4">
-        <div className="flex items-center gap-[12px]">
+      <header className="flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface border-b border-border max-[699px]:px-4">
+        <div className="hidden max-[699px]:flex items-center gap-[10px] min-w-0">
+          <button
+            type="button"
+            aria-label={t('shell.openMenu')}
+            className="grid place-items-center w-[38px] h-[38px] flex-shrink-0 rounded-[9px] text-text-muted hover:text-text hover:bg-hover"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+          <div className="min-w-0">
+            <div className="text-[14px] font-bold text-text tracking-[-0.01em] leading-[1.1] truncate">{pageTitle}</div>
+            <div className="text-[10px] text-text-muted tracking-[0.16em] uppercase truncate">{brandName}</div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-[12px] max-[699px]:hidden">
           <div className="w-[36px] h-[36px] rounded-[10px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold tracking-[-0.02em]">{brandName[0]?.toUpperCase() ?? '·'}</div>
           <div>
             <div className="text-[14px] font-bold text-text tracking-[-0.01em]">{brandName}</div>
@@ -25,7 +60,7 @@ export default function ClientShell() {
           </div>
         </div>
 
-        <nav className="flex gap-[4px] max-[699px]:order-last max-[699px]:w-full max-[699px]:overflow-x-auto">
+        <nav className="flex gap-[4px] max-[699px]:hidden">
           <NavLink
             to="/client"
             end
@@ -49,7 +84,7 @@ export default function ClientShell() {
           </NavLink>
         </nav>
 
-        <div className="flex items-center gap-[12px]">
+        <div className="flex items-center gap-[12px] max-[699px]:hidden">
           <div className="w-[36px] h-[36px] rounded-full bg-brand-secondary text-brand-on-secondary grid place-items-center font-bold text-[12px]">{initials(me?.firstName, me?.lastName, me?.email)}</div>
           <button
             className="bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text"
@@ -59,6 +94,46 @@ export default function ClientShell() {
           </button>
         </div>
       </header>
+
+      {drawerOpen && (
+        <div
+          className="hidden max-[699px]:block fixed inset-0 z-40 bg-black/40"
+          aria-hidden="true"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+      <aside className={`hidden max-[699px]:flex flex-col fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-border p-[10px] transition-transform duration-[200ms] ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center gap-[11px] px-[10px] pb-[14px] mb-[4px] border-b border-border">
+          <div className="w-[30px] h-[30px] rounded-[8px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold text-[14px] tracking-[-0.02em] flex-shrink-0">{brandName[0]?.toUpperCase() ?? '·'}</div>
+          <div className="min-w-0">
+            <div className="text-[13.5px] font-bold text-text tracking-[-0.01em] leading-[1.1] truncate">{brandName}</div>
+            <div className="text-[9px] text-text-faint tracking-[0.15em] uppercase mt-[2px]">{t('shell.ownerPortal')}</div>
+          </div>
+        </div>
+        <nav className="flex flex-col flex-1">
+          <NavLink to="/client" end className={({ isActive }) => navItem(isActive)}>
+            <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGauge} /></span> {t('nav.overview')}
+          </NavLink>
+          <NavLink to="/client/settings" className={({ isActive }) => navItem(isActive)}>
+            <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGear} /></span> {t('nav.settings')}
+          </NavLink>
+        </nav>
+        <div className="px-[10px] pt-[14px] mt-[4px] border-t border-border">
+          <div className="flex items-center gap-[10px] pb-[12px]">
+            <div className="w-[32px] h-[32px] rounded-full bg-brand-secondary text-brand-on-secondary grid place-items-center font-bold text-[11px] flex-shrink-0">{initials(me?.firstName, me?.lastName, me?.email)}</div>
+            <div className="leading-[1.15] min-w-0">
+              <div className="text-[12.5px] font-semibold text-text truncate">{me?.firstName ?? me?.email}</div>
+              <div className="text-[10px] text-text-muted truncate">{me?.email}</div>
+            </div>
+          </div>
+          <button
+            onClick={signOut}
+            className="w-full flex items-center justify-center gap-[9px] py-[10px] rounded-[9px] bg-transparent border border-border-strong text-text-muted text-[12px] font-semibold tracking-[0.04em] uppercase cursor-pointer hover:text-text hover:border-text-muted"
+          >
+            <FontAwesomeIcon icon={faArrowRightFromBracket} /> {t('nav.signOut')}
+          </button>
+        </div>
+      </aside>
 
       <div className="pt-[24px] px-[32px] pb-[8px] max-[699px]:px-4">
         <div className="text-[22px] font-bold text-text tracking-[-0.02em]">{greeting}</div>
