@@ -4,7 +4,7 @@ import { Theme, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ThemeRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(): Promise<Theme[]> {
     return await this.prisma.theme.findMany({
@@ -31,7 +31,10 @@ export class ThemeRepository {
     return await this.prisma.theme.create({ data });
   }
 
-  async update(id_theme: string, data: Prisma.ThemeUpdateInput): Promise<Theme> {
+  async update(
+    id_theme: string,
+    data: Prisma.ThemeUpdateInput,
+  ): Promise<Theme> {
     return await this.prisma.theme.update({
       where: { id_theme },
       data,

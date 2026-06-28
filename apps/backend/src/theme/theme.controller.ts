@@ -26,7 +26,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Theme')
 @Controller('theme')
 export class ThemeController {
-  constructor(private readonly themeService: ThemeService) { }
+  constructor(private readonly themeService: ThemeService) {}
 
   @Post()
   @ResponseMessage('Theme created successfully')

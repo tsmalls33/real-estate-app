@@ -67,7 +67,11 @@ export class ReservationController {
     @Body() dto: UpdateReservationStatusDto,
     @CurrentTenant() scope: TenantScope,
   ) {
-    return this.reservationService.updateStatus(id_reservation, dto.status, scope);
+    return this.reservationService.updateStatus(
+      id_reservation,
+      dto.status,
+      scope,
+    );
   }
 
   /** PATCH /reservations/:id_reservation/cancel */
@@ -89,9 +93,11 @@ export class ReservationController {
     @CurrentTenant() scope: TenantScope,
   ) {
     // Verify reservation tenant before listing costs
-    return this.reservationService.findOne(id_reservation, scope).then(() =>
-      this.costService.findAll({ ...query, id_reservation }, scope),
-    );
+    return this.reservationService
+      .findOne(id_reservation, scope)
+      .then(() =>
+        this.costService.findAll({ ...query, id_reservation }, scope),
+      );
   }
 
   /** POST /reservations/:id_reservation/costs */
@@ -102,9 +108,9 @@ export class ReservationController {
     @CurrentTenant() scope: TenantScope,
   ) {
     // Verify reservation tenant before creating cost
-    return this.reservationService.findOne(id_reservation, scope).then(() =>
-      this.costService.create({ ...dto, id_reservation }),
-    );
+    return this.reservationService
+      .findOne(id_reservation, scope)
+      .then(() => this.costService.create({ ...dto, id_reservation }));
   }
 
   /** PATCH /reservations/:id_reservation/costs/:id_cost */
@@ -116,9 +122,9 @@ export class ReservationController {
     @CurrentTenant() scope: TenantScope,
   ) {
     // Verify reservation tenant before updating cost
-    return this.reservationService.findOne(id_reservation, scope).then(() =>
-      this.costService.update(id_cost, dto),
-    );
+    return this.reservationService
+      .findOne(id_reservation, scope)
+      .then(() => this.costService.update(id_cost, dto));
   }
 
   /** DELETE /reservations/:id_reservation/costs/:id_cost */
@@ -129,8 +135,8 @@ export class ReservationController {
     @CurrentTenant() scope: TenantScope,
   ) {
     // Verify reservation tenant before deleting cost
-    return this.reservationService.findOne(id_reservation, scope).then(() =>
-      this.costService.remove(id_cost),
-    );
+    return this.reservationService
+      .findOne(id_reservation, scope)
+      .then(() => this.costService.remove(id_cost));
   }
 }

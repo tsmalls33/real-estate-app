@@ -8,15 +8,27 @@ export class CreateThemeDto implements SharedCreateThemeDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ required: true, example: '#FAFAFA', description: 'Page background color' })
+  @ApiProperty({
+    required: true,
+    example: '#FAFAFA',
+    description: 'Page background color',
+  })
   @IsString()
   backgroundColor: string;
 
-  @ApiProperty({ required: true, example: '#1976d2', description: 'Main brand color — primary CTAs, active states' })
+  @ApiProperty({
+    required: true,
+    example: '#1976d2',
+    description: 'Main brand color — primary CTAs, active states',
+  })
   @IsString()
   brandColor: string;
 
-  @ApiProperty({ required: true, example: '#ff9800', description: 'Secondary brand accent' })
+  @ApiProperty({
+    required: true,
+    example: '#ff9800',
+    description: 'Secondary brand accent',
+  })
   @IsString()
   secondaryColor: string;
 

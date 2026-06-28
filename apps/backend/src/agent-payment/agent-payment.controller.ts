@@ -29,7 +29,10 @@ export class AgentPaymentController {
   constructor(private readonly agentPaymentService: AgentPaymentService) {}
 
   @Get()
-  findAll(@Query() query: GetAgentPaymentsQueryParams, @CurrentTenant() scope: TenantScope) {
+  findAll(
+    @Query() query: GetAgentPaymentsQueryParams,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.agentPaymentService.findAll(query, scope);
   }
 
@@ -39,12 +42,19 @@ export class AgentPaymentController {
   }
 
   @Post()
-  create(@Body() dto: CreateAgentPaymentDto, @CurrentTenant() scope: TenantScope) {
+  create(
+    @Body() dto: CreateAgentPaymentDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.agentPaymentService.create(dto, scope);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateAgentPaymentDto, @CurrentTenant() scope: TenantScope) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateAgentPaymentDto,
+    @CurrentTenant() scope: TenantScope,
+  ) {
     return this.agentPaymentService.update(id, dto, scope);
   }
 

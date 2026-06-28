@@ -4,6 +4,16 @@ module.exports = {
   darkMode: ['selector', '[data-theme="dark"]'],
   theme: {
     extend: {
+      // Responsive is DESKTOP-FIRST: base classes target desktop, and these
+      // max-width breakpoints layer mobile overrides on top (e.g.
+      // `max-card:grid-cols-1`). Adjust a threshold here and every usage
+      // follows. Do not introduce mobile-first min-width `sm:`/`md:` — it
+      // fights the desktop base classes. See frontend CLAUDE.md → Responsive.
+      screens: {
+        'max-admin':  { max: '899px' }, // admin shell: sidebar → off-canvas drawer
+        'max-client': { max: '699px' }, // client shell: topbar → off-canvas drawer
+        'max-card':   { max: '599px' }, // cards/forms: grids → 1 col, labels stack, rows wrap
+      },
       colors: {
         bg: 'var(--bg)',
         surface: 'var(--surface)',

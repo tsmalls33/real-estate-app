@@ -3,7 +3,10 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetClientsQueryParams {
-  @ApiProperty({ required: false, description: 'Search by first name, last name, or email' })
+  @ApiProperty({
+    required: false,
+    description: 'Search by first name, last name, or email',
+  })
   @IsOptional()
   @IsString()
   search?: string;

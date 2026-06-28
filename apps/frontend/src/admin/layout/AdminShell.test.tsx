@@ -22,12 +22,17 @@ function renderShell(role: UserRoles) {
   vi.mocked(userApi.me).mockResolvedValue(makeMe({ role }));
   return renderWithSession(
     <Routes>
-      <Route path="/admin" element={<AdminShell />} />
+      <Route path="/admin" element={<AdminShell />}>
+        <Route index element={<div>dashboard page</div>} />
+        <Route path="settings" element={<div>settings page</div>} />
+      </Route>
       <Route path="/signin" element={<div>signin page</div>} />
     </Routes>,
     { route: '/admin' },
   );
 }
+
+const backdrop = () => screen.queryByTestId('drawer-backdrop');
 
 beforeEach(() => {
   clearAuth();
@@ -52,9 +57,50 @@ describe('AdminShell', () => {
     expect((await screen.findAllByText('Acme')).length).toBeGreaterThan(0);
   });
 
+  it('opens the sidebar drawer when the hamburger is tapped', async () => {
+    renderShell(UserRoles.ADMIN);
+    await screen.findByRole('link', { name: /settings/i });
+
+    expect(backdrop()).toBeNull();
+    expect(screen.getByRole('complementary').className).toContain('-translate-x-full');
+
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+
+    expect(backdrop()).not.toBeNull();
+    expect(screen.getByRole('complementary').className).toContain('translate-x-0');
+  });
+
+  it('dismisses the drawer on backdrop click', async () => {
+    renderShell(UserRoles.ADMIN);
+    await screen.findByRole('button', { name: /open menu/i });
+
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+    const overlay = backdrop();
+    expect(overlay).not.toBeNull();
+
+    await userEvent.click(overlay as Element);
+    expect(backdrop()).toBeNull();
+  });
+
+  it('dismisses the drawer on route change', async () => {
+    renderShell(UserRoles.ADMIN);
+    await screen.findByRole('button', { name: /open menu/i });
+
+    await userEvent.click(screen.getByRole('button', { name: /open menu/i }));
+    expect(backdrop()).not.toBeNull();
+
+    await userEvent.click(screen.getByRole('link', { name: /settings/i }));
+
+    expect(await screen.findByText('settings page')).toBeInTheDocument();
+    expect(backdrop()).toBeNull();
+  });
+
   it('signs out: clears tokens and navigates to /signin', async () => {
     renderShell(UserRoles.ADMIN);
-    await userEvent.click(await screen.findByRole('button', { name: /sign out/i }));
+    // Two sign-out buttons exist (desktop topbar + mobile drawer footer); both
+    // call the same handler, so either drives the flow.
+    const [signOutBtn] = await screen.findAllByRole('button', { name: /sign out/i });
+    await userEvent.click(signOutBtn);
 
     expect(await screen.findByText('signin page')).toBeInTheDocument();
     expect(localStorage.getItem('accessToken')).toBeNull();
