@@ -8,8 +8,9 @@ import { TENANT_A } from '../testing/tenant-test.helpers';
  * with `createParamDecorator`. Works by applying the decorator to a
  * dummy class method parameter and reading the resulting metadata.
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-function getParamDecoratorFactory(decorator: Function) {
+function getParamDecoratorFactory(
+  decorator: (...args: any[]) => ParameterDecorator,
+) {
   class Test {
     test(@decorator() _value: unknown) {
       void _value;

@@ -150,8 +150,7 @@ export class UserService {
     // Strip `id_tenant` via destructuring instead of mutating `input`.
     const updateInput =
       scope?.type === 'TENANT'
-        ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          (({ id_tenant: _ignored, ...rest }) => rest)(input)
+        ? (({ id_tenant, ...rest }) => (void id_tenant, rest))(input)
         : input;
 
     return await this.userRepository.update(id_user, updateInput);
