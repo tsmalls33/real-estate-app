@@ -99,7 +99,10 @@ describe('AdminShell', () => {
 
   it('signs out: clears tokens and navigates to /signin', async () => {
     renderShell(UserRoles.ADMIN);
-    await userEvent.click(await screen.findByRole('button', { name: /sign out/i }));
+    // Two sign-out buttons exist (desktop topbar + mobile drawer footer); both
+    // call the same handler, so either drives the flow.
+    const [signOutBtn] = await screen.findAllByRole('button', { name: /sign out/i });
+    await userEvent.click(signOutBtn);
 
     expect(await screen.findByText('signin page')).toBeInTheDocument();
     expect(localStorage.getItem('accessToken')).toBeNull();
