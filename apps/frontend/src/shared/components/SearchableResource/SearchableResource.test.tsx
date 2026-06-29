@@ -40,15 +40,15 @@ function renderAt(route: string, fetcher: (q: ResourceQuery) => Promise<{ items:
 afterEach(() => vi.useRealTimers());
 
 describe('SearchableResource', () => {
-  it('fetches with the search + filter + page params read from the URL', async () => {
-    const fetcher = vi.fn(async () => ({ items: [] as Item[], total: 0 }));
+  it('fetches with the search + filter + page params read from the URL', async (_q: ResourceQuery) => {
+    const fetcher = vi.fn(async (_q: ResourceQuery) => ({ items: [] as Item[], total: 0 }));
     renderAt('/?q=foo&status=SOLD&page=2', fetcher);
     await waitFor(() => expect(fetcher).toHaveBeenCalled());
     expect(fetcher).toHaveBeenCalledWith({ q: 'foo', status: 'SOLD', page: 2, limit: 12 });
   });
 
-  it('renders the fetched items through children', async () => {
-    const fetcher = vi.fn(async () => ({
+  it('renders the fetched items through children', async (_q: ResourceQuery) => {
+    const fetcher = vi.fn(async (_q: ResourceQuery) => ({
       items: [{ id: 'x1' }, { id: 'x2' }] as Item[],
       total: 2,
     }));
@@ -57,8 +57,8 @@ describe('SearchableResource', () => {
     expect(screen.getByText('x2')).toBeInTheDocument();
   });
 
-  it('resets the page when a filter changes', async () => {
-    const fetcher = vi.fn(async () => ({ items: [] as Item[], total: 0 }));
+  it('resets the page when a filter changes', async (_q: ResourceQuery) => {
+    const fetcher = vi.fn(async (_q: ResourceQuery) => ({ items: [] as Item[], total: 0 }));
     renderAt('/?page=2', fetcher);
     await waitFor(() => expect(fetcher).toHaveBeenCalledWith(expect.objectContaining({ page: 2 })));
 
@@ -71,8 +71,8 @@ describe('SearchableResource', () => {
     expect(last.page).toBe(1);
   });
 
-  it('debounces the search text before re-fetching', async () => {
-    const fetcher = vi.fn(async () => ({ items: [] as Item[], total: 0 }));
+  it('debounces the search text before re-fetching', async (_q: ResourceQuery) => {
+    const fetcher = vi.fn(async (_q: ResourceQuery) => ({ items: [] as Item[], total: 0 }));
     renderAt('/', fetcher);
     await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(1)); // initial fetch
 
