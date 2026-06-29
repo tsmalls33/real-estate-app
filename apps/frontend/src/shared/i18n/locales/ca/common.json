@@ -54,7 +54,8 @@
     "noResults": "Sense resultats.",
     "error": "Alguna cosa ha anat malament.",
     "notFound": "Pàgina no trobada.",
-    "emDash": "—"
+    "emDash": "—",
+    "paginationCount": "{{from}}–{{to}} de {{total}}"
   },
   "roles": {
     "admin": "Administrador",
@@ -87,7 +88,16 @@
       "scopeTenantFallback": "la teva immobiliària",
       "scopeAll": "Totes les propietats de totes les immobiliàries",
       "loadError": "No s'han pogut carregar les propietats: {{message}}",
-      "paginationCount": "{{from}}–{{to}} de {{total}}"
+      "searchPlaceholder": "Cerca propietats…",
+      "filters": {
+        "all": "Totes",
+        "forSale": "En venda",
+        "forRent": "En lloguer",
+        "underRental": "Llogada",
+        "sold": "Venuda",
+        "inactive": "Inactiva",
+        "reset": "Restableix"
+      }
     },
     "tenants": {
       "title": "Immobiliàries",

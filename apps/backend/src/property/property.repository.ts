@@ -35,6 +35,7 @@ export class PropertyRepository {
   async findAll(filters: {
     status?: PropertyStatus;
     saleType?: SaleType;
+    q?: string;
     scope: TenantScope;
     id_agent?: string;
     id_owner?: string;
@@ -48,6 +49,26 @@ export class PropertyRepository {
       isDeleted: false,
       ...(filterFields.status && { status: filterFields.status }),
       ...(filterFields.saleType && { saleType: filterFields.saleType }),
+      ...(filterFields.q && {
+        OR: [
+          { propertyName: { contains: filterFields.q, mode: 'insensitive' } },
+          {
+            propertyAddress: { contains: filterFields.q, mode: 'insensitive' },
+          },
+          {
+            owner: {
+              firstName: { contains: filterFields.q, mode: 'insensitive' },
+              isDeleted: false,
+            },
+          },
+          {
+            owner: {
+              lastName: { contains: filterFields.q, mode: 'insensitive' },
+              isDeleted: false,
+            },
+          },
+        ],
+      }),
       ...tenantFilter(scope),
       ...(filterFields.id_agent && { id_agent: filterFields.id_agent }),
       ...(filterFields.id_owner && { id_owner: filterFields.id_owner }),

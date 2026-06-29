@@ -72,7 +72,6 @@ real-estate-app-frontend/
 /generated/prisma
 .claude/
 CLAUDE.md
-REVIEW.md
 /plans
 .markdown*
 /previews

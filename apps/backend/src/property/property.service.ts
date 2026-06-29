@@ -37,6 +37,7 @@ export class PropertyService {
     return this.propertyRepository.findAll({
       status: query.status,
       saleType: query.saleType,
+      q: query.q,
       scope,
       id_agent: query.id_agent,
       id_owner: extra?.id_owner,
