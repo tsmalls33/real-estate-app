@@ -45,7 +45,7 @@ export const userApi = {
 };
 
 export const propertyApi = {
-  list: (params?: { page?: number; limit?: number }) => {
+  list: (params?: { q?: string; status?: string; saleType?: string; page?: number; limit?: number }) => {
     const qs = params ? '?' + new URLSearchParams(
       Object.fromEntries(
         Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)]),

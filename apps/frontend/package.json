@@ -24,7 +24,7 @@
     "start": "react-scripts start",
     "start:dev": "react-scripts start",
     "build": "react-scripts build",
-    "test": "vitest run",
+    "test": "tsc --noEmit && vitest run",
     "test:watch": "vitest",
     "eject": "react-scripts eject"
   },

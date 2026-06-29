@@ -1,4 +1,11 @@
-import { IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PropertyStatus, SaleType } from '@prisma/client';
@@ -13,6 +20,11 @@ export class GetPropertiesQueryParams {
   @IsEnum(SaleType)
   @IsOptional()
   saleType?: SaleType;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  q?: string;
 
   @ApiPropertyOptional()
   @IsUUID()

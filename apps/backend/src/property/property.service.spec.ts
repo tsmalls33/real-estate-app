@@ -45,6 +45,22 @@ describe('PropertyService – tenant scoping', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // findAll
+  // ---------------------------------------------------------------------------
+  describe('findAll', () => {
+    it('should forward query.q into propertyRepository.findAll', async () => {
+      mockRepo.findAll.mockResolvedValue({ properties: [], total: 0 } as any);
+
+      await service.findAll({ q: 'beach' } as any, mockTenantScope(TENANT_A));
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockRepo.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({ q: 'beach' }),
+      );
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // findOne
   // ---------------------------------------------------------------------------
   describe('findOne', () => {
