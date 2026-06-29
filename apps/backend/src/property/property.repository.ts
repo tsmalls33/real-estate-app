@@ -52,9 +52,21 @@ export class PropertyRepository {
       ...(filterFields.q && {
         OR: [
           { propertyName: { contains: filterFields.q, mode: 'insensitive' } },
-          { propertyAddress: { contains: filterFields.q, mode: 'insensitive' } },
-          { owner: { firstName: { contains: filterFields.q, mode: 'insensitive' }, isDeleted: false } },
-          { owner: { lastName: { contains: filterFields.q, mode: 'insensitive' }, isDeleted: false } },
+          {
+            propertyAddress: { contains: filterFields.q, mode: 'insensitive' },
+          },
+          {
+            owner: {
+              firstName: { contains: filterFields.q, mode: 'insensitive' },
+              isDeleted: false,
+            },
+          },
+          {
+            owner: {
+              lastName: { contains: filterFields.q, mode: 'insensitive' },
+              isDeleted: false,
+            },
+          },
         ],
       }),
       ...tenantFilter(scope),

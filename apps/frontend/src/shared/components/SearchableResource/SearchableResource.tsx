@@ -32,6 +32,7 @@ export default function SearchableResource<T>({
 
   // Sync local state when URL changes externally (browser back/forward).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQInput(urlQ);
     clearTimeout(debounceRef.current);
   }, [urlQ]);
@@ -109,6 +110,7 @@ export default function SearchableResource<T>({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState(prev => ({ ...prev, loading: true, error: null }));
     fetcher(query)
       .then(res => {
