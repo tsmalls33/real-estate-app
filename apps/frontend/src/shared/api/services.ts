@@ -2,6 +2,7 @@ import { api, type Envelope } from './client';
 import type {
   Language,
   MeResponse,
+  OwnerDashboardResponse,
   Property,
   Tenant,
   ThemeMode,
@@ -53,6 +54,11 @@ export const propertyApi = {
     ).toString() : '';
     return api.get<Envelope<{ properties: Property[]; total: number }>>(`/properties${qs}`).then(r => r.data);
   },
+};
+
+export const ownerApi = {
+  dashboard: () =>
+    api.get<Envelope<OwnerDashboardResponse>>('/properties/dashboard').then(r => r.data),
 };
 
 export const tenantApi = {

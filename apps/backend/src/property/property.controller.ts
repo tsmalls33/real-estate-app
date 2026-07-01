@@ -86,6 +86,24 @@ export class PropertyController {
     return this.propertyService.findAll(query, tenantScopeForUser(user));
   }
 
+  /** GET /properties/dashboard — owner aggregate data for all 3 sub-views */
+  @Get('dashboard')
+  @Roles(
+    UserRoles.SUPERADMIN,
+    UserRoles.ADMIN,
+    UserRoles.EMPLOYEE,
+    UserRoles.CLIENT,
+  )
+  @ResponseMessage('Owner dashboard fetched successfully')
+  getDashboard(@CurrentUser() user: JwtPayload) {
+    if (user.role === UserRoles.CLIENT) {
+      return this.propertyService.getOwnerDashboard(user.sub);
+    }
+    // ADMIN/SUPERADMIN/EMPLOYEE: scope to their tenant for now (no owner filter)
+    // A ?userId= query param can be added when needed.
+    return this.propertyService.getOwnerDashboard(user.sub);
+  }
+
   /** GET /properties/:id_property */
   @Get(':id_property')
   @ResponseMessage('Property fetched successfully')
