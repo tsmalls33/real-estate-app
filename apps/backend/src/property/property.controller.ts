@@ -29,6 +29,7 @@ import { UserRoles } from '@RealEstate/types';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { GetPropertiesQueryParams } from './dto/get-properties-query-params';
+import { GetDashboardQueryParams } from './dto/get-dashboard-query-params';
 import { GetReservationsQueryParams } from './dto/get-reservations-query-params';
 import { PropertyService } from './property.service';
 import { PropertyStatsService } from './property-stats.service';
@@ -87,15 +88,20 @@ export class PropertyController {
   }
 
   /**
-   * GET /properties/dashboard — owner aggregate data for all 3 sub-views.
-   * CLIENT-only for now: it scopes to id_owner = user.sub. Admin/employee
-   * access can be added with a ?userId= param once that view is built.
+   * GET /properties/dashboard?property=<uuid> — owner aggregate data.
+   * CLIENT-only for now: it scopes to id_owner = user.sub. An optional
+   * ?property= narrows the aggregation to one of the owner's properties.
+   * Admin/employee access can be added with a ?userId= param later.
    */
   @Get('dashboard')
   @Roles(UserRoles.CLIENT)
   @ResponseMessage('Owner dashboard fetched successfully')
-  getDashboard(@CurrentUser() user: JwtPayload) {
-    return this.propertyService.getOwnerDashboard(user.sub);
+  getDashboard(
+    @Query(new ValidationPipe({ transform: true }))
+    query: GetDashboardQueryParams,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.propertyService.getOwnerDashboard(user.sub, query.property);
   }
 
   /** GET /properties/:id_property */

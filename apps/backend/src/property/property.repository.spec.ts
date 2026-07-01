@@ -181,4 +181,24 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
     expect(avgNightly.amount).toBe(100);
     expect(avgNightly.deltaPercent).toBe(100);
   });
+
+  it('scopes the query to a single property when a propertyId is given', async () => {
+    mockPrisma.reservation.findMany.mockResolvedValue([]);
+
+    await repository.getOwnerDashboardMetrics('owner-1', 'prop-9');
+
+    const { where } = mockPrisma.reservation.findMany.mock.calls[0][0];
+    expect(where.id_property).toBe('prop-9');
+    // ownership is still enforced by the owner relation filter
+    expect(where.property).toEqual({ id_owner: 'owner-1', isDeleted: false });
+  });
+
+  it('omits id_property from the where clause for the combined view', async () => {
+    mockPrisma.reservation.findMany.mockResolvedValue([]);
+
+    await repository.getOwnerDashboardMetrics('owner-1');
+
+    const { where } = mockPrisma.reservation.findMany.mock.calls[0][0];
+    expect(where).not.toHaveProperty('id_property');
+  });
 });

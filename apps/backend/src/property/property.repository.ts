@@ -172,11 +172,13 @@ export class PropertyRepository {
 
   async getOwnerDashboardMetrics(
     userId: string,
+    propertyId?: string,
   ): Promise<OwnerDashboardResponse> {
     const raw = await this.prisma.reservation.findMany({
       where: {
         property: { id_owner: userId, isDeleted: false },
         status: { not: ReservationStatus.CANCELLED },
+        ...(propertyId ? { id_property: propertyId } : {}),
       },
       include: {
         property: { select: { id_property: true, propertyName: true } },

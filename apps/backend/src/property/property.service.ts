@@ -124,7 +124,10 @@ export class PropertyService {
     assertTenantMatch(scope, property.id_tenant);
   }
 
-  async getOwnerDashboard(userId: string): Promise<OwnerDashboardResponse> {
-    return this.propertyRepository.getOwnerDashboardMetrics(userId);
+  async getOwnerDashboard(
+    userId: string,
+    propertyId?: string,
+  ): Promise<OwnerDashboardResponse> {
+    return this.propertyRepository.getOwnerDashboardMetrics(userId, propertyId);
   }
 }
