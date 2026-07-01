@@ -199,8 +199,20 @@ export class PropertyRepository {
 
     const now = new Date();
     const startThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const startLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const startMonthBefore = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+
+    // Nights of a reservation that fall inside [windowStart, windowEnd).
+    const nightsInWindow = (
+      r: { startDate: Date; endDate: Date },
+      windowStart: Date,
+      windowEnd: Date,
+    ) => {
+      const from = Math.max(r.startDate.getTime(), windowStart.getTime());
+      const to = Math.min(r.endDate.getTime(), windowEnd.getTime());
+      return to > from ? Math.ceil((to - from) / 86400000) : 0;
+    };
 
     const completed = raw.filter(
       (r) => r.status === ReservationStatus.COMPLETED,
@@ -227,45 +239,42 @@ export class PropertyRepository {
           )
         : 0;
 
-    const proms = [...new Set(raw.map((r) => r.property.id_property))];
-    const nightsPerProperty = raw
-      .filter((r) => r.endDate >= startThisMonth)
-      .reduce(
-        (acc, r) => {
-          const id = r.property.id_property;
-          acc[id] =
-            (acc[id] ?? 0) +
-            Math.ceil((r.endDate.getTime() - r.startDate.getTime()) / 86400000);
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
-
+    const properties = [...new Set(raw.map((r) => r.property.id_property))];
     const daysInMonth = new Date(
       now.getFullYear(),
       now.getMonth() + 1,
       0,
     ).getDate();
-    const totalNights = proms.length * daysInMonth;
-    const bookedNights = Object.values(nightsPerProperty).reduce(
-      (s, v) => s + v,
+    const totalNights = properties.length * daysInMonth;
+    // Only count the portion of each stay that falls within the current month,
+    // so occupancy can never exceed 100%.
+    const bookedNights = raw.reduce(
+      (s, r) => s + nightsInWindow(r, startThisMonth, startNextMonth),
       0,
     );
 
-    const completedLast30 = completed.filter(
-      (r) => r.endDate >= new Date(now.getTime() - 30 * 86400000),
-    );
-    const totalNightsLast30 = completedLast30.reduce(
-      (s, r) =>
-        s + Math.ceil((r.endDate.getTime() - r.startDate.getTime()) / 86400000),
-      0,
-    );
-    const avgNightly =
-      totalNightsLast30 > 0
-        ? Math.round(
-            completedLast30.reduce((s, r) => s + Number(r.totalCost), 0) /
-              totalNightsLast30,
-          )
+    const start30 = new Date(now.getTime() - 30 * 86400000);
+    const start60 = new Date(now.getTime() - 60 * 86400000);
+    const avgNightlyOver = (windowStart: Date, windowEnd: Date) => {
+      const inWindow = completed.filter(
+        (r) => r.endDate >= windowStart && r.endDate < windowEnd,
+      );
+      const nights = inWindow.reduce(
+        (s, r) =>
+          s +
+          Math.ceil((r.endDate.getTime() - r.startDate.getTime()) / 86400000),
+        0,
+      );
+      if (nights === 0) return 0;
+      return Math.round(
+        inWindow.reduce((s, r) => s + Number(r.totalCost), 0) / nights,
+      );
+    };
+    const avgNightly = avgNightlyOver(start30, now);
+    const avgNightlyPrev = avgNightlyOver(start60, start30);
+    const avgNightlyDelta =
+      avgNightlyPrev > 0
+        ? Math.round(((avgNightly - avgNightlyPrev) / avgNightlyPrev) * 100)
         : 0;
 
     const completedThisMonth = completed.filter(
@@ -277,14 +286,8 @@ export class PropertyRepository {
     );
     const nextPayoutAmount = incomeThisMonth;
 
-    const payoutMonth = now.getMonth() + 2;
-    const payoutYear =
-      payoutMonth > 11 ? now.getFullYear() + 1 : now.getFullYear();
-    const payoutDate = new Date(
-      payoutYear,
-      payoutMonth > 11 ? payoutMonth - 12 : payoutMonth,
-      5,
-    );
+    // Date constructor normalizes month overflow (e.g. month 13 -> next year).
+    const payoutDate = new Date(now.getFullYear(), now.getMonth() + 2, 5);
 
     const incomeChart: IncomeChartItem[] = [];
     for (let i = 5; i >= 0; i--) {
@@ -310,6 +313,7 @@ export class PropertyRepository {
 
     const upcomingCheckins: UpcomingCheckin[] = raw
       .filter((r) => r.status === ReservationStatus.UPCOMING)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
       .slice(0, 5)
       .map((r) => ({
         id: r.id_reservation,
@@ -335,7 +339,7 @@ export class PropertyRepository {
         },
         avgNightly: {
           amount: avgNightly,
-          deltaPercent: 0,
+          deltaPercent: avgNightlyDelta,
         },
         nextPayout: {
           amount: nextPayoutAmount,

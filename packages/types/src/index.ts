@@ -8,3 +8,4 @@ export * from './AgentPayment';
 export * from './Reservation';
 export * from './Property';
 export * from './PropertyStats';
+export * from './Dashboard';
