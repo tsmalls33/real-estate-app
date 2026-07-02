@@ -6,7 +6,7 @@ interface Props {
 }
 
 const card =
-  'bg-surface border border-border rounded-[14px] p-[16px_18px] shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md animate-[rise_0.4s_ease-out_both]';
+  'bg-surface border border-border rounded-[14px] p-[16px_18px] shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md';
 
 function DeltaPill({ pct, onDark = false }: { pct: number; onDark?: boolean }) {
   const { t } = useTranslation();
@@ -41,7 +41,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
         </div>
       </div>
 
-      <div className={card} style={{ animationDelay: '60ms' }}>
+      <div className={card}>
         <div className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted">
           {t('client.dashboard.nightsBooked')}
         </div>
@@ -51,8 +51,8 @@ export default function OwnerKpiStrip({ kpis }: Props) {
         </div>
         <div className="h-[4px] rounded-full bg-surface-2 mt-[9px] overflow-hidden">
           <div
-            className="h-full rounded-full bg-brand-secondary origin-left animate-[growX_0.8s_ease-out_both]"
-            style={{ width: `${occupancy}%`, animationDelay: '250ms' }}
+            className="h-full rounded-full bg-brand-secondary origin-left animate-[growX_0.7s_ease-out_both]"
+            style={{ width: `${occupancy}%` }}
           />
         </div>
         <div className="text-[11px] mt-[5px] text-text-muted font-medium">
@@ -60,7 +60,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
         </div>
       </div>
 
-      <div className={card} style={{ animationDelay: '120ms' }}>
+      <div className={card}>
         <div className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted">
           {t('client.dashboard.avgNightly')}
         </div>
@@ -72,7 +72,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
         </div>
       </div>
 
-      <div className={card} style={{ animationDelay: '180ms' }}>
+      <div className={card}>
         <div className="text-[10px] uppercase tracking-[0.12em] font-semibold text-text-muted">
           {t('client.dashboard.nextPayout')}
         </div>

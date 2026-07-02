@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { IncomeChartItem } from '@RealEstate/types';
+import { CHANNELS } from '../../shared/components/ChannelBadge/channels';
 
 interface Props {
   data: IncomeChartItem[];
@@ -18,11 +19,10 @@ export default function IncomeChart({ data }: Props) {
     return new Date(y, m - 1, 1).toLocaleDateString(i18n.language, { month: 'short' });
   };
 
-  const legend = [
-    { label: t('client.dashboard.channels.airbnb'), color: 'var(--channel-airbnb)' },
-    { label: t('client.dashboard.channels.booking'), color: 'var(--channel-booking)' },
-    { label: t('client.dashboard.channels.direct'), color: 'var(--brand-primary)' },
-  ];
+  const legend = (['AIRBNB', 'BOOKING', 'OTHER'] as const).map((c) => ({
+    label: t(CHANNELS[c].labelKey),
+    color: CHANNELS[c].color,
+  }));
 
   return (
     <div className="bg-surface border border-border rounded-[14px] p-[16px_18px] shadow-sm flex flex-col h-full">
@@ -39,7 +39,7 @@ export default function IncomeChart({ data }: Props) {
             ))}
           </div>
           <div className="absolute inset-0 flex items-end gap-[6px] border-b border-border">
-            {data.map((month, i) => {
+            {data.map((month) => {
               const total = month.airbnb + month.booking + month.other;
               const pct = (v: number) => (total <= 0 ? 0 : (v / total) * 100);
               const tip = `€${total.toLocaleString()} — ${legend[0].label} €${month.airbnb.toLocaleString()} · ${legend[1].label} €${month.booking.toLocaleString()} · ${legend[2].label} €${month.other.toLocaleString()}`;
@@ -54,12 +54,12 @@ export default function IncomeChart({ data }: Props) {
                 <div
                   key={month.month}
                   title={tip}
-                  className="flex-1 flex flex-col-reverse rounded-t-[6px] overflow-hidden origin-bottom animate-[growY_0.6s_cubic-bezier(0.22,1,0.36,1)_both] transition-[filter] duration-150 hover:brightness-110 cursor-default"
-                  style={{ height: `${(total / maxTotal) * 100}%`, minHeight: '6px', animationDelay: `${i * 70}ms` }}
+                  className="flex-1 flex flex-col-reverse rounded-t-[6px] overflow-hidden origin-bottom animate-[growY_0.45s_cubic-bezier(0.22,1,0.36,1)_both] transition-[filter] duration-150 hover:brightness-110 cursor-default"
+                  style={{ height: `${(total / maxTotal) * 100}%`, minHeight: '6px' }}
                 >
-                  <div style={{ height: `${pct(month.other)}%`, background: 'var(--brand-primary)' }} />
-                  <div style={{ height: `${pct(month.booking)}%`, background: 'var(--channel-booking)' }} />
-                  <div style={{ height: `${pct(month.airbnb)}%`, background: 'var(--channel-airbnb)' }} />
+                  <div style={{ height: `${pct(month.other)}%`, background: CHANNELS.OTHER.color }} />
+                  <div style={{ height: `${pct(month.booking)}%`, background: CHANNELS.BOOKING.color }} />
+                  <div style={{ height: `${pct(month.airbnb)}%`, background: CHANNELS.AIRBNB.color }} />
                 </div>
               );
             })}

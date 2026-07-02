@@ -27,9 +27,9 @@ export default function PropertySwitcher() {
   };
 
   const pillClass = (isActive: boolean) =>
-    `flex-shrink-0 flex items-center gap-[10px] pl-[8px] pr-[16px] py-[7px] rounded-full text-left cursor-pointer transition-all duration-150 border hover:-translate-y-[1px] active:translate-y-0 ${
+    `flex-shrink-0 flex items-center gap-[10px] pl-[8px] pr-[16px] py-[7px] rounded-full text-left cursor-pointer transition-all duration-150 border ${
       isActive
-        ? 'bg-brand-primary border-brand-primary text-brand-on-primary shadow-md ring-2 ring-brand-secondary-soft'
+        ? 'bg-brand-primary border-brand-primary text-brand-on-primary ring-[3px] ring-brand-secondary-soft'
         : 'bg-surface border-border text-text hover:border-brand-secondary hover:shadow-sm'
     }`;
 
@@ -77,7 +77,7 @@ export default function PropertySwitcher() {
   );
 
   return (
-    <ScrollFade className="flex gap-2 pb-1" role="tablist" aria-label={t('client.dashboard.title')}>
+    <ScrollFade className="flex gap-2 py-[4px]" role="tablist" aria-label={t('client.dashboard.title')}>
       {chip('all', t('client.dashboard.allProperties'), t('client.dashboard.combinedView'), radio(selectedId === 'all'), selectedId === 'all')}
       {properties.map(p =>
         chip(p.id_property, p.propertyName, p.propertyAddress, thumb(p), selectedId === p.id_property),

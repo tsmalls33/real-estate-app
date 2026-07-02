@@ -43,6 +43,8 @@ export default function ClientShell() {
     '/client/settings': t('nav.settings'),
   };
   const pageTitle = TITLES[location.pathname] ?? '';
+  // The switcher is a data filter — meaningless on settings.
+  const showSwitcher = location.pathname !== '/client/settings';
 
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
@@ -154,7 +156,7 @@ export default function ClientShell() {
         </div>
       </aside>
 
-      <div className="w-full max-w-[1240px] mx-auto pt-[26px] px-[32px] pb-[8px] max-client:px-4 animate-[rise_0.4s_ease-out_both]">
+      <div className="w-full max-w-[1240px] mx-auto pt-[26px] px-[32px] pb-[8px] max-client:px-4">
         <div className="text-[24px] font-bold text-text tracking-[-0.02em]">
           {greeting}{' '}
           <span aria-hidden className="inline-block animate-[wave_1.1s_ease-in-out_0.3s_1] origin-[70%_70%]">👋</span>
@@ -164,9 +166,11 @@ export default function ClientShell() {
         </div>
       </div>
 
-      <div className="w-full max-w-[1240px] mx-auto px-[32px] pb-[8px] max-client:px-4">
-        <PropertySwitcher />
-      </div>
+      {showSwitcher && (
+        <div className="w-full max-w-[1240px] mx-auto px-[32px] pb-[8px] max-client:px-4">
+          <PropertySwitcher />
+        </div>
+      )}
 
       <main className="w-full max-w-[1240px] mx-auto pt-[12px] px-[32px] pb-[40px] flex-1 max-client:px-4">
         <Outlet />
