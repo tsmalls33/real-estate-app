@@ -4,6 +4,7 @@ import {
   RentalMode,
   SaleType,
 } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 type PropertySeed = {
   id_property: string;
@@ -177,10 +178,11 @@ export async function seedProperties(prisma: PrismaClient) {
       );
     }
 
+    const id_property = seedUuid(p.id_property);
     const data = {
       propertyName: p.propertyName,
       propertyAddress: p.propertyAddress,
-      id_tenant: p.id_tenant,
+      id_tenant: seedUuid(p.id_tenant),
       id_owner,
       id_agent,
       status: p.status,
@@ -189,9 +191,9 @@ export async function seedProperties(prisma: PrismaClient) {
     };
 
     await prisma.property.upsert({
-      where: { id_property: p.id_property },
+      where: { id_property },
       update: data,
-      create: { id_property: p.id_property, ...data },
+      create: { id_property, ...data },
     });
   }
 

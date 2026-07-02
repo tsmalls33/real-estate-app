@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 const DEFAULT_TENANTS = [
   {
@@ -19,13 +20,15 @@ export async function seedTenants(prisma: PrismaClient) {
   console.log('Seeding tenants...');
 
   for (const tenant of DEFAULT_TENANTS) {
+    const id_tenant = seedUuid(tenant.id_tenant);
+    const id_theme = seedUuid(tenant.id_theme);
     await prisma.tenant.upsert({
-      where: { id_tenant: tenant.id_tenant },
+      where: { id_tenant },
       update: {
         customDomain: tenant.customDomain,
-        id_theme: tenant.id_theme,
+        id_theme,
       },
-      create: tenant,
+      create: { ...tenant, id_tenant, id_theme },
     });
   }
 

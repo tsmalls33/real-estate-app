@@ -1,4 +1,5 @@
 import { PrismaClient, Platform, ReservationStatus } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 // Deterministic PRNG (mulberry32) so re-running the seed produces identical
 // values for a given property. Seeded per property by index.
@@ -177,11 +178,14 @@ export async function seedReservations(prisma: PrismaClient) {
 
   let n = 0;
   for (const row of rows) {
-    const id_reservation = `reservation-seed-${String(++n).padStart(4, '0')}`;
+    const id_reservation = seedUuid(
+      `reservation-seed-${String(++n).padStart(4, '0')}`,
+    );
+    const data = { ...row, id_property: seedUuid(row.id_property) };
     await prisma.reservation.upsert({
       where: { id_reservation },
-      update: row,
-      create: { id_reservation, ...row },
+      update: data,
+      create: { id_reservation, ...data },
     });
   }
 
