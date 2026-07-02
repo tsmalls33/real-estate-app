@@ -2,17 +2,23 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGauge, faGear, faBars, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faBars, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from '../../shared/theme/ThemeContext';
 import { useSignOut } from '../../shared/auth/useSignOut';
 import { initials } from '../../shared/format/initials';
 import { focusRing } from '../../shared/styles/focusRing';
+import PropertySwitcher from '../components/PropertySwitcher';
 
 const navItem = (isActive: boolean) =>
   `relative flex items-center gap-[11px] py-[9px] px-[11px] rounded-[7px] text-[13px] cursor-pointer no-underline mb-[2px] transition-[background-color,color] duration-[120ms] ease-[ease] hover:bg-hover hover:text-text ${
     isActive
       ? "bg-hover text-text font-semibold before:content-[''] before:absolute before:left-0 before:top-[7px] before:bottom-[7px] before:w-[2px] before:rounded-[2px] before:bg-brand-secondary"
       : 'text-text-muted'
+  }`;
+
+const tabLink = (isActive: boolean) =>
+  `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${focusRing} ${
+    isActive ? 'bg-brand-secondary text-brand-on-secondary font-semibold' : 'text-text-muted hover:text-text'
   }`;
 
 export default function ClientShell() {
@@ -30,7 +36,9 @@ export default function ClientShell() {
   const greeting = me?.firstName ? t('shell.welcomeBack', { name: me.firstName }) : t('shell.welcomeBackGeneric');
 
   const TITLES: Record<string, string> = {
-    '/client': t('nav.overview'),
+    '/client': t('client.dashboard.overview'),
+    '/client/reservations': t('client.dashboard.reservations'),
+    '/client/income': t('client.dashboard.income'),
     '/client/settings': t('nav.settings'),
   };
   const pageTitle = TITLES[location.pathname] ?? '';
@@ -62,30 +70,29 @@ export default function ClientShell() {
         </div>
 
         <nav className="flex gap-[4px] max-client:hidden">
-          <NavLink
-            to="/client"
-            end
-            className={({ isActive }) =>
-              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${focusRing} ${
-                isActive ? 'bg-brand-secondary text-brand-on-secondary font-semibold' : 'text-text-muted hover:text-text'
-              }`
-            }
-          >
-            <FontAwesomeIcon icon={faGauge} aria-hidden /> {t('nav.overview')}
+          <NavLink to="/client" end className={({ isActive }) => tabLink(isActive)}>
+            {t('client.dashboard.overview')}
           </NavLink>
-          <NavLink
-            to="/client/settings"
-            className={({ isActive }) =>
-              `inline-flex items-center gap-[6px] py-[8px] px-[14px] rounded-full text-[13px] cursor-pointer no-underline ${focusRing} ${
-                isActive ? 'bg-brand-secondary text-brand-on-secondary font-semibold' : 'text-text-muted hover:text-text'
-              }`
-            }
-          >
-            <FontAwesomeIcon icon={faGear} aria-hidden /> {t('nav.settings')}
+          <NavLink to="/client/reservations" className={({ isActive }) => tabLink(isActive)}>
+            {t('client.dashboard.reservations')}
+          </NavLink>
+          <NavLink to="/client/income" className={({ isActive }) => tabLink(isActive)}>
+            {t('client.dashboard.income')}
           </NavLink>
         </nav>
 
         <div className="flex items-center gap-[12px] max-client:hidden">
+          <NavLink
+            to="/client/settings"
+            className={({ isActive }) =>
+              `grid place-items-center w-[36px] h-[36px] rounded-[9px] text-text-muted hover:text-text hover:bg-hover ${focusRing} ${
+                isActive ? 'text-brand-secondary' : ''
+              }`
+            }
+            aria-label={t('nav.settings')}
+          >
+            <FontAwesomeIcon icon={faGear} />
+          </NavLink>
           <div className="w-[36px] h-[36px] rounded-full bg-brand-secondary text-brand-on-secondary grid place-items-center font-bold text-[12px]">{initials(me?.firstName, me?.lastName, me?.email)}</div>
           <button
             className={`bg-transparent border border-border-strong text-text-muted text-[12px] py-[7px] px-[12px] rounded-full cursor-pointer tracking-[0.04em] uppercase font-semibold hover:text-text ${focusRing}`}
@@ -114,11 +121,19 @@ export default function ClientShell() {
         </div>
         <nav className="flex flex-col flex-1">
           <NavLink to="/client" end className={({ isActive }) => navItem(isActive)}>
-            <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGauge} /></span> {t('nav.overview')}
+            {t('client.dashboard.overview')}
           </NavLink>
-          <NavLink to="/client/settings" className={({ isActive }) => navItem(isActive)}>
-            <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGear} /></span> {t('nav.settings')}
+          <NavLink to="/client/reservations" className={({ isActive }) => navItem(isActive)}>
+            {t('client.dashboard.reservations')}
           </NavLink>
+          <NavLink to="/client/income" className={({ isActive }) => navItem(isActive)}>
+            {t('client.dashboard.income')}
+          </NavLink>
+          <div className="mt-auto border-t border-border pt-[4px]">
+            <NavLink to="/client/settings" className={({ isActive }) => navItem(isActive)}>
+              <span className="text-[13px] w-[16px] text-center flex-shrink-0 opacity-90"><FontAwesomeIcon icon={faGear} /></span> {t('nav.settings')}
+            </NavLink>
+          </div>
         </nav>
         <div className="px-[10px] pt-[14px] mt-[4px] border-t border-border">
           <div className="flex items-center gap-[10px] pb-[12px]">
@@ -140,6 +155,10 @@ export default function ClientShell() {
       <div className="pt-[24px] px-[32px] pb-[8px] max-client:px-4">
         <div className="text-[22px] font-bold text-text tracking-[-0.02em]">{greeting}</div>
         <div className="text-[12px] text-text-muted mt-[4px]">{me?.email}</div>
+      </div>
+
+      <div className="px-[32px] pb-[8px] max-client:px-4">
+        <PropertySwitcher />
       </div>
 
       <main className="pt-[12px] px-[32px] pb-[40px] flex-1 max-client:px-4">

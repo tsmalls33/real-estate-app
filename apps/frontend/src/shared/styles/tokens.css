@@ -117,3 +117,14 @@
     }
   }
 }
+
+@layer utilities {
+  /* Hide the native scrollbar while keeping the element scrollable. Paired with
+     ScrollFade, which supplies the edge affordance instead. */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -11,19 +11,22 @@ vi.mock('../../shared/api/services', () => ({
   authApi: { signin: vi.fn(), signup: vi.fn(), logout: vi.fn().mockResolvedValue(undefined) },
 }));
 
-import { userApi } from '../../shared/api/services';
+import { userApi, propertyApi } from '../../shared/api/services';
 import { seedAuth, clearAuth } from '../../test-utils/auth';
-import { makeMe } from '../../test-utils/factories';
+import { makeMe, makeProperty } from '../../test-utils/factories';
 import { renderWithSession } from '../../test-utils/render';
 import ClientShell from './ClientShell';
 
 function renderShell() {
   seedAuth(UserRoles.CLIENT);
   vi.mocked(userApi.me).mockResolvedValue(makeMe({ role: UserRoles.CLIENT, firstName: 'Cleo' }));
+  vi.mocked(propertyApi.list).mockResolvedValue({ properties: [makeProperty()], total: 1 });
   return renderWithSession(
     <Routes>
       <Route path="/client" element={<ClientShell />}>
         <Route index element={<div>overview page</div>} />
+        <Route path="reservations" element={<div>reservations page</div>} />
+        <Route path="income" element={<div>income page</div>} />
         <Route path="settings" element={<div>settings page</div>} />
       </Route>
       <Route path="/signin" element={<div>signin page</div>} />
