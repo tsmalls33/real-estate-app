@@ -92,6 +92,34 @@ jobs:
       - name: Integration tests
         run: pnpm --filter @RealEstate/backend run test:integration
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ESLint (backend uses type-aware rules) needs types available.
+      - name: Build types
+        run: pnpm --filter @RealEstate/types run build
+
+      # Backend lint reads Prisma-generated types via projectService: true.
+      - name: Generate Prisma client
+        run: pnpm --filter @RealEstate/backend exec prisma generate
+
+      - name: Lint all packages
+        run: pnpm run lint
+
   frontend:
     runs-on: ubuntu-latest
     steps:
@@ -114,9 +142,8 @@ jobs:
         run: pnpm --filter @RealEstate/types run build
 
       # react-scripts 5 (CRA) drives ESLint with options removed in ESLint 9,
-      # which is hoisted into the workspace by the backend. Lint is out of
-      # scope as a CI gate for now, so disable CRA's lint pass — the build
-      # still type-checks and bundles.
+      # which is hoisted into the workspace by the backend. Lint runs in its
+      # own job (the `lint` step above) using the flat config directly.
       - name: Build frontend
         env:
           DISABLE_ESLINT_PLUGIN: "true"
