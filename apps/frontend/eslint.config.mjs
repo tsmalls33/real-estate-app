@@ -11,6 +11,9 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // Advisory perf hint (react-hooks v7), not a correctness rule; it flags
+      // legitimate patterns (fetch-then-setState, reset-on-nav). Keep as a warning.
+      'react-hooks/set-state-in-effect': 'warn',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },

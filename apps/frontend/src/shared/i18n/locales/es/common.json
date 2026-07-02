@@ -113,7 +113,28 @@
     "dashboard": {
       "title": "Tus propiedades",
       "loadError": "No se pudieron cargar tus propiedades: {{message}}",
-      "empty": "Aún no tienes propiedades."
+      "empty": "Aún no tienes propiedades.",
+      "overview": "Resumen",
+      "reservations": "Reservas",
+      "income": "Ingresos",
+      "allProperties": "Todas las propiedades",
+      "combinedView": "Vista combinada",
+      "incomeLastMonth": "Ingresos · Mes pasado",
+      "nightsBooked": "Noches reservadas",
+      "avgNightly": "Media por noche",
+      "nextPayout": "Próximo pago",
+      "occupancy": "{{pct}}% de ocupación",
+      "vsLastMonth": "vs. el mes pasado",
+      "incomeChart": "Ingresos · últimos 6 meses",
+      "upcomingCheckins": "Próximas entradas",
+      "noCheckins": "No hay próximas entradas",
+      "nights": "{{n}} noches",
+      "guests": "{{n}} huéspedes",
+      "channels": {
+        "airbnb": "Airbnb",
+        "booking": "Booking",
+        "direct": "Directo"
+      }
     }
   },
   "propertyStatus": {

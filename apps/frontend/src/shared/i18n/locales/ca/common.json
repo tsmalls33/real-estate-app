@@ -113,7 +113,28 @@
     "dashboard": {
       "title": "Les teves propietats",
       "loadError": "No s'han pogut carregar les teves propietats: {{message}}",
-      "empty": "Encara no tens propietats."
+      "empty": "Encara no tens propietats.",
+      "overview": "Resum",
+      "reservations": "Reserves",
+      "income": "Ingressos",
+      "allProperties": "Totes les propietats",
+      "combinedView": "Vista combinada",
+      "incomeLastMonth": "Ingressos · Mes passat",
+      "nightsBooked": "Nits reservades",
+      "avgNightly": "Mitjana per nit",
+      "nextPayout": "Pròxim pagament",
+      "occupancy": "{{pct}}% d'ocupació",
+      "vsLastMonth": "vs. el mes passat",
+      "incomeChart": "Ingressos · últims 6 mesos",
+      "upcomingCheckins": "Pròximes entrades",
+      "noCheckins": "No hi ha pròximes entrades",
+      "nights": "{{n}} nits",
+      "guests": "{{n}} hostes",
+      "channels": {
+        "airbnb": "Airbnb",
+        "booking": "Booking",
+        "direct": "Directe"
+      }
     }
   },
   "propertyStatus": {

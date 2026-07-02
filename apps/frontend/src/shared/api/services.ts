@@ -57,8 +57,10 @@ export const propertyApi = {
 };
 
 export const ownerApi = {
-  dashboard: () =>
-    api.get<Envelope<OwnerDashboardResponse>>('/properties/dashboard').then(r => r.data),
+  dashboard: (propertyId?: string) =>
+    api.get<Envelope<OwnerDashboardResponse>>(
+      `/properties/dashboard${propertyId ? `?property=${encodeURIComponent(propertyId)}` : ''}`,
+    ).then(r => r.data),
 };
 
 export const tenantApi = {
