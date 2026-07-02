@@ -1,4 +1,5 @@
 import { PrismaClient, PlanPeriod } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 const DEFAULT_PLANS = [
   {
@@ -25,14 +26,15 @@ export async function seedPlans(prisma: PrismaClient) {
   console.log('Seeding plans...');
 
   for (const plan of DEFAULT_PLANS) {
+    const id_plan = seedUuid(plan.id_plan);
     await prisma.plan.upsert({
-      where: { id_plan: plan.id_plan },
+      where: { id_plan },
       update: {
         name: plan.name,
         price: plan.price,
         pricePeriod: plan.pricePeriod,
       },
-      create: plan,
+      create: { ...plan, id_plan },
     });
   }
 

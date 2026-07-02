@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 const DEFAULT_THEMES = [
   {
@@ -28,15 +29,16 @@ export async function seedThemes(prisma: PrismaClient) {
   console.log('Seeding themes...');
 
   for (const theme of DEFAULT_THEMES) {
+    const id_theme = seedUuid(theme.id_theme);
     await prisma.theme.upsert({
-      where: { id_theme: theme.id_theme },
+      where: { id_theme },
       update: {
         name: theme.name,
         backgroundColor: theme.backgroundColor,
         brandColor: theme.brandColor,
         secondaryColor: theme.secondaryColor,
       },
-      create: theme,
+      create: { ...theme, id_theme },
     });
   }
 

@@ -1,4 +1,5 @@
 import { PrismaClient, CostType } from '@prisma/client';
+import { seedUuid } from './_uuid';
 
 // Same deterministic PRNG approach as reservation.seed — re-running produces
 // identical amounts for a given property.
@@ -214,11 +215,12 @@ export async function seedCosts(prisma: PrismaClient) {
 
   let n = 0;
   for (const row of rows) {
-    const id_cost = `cost-seed-${String(++n).padStart(4, '0')}`;
+    const id_cost = seedUuid(`cost-seed-${String(++n).padStart(4, '0')}`);
+    const data = { ...row, id_property: seedUuid(row.id_property) };
     await prisma.cost.upsert({
       where: { id_cost },
-      update: row,
-      create: { id_cost, ...row },
+      update: data,
+      create: { id_cost, ...data },
     });
   }
 

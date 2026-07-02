@@ -1,5 +1,6 @@
 import { PrismaClient, UserRoles, User } from '@prisma/client';
 import { seedPasswordHash } from './_password';
+import { seedUuid } from './_uuid';
 
 const DEFAULT_USERS: Partial<User>[] = [
   {
@@ -82,10 +83,16 @@ export async function seedUsers(prisma: PrismaClient) {
   const passwordHash = await seedPasswordHash('Password123!');
 
   for (const user of DEFAULT_USERS) {
+    const id_tenant = user.id_tenant ? seedUuid(user.id_tenant) : null;
     await prisma.user.upsert({
       where: { email: user.email },
-      update: { firstName: user.firstName, lastName: user.lastName, role: user.role, id_tenant: user.id_tenant },
-      create: { ...user as User, passwordHash },
+      update: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        id_tenant,
+      },
+      create: { ...(user as User), id_tenant, passwordHash },
     });
   }
 
