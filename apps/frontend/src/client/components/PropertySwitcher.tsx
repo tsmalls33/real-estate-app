@@ -27,10 +27,10 @@ export default function PropertySwitcher() {
   };
 
   const pillClass = (isActive: boolean) =>
-    `flex-shrink-0 flex items-center gap-[10px] pl-[8px] pr-[16px] py-[7px] rounded-full text-left cursor-pointer transition-all duration-100 border ${
+    `flex-shrink-0 flex items-center gap-[10px] pl-[8px] pr-[16px] py-[7px] rounded-full text-left cursor-pointer transition-all duration-150 border hover:-translate-y-[1px] active:translate-y-0 ${
       isActive
-        ? 'bg-brand-primary border-brand-primary text-brand-on-primary'
-        : 'bg-surface border-border text-text hover:border-text-muted'
+        ? 'bg-brand-primary border-brand-primary text-brand-on-primary shadow-md ring-2 ring-brand-secondary-soft'
+        : 'bg-surface border-border text-text hover:border-brand-secondary hover:shadow-sm'
     }`;
 
   const chip = (

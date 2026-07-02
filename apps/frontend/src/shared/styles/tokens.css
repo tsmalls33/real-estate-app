@@ -33,6 +33,10 @@
   --success-soft: #E6F0E9;
   --danger-soft:  #F7E6E6;
 
+  /* Booking-channel accents — tuned per mode for contrast. */
+  --channel-airbnb:  #E8474E;
+  --channel-booking: #2758C4;
+
   /* Mode-aware hover/selected overlay — reads on both light and dark surfaces. */
   --hover: rgba(17, 24, 39, 0.05);
 
@@ -69,6 +73,9 @@
 
   --success-soft: #16261C;
   --danger-soft:  #2A1A1A;
+
+  --channel-airbnb:  #FF8A8F;
+  --channel-booking: #7FA5F5;
 
   --hover: rgba(255, 255, 255, 0.06);
 
@@ -116,6 +123,25 @@
       animation: none;
     }
   }
+}
+
+/* Entrance/feedback motion, consumed via Tailwind arbitrary animate-[...] values.
+   Kept out of @layer so the names are always emitted for runtime references. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes growY { from { transform: scaleY(0); } }
+@keyframes growX { from { transform: scaleX(0); } }
+@keyframes wave {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(16deg); }
+  50% { transform: rotate(-8deg); }
+  75% { transform: rotate(10deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 @layer utilities {
