@@ -5,11 +5,11 @@ import { createHash } from 'node:crypto';
 // references intact while satisfying UUID validation (e.g. ?property on the
 // owner dashboard). Re-running the seed always yields the same id for a slug.
 const SEED_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+const NAMESPACE_BYTES = Buffer.from(SEED_NAMESPACE.replace(/-/g, ''), 'hex');
 
 export function seedUuid(slug: string): string {
-  const ns = Buffer.from(SEED_NAMESPACE.replace(/-/g, ''), 'hex');
   const bytes = createHash('sha1')
-    .update(ns)
+    .update(NAMESPACE_BYTES)
     .update(slug, 'utf8')
     .digest()
     .subarray(0, 16);
