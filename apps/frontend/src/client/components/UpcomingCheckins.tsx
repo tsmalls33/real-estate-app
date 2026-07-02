@@ -44,8 +44,8 @@ export default function UpcomingCheckins({ checkins }: Props) {
       <div className="flex-1 min-h-0">
         <ScrollFade orientation="vertical" className="space-y-2" fadeColor="var(--surface)">
           {checkins.map((c) => {
-            const day = new Date(c.checkIn).getDate();
-            const month = new Date(c.checkIn).toLocaleDateString(i18n.language, { month: 'short' });
+            const day = new Date(c.checkIn).getUTCDate();
+            const month = new Date(c.checkIn).toLocaleDateString(i18n.language, { month: 'short', timeZone: 'UTC' });
             return (
               <div key={c.id} className="flex items-center gap-3 py-2 border-b border-border last:border-b-0">
                 <div className="flex flex-col items-center w-[36px] flex-shrink-0">

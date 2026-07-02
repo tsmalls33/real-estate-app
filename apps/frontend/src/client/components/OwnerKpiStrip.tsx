@@ -43,7 +43,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
           €{kpis.avgNightly.amount}
         </div>
         <div className={`text-[11px] mt-[2px] font-medium ${kpis.avgNightly.deltaPercent >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-          {kpis.avgNightly.deltaPercent >= 0 ? '↑' : '↓'} €{Math.abs(kpis.avgNightly.deltaPercent)} {t('client.dashboard.vsLastMonth')}
+          {kpis.avgNightly.deltaPercent >= 0 ? '↑' : '↓'} {Math.abs(kpis.avgNightly.deltaPercent)}% {t('client.dashboard.vsLastMonth')}
         </div>
       </div>
 
@@ -55,7 +55,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
           €{kpis.nextPayout.amount.toLocaleString()}
         </div>
         <div className="text-[11px] mt-[2px] text-text-muted font-medium">
-          {kpis.nextPayout.date && new Date(kpis.nextPayout.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+          {kpis.nextPayout.date && new Date(kpis.nextPayout.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' })}
         </div>
       </div>
     </div>

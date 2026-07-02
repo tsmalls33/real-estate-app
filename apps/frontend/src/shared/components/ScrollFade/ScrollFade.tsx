@@ -57,7 +57,10 @@ export default function ScrollFade({
       <div
         {...rest}
         ref={ref}
-        onScroll={update}
+        onScroll={(e) => {
+          rest.onScroll?.(e);
+          update();
+        }}
         className={`${vertical ? 'h-full overflow-y-auto' : 'overflow-x-auto'} scrollbar-none ${className ?? ''}`}
       >
         {children}
