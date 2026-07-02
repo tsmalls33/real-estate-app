@@ -29,7 +29,7 @@ export default function PropertySwitcher() {
   const pillClass = (isActive: boolean) =>
     `flex-shrink-0 flex items-center gap-[10px] pl-[8px] pr-[16px] py-[7px] rounded-full text-left cursor-pointer transition-all duration-150 border ${
       isActive
-        ? 'bg-brand-primary border-brand-primary text-brand-on-primary ring-[3px] ring-brand-secondary-soft'
+        ? 'bg-brand-primary border-brand-secondary text-brand-on-primary'
         : 'bg-surface border-border text-text hover:border-brand-secondary hover:shadow-sm'
     }`;
 
