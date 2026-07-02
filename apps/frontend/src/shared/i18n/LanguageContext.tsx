@@ -28,7 +28,10 @@ function readStoredLanguage(): Language {
 export function LanguageProvider({ children, preferredLanguage }: { children: React.ReactNode; preferredLanguage?: Language | null }) {
   const { i18n } = useTranslation();
   const changeLangRef = useRef(i18n.changeLanguage);
-  changeLangRef.current = i18n.changeLanguage;
+
+  useEffect(() => {
+    changeLangRef.current = i18n.changeLanguage;
+  }, [i18n]);
 
   const [language, setLanguageState] = useState<Language>(
     () => preferredLanguage ?? readStoredLanguage(),
