@@ -56,7 +56,7 @@ export default function OwnerKpiStrip({ kpis }: Props) {
           />
         </div>
         <div className="text-[11px] mt-[5px] text-text-muted font-medium">
-          {t('client.dashboard.occupancy', { pct: kpis.nightsBooked.occupancyPct })}
+          {t('client.dashboard.occupancy', { pct: occupancy })}
         </div>
       </div>
 

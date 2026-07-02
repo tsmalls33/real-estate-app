@@ -6,10 +6,15 @@ export interface ChannelMeta {
   labelKey: string;
 }
 
-export const CHANNELS: Record<string, ChannelMeta> = {
+export type ChannelId = 'AIRBNB' | 'BOOKING' | 'OTHER';
+
+export const CHANNELS: Record<ChannelId, ChannelMeta> = {
   AIRBNB: { color: 'var(--channel-airbnb)', labelKey: 'client.dashboard.channels.airbnb' },
   BOOKING: { color: 'var(--channel-booking)', labelKey: 'client.dashboard.channels.booking' },
   OTHER: { color: 'var(--brand-primary)', labelKey: 'client.dashboard.channels.direct' },
 };
 
-export const channelMeta = (channel: string): ChannelMeta => CHANNELS[channel] ?? CHANNELS.OTHER;
+const isChannelId = (c: string): c is ChannelId => c in CHANNELS;
+
+export const channelMeta = (channel: string): ChannelMeta =>
+  isChannelId(channel) ? CHANNELS[channel] : CHANNELS.OTHER;

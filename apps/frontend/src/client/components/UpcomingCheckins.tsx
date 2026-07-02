@@ -12,10 +12,12 @@ export default function UpcomingCheckins({ checkins }: Props) {
   const { t, i18n } = useTranslation();
 
   // "in 4 days" / "tomorrow", localized for free via Intl — no i18n keys needed.
-  // Captured once per mount so render stays pure (react-hooks/purity).
-  const [now] = useState(() => Date.now());
+  // Whole UTC calendar days (consistent with the UTC date chip) so the label
+  // never flips with time of day. Captured once per mount (react-hooks/purity).
+  const [today] = useState(() => new Date());
+  const utcDay = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
   const relative = (checkIn: string) => {
-    const days = Math.round((new Date(checkIn).getTime() - now) / 86400000);
+    const days = Math.round((utcDay(new Date(checkIn)) - utcDay(today)) / 86400000);
     return new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(days, 'day');
   };
 

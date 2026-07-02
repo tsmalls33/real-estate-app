@@ -42,7 +42,8 @@ export default function IncomeChart({ data }: Props) {
             {data.map((month) => {
               const total = month.airbnb + month.booking + month.other;
               const pct = (v: number) => (total <= 0 ? 0 : (v / total) * 100);
-              const tip = `€${total.toLocaleString()} — ${legend[0].label} €${month.airbnb.toLocaleString()} · ${legend[1].label} €${month.booking.toLocaleString()} · ${legend[2].label} €${month.other.toLocaleString()}`;
+              const fmt = (v: number) => v.toLocaleString(i18n.language);
+              const tip = `€${fmt(total)} — ${legend[0].label} €${fmt(month.airbnb)} · ${legend[1].label} €${fmt(month.booking)} · ${legend[2].label} €${fmt(month.other)}`;
               if (total <= 0) {
                 return (
                   <div key={month.month} className="flex-1 flex justify-center">

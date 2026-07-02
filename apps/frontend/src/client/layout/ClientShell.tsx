@@ -48,7 +48,7 @@ export default function ClientShell() {
 
   return (
     <div className="min-h-screen bg-surface-2 flex flex-col">
-      <header role="banner" className="sticky top-0 z-30 flex items-center justify-between gap-[18px] py-[14px] px-[32px] backdrop-blur-md border-b border-border max-client:px-4" style={{ background: 'color-mix(in srgb, var(--surface) 86%, transparent)' }}>
+      <header role="banner" className="sticky top-0 z-30 flex items-center justify-between gap-[18px] py-[14px] px-[32px] bg-surface backdrop-blur-md border-b border-border max-client:px-4" style={{ background: 'color-mix(in srgb, var(--surface) 86%, transparent)' }}>
         <span aria-hidden className="absolute inset-x-0 -bottom-px h-[2px] pointer-events-none" style={{ background: 'linear-gradient(90deg, color-mix(in srgb, var(--brand-secondary) 65%, transparent), color-mix(in srgb, var(--brand-primary) 25%, transparent) 55%, transparent)' }} />
         <div className="hidden max-client:flex items-center gap-[10px] min-w-0">
           <button
