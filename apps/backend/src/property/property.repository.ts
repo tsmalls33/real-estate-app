@@ -181,25 +181,45 @@ export class PropertyRepository {
         ...(propertyId ? { id_property: propertyId } : {}),
       },
       include: {
-        property: { select: { id_property: true, propertyName: true } },
+        property: {
+          select: { id_property: true, propertyName: true, saleType: true },
+        },
       },
       orderBy: { startDate: 'desc' },
     });
+
+    // Occupancy is measured against the owner's rentable capacity, so the
+    // denominator counts owned rental units (short/long-term), not the for-sale
+    // listings and not just the ones that happen to have a booking this month.
+    const now = new Date();
+    const daysInMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+    ).getDate();
+    const rentalPropertyCount = await this.prisma.property.count({
+      where: {
+        id_owner: userId,
+        isDeleted: false,
+        saleType: SaleType.RENT,
+        ...(propertyId ? { id_property: propertyId } : {}),
+      },
+    });
+    const totalNights = rentalPropertyCount * daysInMonth;
 
     if (raw.length === 0) {
       return {
         kpis: {
           incomeLastMonth: { amount: 0, deltaPercent: 0 },
-          nightsBooked: { booked: 0, total: 0, occupancyPct: 0 },
+          nightsBooked: { booked: 0, total: totalNights, occupancyPct: 0 },
           avgNightly: { amount: 0, deltaPercent: 0 },
-          nextPayout: { amount: 0, date: '' },
+          nextPayout: { amount: 0, date: null },
         },
         incomeChart: [],
         upcomingCheckins: [],
       };
     }
 
-    const now = new Date();
     const startThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const startLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -241,19 +261,15 @@ export class PropertyRepository {
           )
         : 0;
 
-    const properties = [...new Set(raw.map((r) => r.property.id_property))];
-    const daysInMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0,
-    ).getDate();
-    const totalNights = properties.length * daysInMonth;
     // Only count the portion of each stay that falls within the current month,
-    // so occupancy can never exceed 100%.
-    const bookedNights = raw.reduce(
-      (s, r) => s + nightsInWindow(r, startThisMonth, startNextMonth),
-      0,
-    );
+    // and only for rental units, so the numerator matches the RENT-scoped
+    // denominator and occupancy can never exceed 100%.
+    const bookedNights = raw
+      .filter((r) => r.property.saleType === SaleType.RENT)
+      .reduce(
+        (s, r) => s + nightsInWindow(r, startThisMonth, startNextMonth),
+        0,
+      );
 
     const start30 = new Date(now.getTime() - 30 * 86400000);
     const start60 = new Date(now.getTime() - 60 * 86400000);
@@ -345,7 +361,10 @@ export class PropertyRepository {
         },
         nextPayout: {
           amount: nextPayoutAmount,
-          date: `${payoutDate.toISOString().split('T')[0]}`,
+          date:
+            nextPayoutAmount > 0
+              ? payoutDate.toISOString().split('T')[0]
+              : null,
         },
       },
       incomeChart,

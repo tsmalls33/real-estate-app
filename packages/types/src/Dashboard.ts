@@ -4,7 +4,7 @@ export interface OwnerKpis {
   incomeLastMonth: { amount: number; deltaPercent: number };
   nightsBooked: { booked: number; total: number; occupancyPct: number };
   avgNightly: { amount: number; deltaPercent: number };
-  nextPayout: { amount: number; date: string };
+  nextPayout: { amount: number; date: string | null };
 }
 
 export interface IncomeChartItem {

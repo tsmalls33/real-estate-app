@@ -112,7 +112,9 @@ describe('Properties (api)', () => {
     });
 
     it('CLIENT can list own properties (role override)', async () => {
-      const { accessToken, user } = await signUpAs(app, { email: 'client-own@test.com' });
+      const { accessToken, user } = await signUpAs(app, {
+        email: 'client-own@test.com',
+      });
       const admin = await createUserWithRole(app, prisma, UserRoles.ADMIN, {
         email: 'admin-for-client@test.com',
       });
@@ -129,7 +131,11 @@ describe('Properties (api)', () => {
       await request(app.getHttpServer())
         .post('/properties')
         .set(...authHeader(admin.accessToken))
-        .send({ ...propertyPayload, propertyName: 'Other Villa', id_owner: admin.userId })
+        .send({
+          ...propertyPayload,
+          propertyName: 'Other Villa',
+          id_owner: admin.userId,
+        })
         .expect(201);
 
       const res = await request(app.getHttpServer())
@@ -178,6 +184,79 @@ describe('Properties (api)', () => {
         .get(`/properties/${created.body.id_property}`)
         .set(...authHeader(adminB.accessToken))
         .expect(404);
+    });
+  });
+
+  describe('GET /properties/dashboard', () => {
+    it('CLIENT gets a dashboard scoped to their rental properties', async () => {
+      const { accessToken, user } = await signUpAs(app, {
+        email: 'client-dash@test.com',
+      });
+      const admin = await createUserWithRole(app, prisma, UserRoles.ADMIN, {
+        email: 'admin-for-dash@test.com',
+      });
+
+      // One rental owned by the client (counts toward occupancy) and one
+      // for-sale listing (must NOT count toward the occupancy denominator).
+      await request(app.getHttpServer())
+        .post('/properties')
+        .set(...authHeader(admin.accessToken))
+        .send({
+          propertyName: 'Client Rental',
+          propertyAddress: '1 Rental Rd',
+          saleType: 'RENT',
+          rentalMode: 'SHORT_TERM',
+          id_owner: user.id_user,
+        })
+        .expect(201);
+      await request(app.getHttpServer())
+        .post('/properties')
+        .set(...authHeader(admin.accessToken))
+        .send({
+          propertyName: 'Client ForSale',
+          propertyAddress: '2 Sale St',
+          saleType: 'SALE',
+          salePrice: 400000,
+          id_owner: user.id_user,
+        })
+        .expect(201);
+
+      const res = await request(app.getHttpServer())
+        .get('/properties/dashboard')
+        .set(...authHeader(accessToken))
+        .expect(200);
+
+      expect(res.body).toHaveProperty('kpis');
+      expect(res.body).toHaveProperty('incomeChart');
+      expect(res.body).toHaveProperty('upcomingCheckins');
+
+      // Denominator = 1 rental * days-in-current-month; the SALE listing is excluded.
+      const now = new Date();
+      const daysInMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+      ).getDate();
+      expect(res.body.kpis.nightsBooked.total).toBe(daysInMonth);
+    });
+
+    it('non-CLIENT roles get 403', async () => {
+      const admin = await createUserWithRole(app, prisma, UserRoles.ADMIN, {
+        email: 'admin-dash-403@test.com',
+      });
+      await request(app.getHttpServer())
+        .get('/properties/dashboard')
+        .set(...authHeader(admin.accessToken))
+        .expect(403);
+    });
+
+    it('rejects a malformed ?property uuid with 400', async () => {
+      const client = await signUpAs(app, { email: 'client-dash-400@test.com' });
+      await request(app.getHttpServer())
+        .get('/properties/dashboard')
+        .query({ property: 'not-a-uuid' })
+        .set(...authHeader(client.accessToken))
+        .expect(400);
     });
   });
 

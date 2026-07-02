@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Platform, ReservationStatus } from '@prisma/client';
+import { Platform, ReservationStatus, SaleType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PropertyRepository } from './property.repository';
 
@@ -16,6 +16,7 @@ type ResOverrides = {
   guestName?: string;
   propertyId?: string;
   propertyName?: string;
+  saleType?: SaleType;
 };
 
 const makeRes = (o: ResOverrides) => ({
@@ -29,12 +30,16 @@ const makeRes = (o: ResOverrides) => ({
   property: {
     id_property: o.propertyId ?? 'prop-1',
     propertyName: o.propertyName ?? 'Test Property',
+    saleType: o.saleType ?? SaleType.RENT,
   },
 });
 
 describe('PropertyRepository – getOwnerDashboardMetrics', () => {
   let repository: PropertyRepository;
-  let mockPrisma: { reservation: { findMany: jest.Mock } };
+  let mockPrisma: {
+    reservation: { findMany: jest.Mock };
+    property: { count: jest.Mock };
+  };
 
   beforeEach(async () => {
     jest.useFakeTimers().setSystemTime(NOW);
@@ -42,6 +47,10 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
     mockPrisma = {
       reservation: {
         findMany: jest.fn(),
+      },
+      property: {
+        // Owner's rentable capacity; overridden per-test where occupancy matters.
+        count: jest.fn().mockResolvedValue(1),
       },
     };
 
@@ -59,8 +68,9 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
     jest.useRealTimers();
   });
 
-  it('returns a zeroed payload when the owner has no reservations', async () => {
+  it('returns a zeroed payload when the owner has no reservations or rentals', async () => {
     mockPrisma.reservation.findMany.mockResolvedValue([]);
+    mockPrisma.property.count.mockResolvedValue(0);
 
     const result = await repository.getOwnerDashboardMetrics('owner-1');
 
@@ -69,7 +79,7 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
         incomeLastMonth: { amount: 0, deltaPercent: 0 },
         nightsBooked: { booked: 0, total: 0, occupancyPct: 0 },
         avgNightly: { amount: 0, deltaPercent: 0 },
-        nextPayout: { amount: 0, date: '' },
+        nextPayout: { amount: 0, date: null },
       },
       incomeChart: [],
       upcomingCheckins: [],
@@ -94,6 +104,65 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
     expect(nightsBooked.booked).toBe(19);
     expect(nightsBooked.total).toBe(31);
     expect(nightsBooked.occupancyPct).toBe(61);
+    expect(nightsBooked.occupancyPct).toBeLessThanOrEqual(100);
+  });
+
+  it('sizes occupancy by the owner rental count, not just booked properties', async () => {
+    // 4 rental units owned, but only one has a booking (19 nights in July).
+    mockPrisma.property.count.mockResolvedValue(4);
+    mockPrisma.reservation.findMany.mockResolvedValue([
+      makeRes({
+        status: ReservationStatus.ACTIVE,
+        start: new Date(2026, 6, 1),
+        end: new Date(2026, 6, 20),
+      }),
+    ]);
+
+    const { nightsBooked } = (
+      await repository.getOwnerDashboardMetrics('owner-1')
+    ).kpis;
+
+    // total = 4 units * 31 days, not 1 * 31
+    expect(nightsBooked.total).toBe(124);
+    expect(nightsBooked.booked).toBe(19);
+    expect(nightsBooked.occupancyPct).toBe(15);
+
+    // denominator only counts owned, non-deleted rental units
+    const { where } = mockPrisma.property.count.mock.calls[0][0];
+    expect(where).toEqual({
+      id_owner: 'owner-1',
+      isDeleted: false,
+      saleType: SaleType.RENT,
+    });
+  });
+
+  it('excludes non-rental properties from booked nights so occupancy stays <= 100%', async () => {
+    // Denominator = 1 rental unit (31 nights). A reservation attached to a
+    // SALE property must not add to the numerator, or occupancy would blow past 100%.
+    mockPrisma.property.count.mockResolvedValue(1);
+    mockPrisma.reservation.findMany.mockResolvedValue([
+      makeRes({
+        id: 'rent',
+        status: ReservationStatus.ACTIVE,
+        start: new Date(2026, 6, 1),
+        end: new Date(2026, 6, 11), // 10 nights on the rental
+      }),
+      makeRes({
+        id: 'sale',
+        status: ReservationStatus.ACTIVE,
+        propertyId: 'prop-sale',
+        saleType: SaleType.SALE,
+        start: new Date(2026, 6, 1),
+        end: new Date(2026, 6, 31), // 30 nights on a for-sale unit — must be ignored
+      }),
+    ]);
+
+    const { nightsBooked } = (
+      await repository.getOwnerDashboardMetrics('owner-1')
+    ).kpis;
+
+    expect(nightsBooked.booked).toBe(10);
+    expect(nightsBooked.total).toBe(31);
     expect(nightsBooked.occupancyPct).toBeLessThanOrEqual(100);
   });
 
