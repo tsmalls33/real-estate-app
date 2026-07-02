@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
-import { UserRoles } from '@RealEstate/types';
 
 vi.mock('../../shared/api/services', () => ({
   userApi: { me: vi.fn() },
   propertyApi: { list: vi.fn() },
   tenantApi: { list: vi.fn(), updateTheme: vi.fn(), assignTheme: vi.fn() },
   authApi: { signin: vi.fn(), signup: vi.fn() },
+  ownerApi: { dashboard: vi.fn() },
 }));
 
-import { userApi, propertyApi } from '../../shared/api/services';
+import { userApi, ownerApi } from '../../shared/api/services';
 import { seedAuth, clearAuth } from '../../test-utils/auth';
-import { makeMe, makeProperty } from '../../test-utils/factories';
+import { makeMe, makeOwnerDashboard } from '../../test-utils/factories';
 import { renderWithSession } from '../../test-utils/render';
+import { UserRoles } from '@RealEstate/types';
 import Dashboard from './Dashboard';
 
 beforeEach(() => {
@@ -23,34 +24,41 @@ beforeEach(() => {
 });
 
 describe('Client Dashboard', () => {
-  it('renders the section title without a count and lists properties', async () => {
-    vi.mocked(propertyApi.list).mockResolvedValue({
-      properties: [makeProperty({ propertyName: 'Lake House' })],
-      total: 1,
-    });
+  it('renders the overview KPIs and chart', async () => {
+    vi.mocked(ownerApi.dashboard).mockResolvedValue(makeOwnerDashboard());
 
     renderWithSession(<Dashboard />);
 
-    const heading = await screen.findByRole('heading', { name: 'Your properties' });
-    expect(heading).toBeInTheDocument();
-    expect(heading).not.toHaveTextContent(/\(/); // no count in parens
-    expect(screen.getByText('Lake House')).toBeInTheDocument();
-  });
-
-  it('shows the client empty-state copy', async () => {
-    vi.mocked(propertyApi.list).mockResolvedValue({ properties: [], total: 0 });
-
-    renderWithSession(<Dashboard />);
-
-    expect(await screen.findByText("You don't have any properties yet.")).toBeInTheDocument();
+    expect(await screen.findByText('Income · Last Month')).toBeInTheDocument();
+    expect(screen.getByText('Nights Booked')).toBeInTheDocument();
+    expect(screen.getByText('Avg. Nightly')).toBeInTheDocument();
+    expect(screen.getByText('Next Payout')).toBeInTheDocument();
   });
 
   it('surfaces a load error', async () => {
-    vi.mocked(propertyApi.list).mockRejectedValue(new Error('down'));
+    vi.mocked(ownerApi.dashboard).mockRejectedValue(new Error('down'));
 
     renderWithSession(<Dashboard />);
 
     expect(await screen.findByRole('heading', { name: 'Network error' })).toBeInTheDocument();
-    expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument();
+    expect(screen.getByText('down')).toBeInTheDocument();
+  });
+
+  it('fetches the combined view when no property is selected', async () => {
+    vi.mocked(ownerApi.dashboard).mockResolvedValue(makeOwnerDashboard());
+
+    renderWithSession(<Dashboard />);
+
+    expect(await screen.findByText('Income · Last Month')).toBeInTheDocument();
+    expect(ownerApi.dashboard).toHaveBeenCalledWith(undefined);
+  });
+
+  it('scopes the fetch to the selected property from the URL', async () => {
+    vi.mocked(ownerApi.dashboard).mockResolvedValue(makeOwnerDashboard());
+
+    renderWithSession(<Dashboard />, { route: '/?property=p2' });
+
+    expect(await screen.findByText('Income · Last Month')).toBeInTheDocument();
+    expect(ownerApi.dashboard).toHaveBeenCalledWith('p2');
   });
 });

@@ -1,55 +1,66 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import type { Property } from '@RealEstate/types';
+import { useSearchParams } from 'react-router-dom';
+import type { OwnerDashboardResponse } from '@RealEstate/types';
 import { ApiError } from '../../shared/api/client';
-import { propertyApi } from '../../shared/api/services';
-import PropertyList from '../../shared/components/PropertyList/PropertyList';
+import { ownerApi } from '../../shared/api/services';
 import ErrorPanel, { type Variant as ErrorVariant } from '../../shared/components/ErrorPanel/ErrorPanel';
-
-function SkeletonCard() {
-  return (
-    <div className="bg-surface border border-border rounded-[14px] py-[18px] px-5 shadow-sm flex flex-col gap-2.5" aria-hidden>
-      <div className="skeleton h-[15px] w-3/4 rounded" />
-      <div className="skeleton h-[12px] w-1/2 rounded" />
-      <div className="flex items-center justify-between mt-1.5">
-        <div className="skeleton h-[10px] w-[80px] rounded-full" />
-        <div className="skeleton h-[12px] w-[60px] rounded" />
-      </div>
-    </div>
-  );
-}
+import Skeleton from '../../shared/components/Skeleton/Skeleton';
+import OwnerKpiStrip from '../components/OwnerKpiStrip';
+import IncomeChart from '../components/IncomeChart';
+import UpcomingCheckins from '../components/UpcomingCheckins';
 
 export default function Dashboard() {
-  const { t } = useTranslation();
-  const [properties, setProperties] = useState<Property[] | null>(null);
+  const [searchParams] = useSearchParams();
+  const property = searchParams.get('property') || undefined;
+  const [data, setData] = useState<OwnerDashboardResponse | null>(null);
   const [error, setError] = useState<{ variant: ErrorVariant; message: string } | null>(null);
 
   useEffect(() => {
-    propertyApi.list()
-      .then(data => setProperties(data.properties))
-      .catch((err: Error) => setError({
-        variant: err instanceof ApiError ? 'api-error' : 'network-error',
-        message: err.message,
-      }));
-  }, []);
+    // Reset to the skeleton on every switch; ignore a stale in-flight response
+    // if the selection changes again before it resolves.
+    let active = true;
+    setData(null);
+    setError(null);
+    ownerApi.dashboard(property)
+      .then(d => { if (active) setData(d); })
+      .catch((err: Error) => {
+        if (active) setError({
+          variant: err instanceof ApiError ? 'api-error' : 'network-error',
+          message: err.message,
+        });
+      });
+    return () => { active = false; };
+  }, [property]);
+
+  const loading = !error && data === null;
 
   return (
     <section>
-      <h2 className="text-[13px] font-bold text-text tracking-[-0.01em] mb-3">{t('client.dashboard.title')}</h2>
-      {error && <ErrorPanel variant={error.variant} />}
-      {!error && properties === null && (
-        <div role="status" aria-label={t('common.loading')}>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-card:grid-cols-1">
-            {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
+      {error && <ErrorPanel variant={error.variant} message={error.message} />}
+
+      {loading && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-4 max-card:grid-cols-2 gap-3">
+            {Array.from({ length: 4 }, (_, i) => (
+              <div key={i} className="bg-surface border border-border rounded-[14px] p-[16px_18px] shadow-sm">
+                <Skeleton count={3} />
+              </div>
+            ))}
+          </div>
+          <div className="bg-surface border border-border rounded-[14px] p-[16px_18px] shadow-sm">
+            <Skeleton count={5} />
           </div>
         </div>
       )}
-      {!error && properties !== null && (
-        <PropertyList
-          items={properties}
-          variant="client"
-          emptyLabel={t('client.dashboard.empty')}
-        />
+
+      {data && (
+        <div className="space-y-4">
+          <OwnerKpiStrip kpis={data.kpis} />
+          <div className="grid grid-cols-[1.5fr_1fr] grid-rows-[minmax(0,1fr)] h-[clamp(320px,46vh,560px)] max-card:grid-cols-1 max-card:grid-rows-none max-card:h-auto gap-4">
+            <IncomeChart data={data.incomeChart} />
+            <UpcomingCheckins checkins={data.upcomingCheckins} />
+          </div>
+        </div>
       )}
     </section>
   );

@@ -28,21 +28,23 @@ vi.mock('../shared/api/services', () => ({
   propertyApi: { list: vi.fn() },
   tenantApi: { list: vi.fn(), updateTheme: vi.fn(), assignTheme: vi.fn() },
   authApi: { signin: vi.fn(), signup: vi.fn() },
+  ownerApi: { dashboard: vi.fn() },
 }));
 
-import { userApi, propertyApi } from '../shared/api/services';
+import { userApi, propertyApi, ownerApi } from '../shared/api/services';
 import { seedAuth, clearAuth } from '../test-utils/auth';
-import { makeMe } from '../test-utils/factories';
+import { makeMe, makeOwnerDashboard } from '../test-utils/factories';
 import { renderWithSession } from '../test-utils/render';
 import AppRouter from './AppRouter';
 
-// Admin landing renders the admin Dashboard, which fires propertyApi.list();
-// the client landing renders the client Dashboard, which also fires it. Resolve
-// it for every test so the app-level ErrorBoundary never trips.
+// Admin landing renders the admin Dashboard (fires propertyApi.list());
+// the client landing renders the client Dashboard (fires ownerApi.dashboard()).
+// Resolve both for every test so the app-level ErrorBoundary never trips.
 beforeEach(() => {
   clearAuth();
   vi.clearAllMocks();
   vi.mocked(propertyApi.list).mockResolvedValue({ properties: [], total: 0 });
+  vi.mocked(ownerApi.dashboard).mockResolvedValue(makeOwnerDashboard());
 });
 
 const onAdmin = () => screen.findByRole('link', { name: /dashboard/i }); // admin-only nav label
