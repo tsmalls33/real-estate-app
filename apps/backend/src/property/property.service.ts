@@ -13,6 +13,7 @@ import {
   assertTenantMatch,
   resolveTenantId,
 } from '../common/types/tenant-scope';
+import type { OwnerDashboardResponse } from '@RealEstate/types';
 
 import { PropertyRepository } from './property.repository';
 
@@ -121,5 +122,12 @@ export class PropertyService {
       );
 
     assertTenantMatch(scope, property.id_tenant);
+  }
+
+  async getOwnerDashboard(
+    userId: string,
+    propertyId?: string,
+  ): Promise<OwnerDashboardResponse> {
+    return this.propertyRepository.getOwnerDashboardMetrics(userId, propertyId);
   }
 }

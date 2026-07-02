@@ -16,6 +16,11 @@ import {
   type PropertyDetail,
   type PropertyListItem,
 } from './projections/property.projection';
+import type {
+  IncomeChartItem,
+  OwnerDashboardResponse,
+  UpcomingCheckin,
+} from '@RealEstate/types';
 
 @Injectable()
 export class PropertyRepository {
@@ -163,5 +168,207 @@ export class PropertyRepository {
     ]);
 
     return { data, total };
+  }
+
+  async getOwnerDashboardMetrics(
+    userId: string,
+    propertyId?: string,
+  ): Promise<OwnerDashboardResponse> {
+    const raw = await this.prisma.reservation.findMany({
+      where: {
+        property: { id_owner: userId, isDeleted: false },
+        status: { not: ReservationStatus.CANCELLED },
+        ...(propertyId ? { id_property: propertyId } : {}),
+      },
+      include: {
+        property: {
+          select: { id_property: true, propertyName: true, saleType: true },
+        },
+      },
+      orderBy: { startDate: 'desc' },
+    });
+
+    // Occupancy is measured against the owner's rentable capacity, so the
+    // denominator counts owned rental units (short/long-term), not the for-sale
+    // listings and not just the ones that happen to have a booking this month.
+    const now = new Date();
+    const daysInMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+    ).getDate();
+    const rentalPropertyCount = await this.prisma.property.count({
+      where: {
+        id_owner: userId,
+        isDeleted: false,
+        saleType: SaleType.RENT,
+        ...(propertyId ? { id_property: propertyId } : {}),
+      },
+    });
+    const totalNights = rentalPropertyCount * daysInMonth;
+
+    if (raw.length === 0) {
+      return {
+        kpis: {
+          incomeLastMonth: { amount: 0, deltaPercent: 0 },
+          nightsBooked: { booked: 0, total: totalNights, occupancyPct: 0 },
+          avgNightly: { amount: 0, deltaPercent: 0 },
+          nextPayout: { amount: 0, date: null },
+        },
+        incomeChart: [],
+        upcomingCheckins: [],
+      };
+    }
+
+    const startThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const startMonthBefore = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+
+    // Nights of a reservation that fall inside [windowStart, windowEnd).
+    const nightsInWindow = (
+      r: { startDate: Date; endDate: Date },
+      windowStart: Date,
+      windowEnd: Date,
+    ) => {
+      const from = Math.max(r.startDate.getTime(), windowStart.getTime());
+      const to = Math.min(r.endDate.getTime(), windowEnd.getTime());
+      return to > from ? Math.ceil((to - from) / 86400000) : 0;
+    };
+
+    const completed = raw.filter(
+      (r) => r.status === ReservationStatus.COMPLETED,
+    );
+    const lastMonthCompleted = completed.filter(
+      (r) => r.endDate >= startLastMonth && r.endDate < startThisMonth,
+    );
+    const prevMonthCompleted = completed.filter(
+      (r) => r.endDate >= startMonthBefore && r.endDate < startLastMonth,
+    );
+
+    const incomeLastMonth = lastMonthCompleted.reduce(
+      (s, r) => s + Number(r.totalCost),
+      0,
+    );
+    const incomePrevMonth = prevMonthCompleted.reduce(
+      (s, r) => s + Number(r.totalCost),
+      0,
+    );
+    const deltaPercent =
+      incomePrevMonth > 0
+        ? Math.round(
+            ((incomeLastMonth - incomePrevMonth) / incomePrevMonth) * 100,
+          )
+        : 0;
+
+    // Only count the portion of each stay that falls within the current month,
+    // and only for rental units, so the numerator matches the RENT-scoped
+    // denominator and occupancy can never exceed 100%.
+    const bookedNights = raw
+      .filter((r) => r.property.saleType === SaleType.RENT)
+      .reduce(
+        (s, r) => s + nightsInWindow(r, startThisMonth, startNextMonth),
+        0,
+      );
+
+    const start30 = new Date(now.getTime() - 30 * 86400000);
+    const start60 = new Date(now.getTime() - 60 * 86400000);
+    const avgNightlyOver = (windowStart: Date, windowEnd: Date) => {
+      const inWindow = completed.filter(
+        (r) => r.endDate >= windowStart && r.endDate < windowEnd,
+      );
+      const nights = inWindow.reduce(
+        (s, r) =>
+          s +
+          Math.ceil((r.endDate.getTime() - r.startDate.getTime()) / 86400000),
+        0,
+      );
+      if (nights === 0) return 0;
+      return Math.round(
+        inWindow.reduce((s, r) => s + Number(r.totalCost), 0) / nights,
+      );
+    };
+    const avgNightly = avgNightlyOver(start30, now);
+    const avgNightlyPrev = avgNightlyOver(start60, start30);
+    const avgNightlyDelta =
+      avgNightlyPrev > 0
+        ? Math.round(((avgNightly - avgNightlyPrev) / avgNightlyPrev) * 100)
+        : 0;
+
+    const completedThisMonth = completed.filter(
+      (r) => r.endDate >= startThisMonth,
+    );
+    const incomeThisMonth = completedThisMonth.reduce(
+      (s, r) => s + Number(r.totalCost),
+      0,
+    );
+    const nextPayoutAmount = incomeThisMonth;
+
+    // Date constructor normalizes month overflow (e.g. month 13 -> next year).
+    const payoutDate = new Date(now.getFullYear(), now.getMonth() + 2, 5);
+
+    const incomeChart: IncomeChartItem[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      const monthCompleted = completed.filter(
+        (r) => r.endDate >= monthStart && r.endDate < monthEnd,
+      );
+
+      incomeChart.push({
+        month: `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, '0')}`,
+        airbnb: monthCompleted
+          .filter((r) => r.platform === Platform.AIRBNB)
+          .reduce((s, r) => s + Number(r.totalCost), 0),
+        booking: monthCompleted
+          .filter((r) => r.platform === Platform.BOOKING)
+          .reduce((s, r) => s + Number(r.totalCost), 0),
+        other: monthCompleted
+          .filter((r) => r.platform === Platform.OTHER)
+          .reduce((s, r) => s + Number(r.totalCost), 0),
+      });
+    }
+
+    const upcomingCheckins: UpcomingCheckin[] = raw
+      .filter((r) => r.status === ReservationStatus.UPCOMING)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+      .slice(0, 5)
+      .map((r) => ({
+        id: r.id_reservation,
+        guestName: r.guestName,
+        propertyName: r.property.propertyName,
+        checkIn: r.startDate.toISOString().split('T')[0],
+        nights: Math.ceil(
+          (r.endDate.getTime() - r.startDate.getTime()) / 86400000,
+        ),
+        channel: r.platform as UpcomingCheckin['channel'],
+      }));
+
+    return {
+      kpis: {
+        incomeLastMonth: { amount: incomeLastMonth, deltaPercent },
+        nightsBooked: {
+          booked: bookedNights,
+          total: totalNights,
+          occupancyPct:
+            totalNights > 0
+              ? Math.round((bookedNights / totalNights) * 100)
+              : 0,
+        },
+        avgNightly: {
+          amount: avgNightly,
+          deltaPercent: avgNightlyDelta,
+        },
+        nextPayout: {
+          amount: nextPayoutAmount,
+          date:
+            nextPayoutAmount > 0
+              ? payoutDate.toISOString().split('T')[0]
+              : null,
+        },
+      },
+      incomeChart,
+      upcomingCheckins,
+    };
   }
 }
