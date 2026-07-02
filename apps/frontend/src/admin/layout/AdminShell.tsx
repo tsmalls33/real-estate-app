@@ -43,7 +43,7 @@ export default function AdminShell() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface-2">
-      <header role="banner" className="h-[56px] flex items-stretch bg-surface border-b border-border">
+      <header role="banner" className="sticky top-0 z-30 h-[56px] flex items-stretch backdrop-blur-md border-b border-border" style={{ background: 'color-mix(in srgb, var(--surface) 86%, transparent)' }}>
         <div className="w-[236px] flex-shrink-0 flex items-center gap-[11px] px-[16px] shadow-[inset_0_-2px_0_var(--brand-secondary)] max-admin:w-auto max-admin:px-[12px] max-admin:shadow-none">
           <div className="w-[30px] h-[30px] rounded-[8px] bg-brand-primary text-brand-on-primary grid place-items-center font-extrabold text-[14px] tracking-[-0.02em] flex-shrink-0">{tenantName[0]?.toUpperCase() ?? '·'}</div>
           <div>
