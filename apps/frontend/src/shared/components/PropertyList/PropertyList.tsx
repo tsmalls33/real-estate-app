@@ -5,6 +5,16 @@ import type { Property, PropertyOwnerSummary } from '@RealEstate/types';
 import { PropertyStatus } from '@RealEstate/types';
 import { formatPrice } from '../../format/price';
 
+// Status reads semantically instead of one-brand-fits-all: available = ready
+// to earn, under rental = occupied (brand accent), sold/inactive = settled.
+const STATUS_TONE: Record<PropertyStatus, string> = {
+  [PropertyStatus.AVAILABLE_SALE]: 'bg-success-soft text-success',
+  [PropertyStatus.AVAILABLE_RENTAL]: 'bg-success-soft text-success',
+  [PropertyStatus.UNDER_RENTAL]: 'bg-brand-secondary-soft text-brand-secondary',
+  [PropertyStatus.SOLD]: 'bg-hover text-text-muted',
+  [PropertyStatus.INACTIVE]: 'bg-hover text-text-faint',
+};
+
 const STATUS_KEY: Record<PropertyStatus, string> = {
   [PropertyStatus.AVAILABLE_SALE]: 'availableSale',
   [PropertyStatus.AVAILABLE_RENTAL]: 'availableRental',
@@ -30,23 +40,23 @@ type ClassSet = {
 const CLASSES: Record<Variant, ClassSet> = {
   admin: {
     grid: 'grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-card:grid-cols-1',
-    card: 'bg-surface border border-border rounded-radius py-4 px-[18px] shadow-sm flex flex-col gap-2',
+    card: 'bg-surface border border-border rounded-radius py-4 px-[18px] shadow-sm flex flex-col gap-2 transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md hover:border-border-strong',
     name: 'text-[14px] font-bold text-text tracking-[-0.01em]',
     addr: 'text-xs text-text-muted',
     row: 'flex items-center justify-between mt-1.5 text-xs text-text-muted',
     status:
-      'px-2.5 py-[3px] rounded-full bg-brand-secondary text-brand-on-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
+      'px-2.5 py-[3px] rounded-full text-[10px] font-bold tracking-[0.06em] uppercase',
     empty:
       'border border-dashed border-border-strong rounded-radius py-9 px-5 text-center text-text-muted bg-surface',
   },
   client: {
     grid: 'grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 max-card:grid-cols-1',
-    card: 'bg-surface border border-border rounded-[14px] py-[18px] px-5 shadow-sm flex flex-col gap-2.5',
+    card: 'bg-surface border border-border rounded-[14px] py-[18px] px-5 shadow-sm flex flex-col gap-2.5 transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md hover:border-border-strong',
     name: 'text-[15px] font-bold text-text tracking-[-0.01em]',
     addr: 'text-xs text-text-muted',
     row: 'flex justify-between items-center mt-1.5 text-xs text-text-muted',
     status:
-      'px-2.5 py-[3px] rounded-full bg-brand-secondary text-brand-on-secondary text-[10px] font-bold tracking-[0.06em] uppercase',
+      'px-2.5 py-[3px] rounded-full text-[10px] font-bold tracking-[0.06em] uppercase',
     empty:
       'border border-dashed border-border-strong rounded-[14px] py-9 px-5 text-center text-text-muted bg-surface',
   },
@@ -92,7 +102,7 @@ export default function PropertyList({
               </div>
             )}
             <div className={c.row}>
-              <span className={c.status}>{t(`propertyStatus.${STATUS_KEY[p.status]}`)}</span>
+              <span className={`${c.status} ${STATUS_TONE[p.status]}`}>{t(`propertyStatus.${STATUS_KEY[p.status]}`)}</span>
               {price && <span>{price}</span>}
             </div>
           </div>

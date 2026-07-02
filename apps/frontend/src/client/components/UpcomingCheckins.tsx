@@ -1,27 +1,25 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UpcomingCheckin } from '@RealEstate/types';
 import ScrollFade from '../../shared/components/ScrollFade/ScrollFade';
+import ChannelBadge from '../../shared/components/ChannelBadge/ChannelBadge';
 
 interface Props {
   checkins: UpcomingCheckin[];
 }
 
-const CHANNEL_COLORS: Record<string, string> = {
-  AIRBNB: 'bg-[#FF5A5F]/10 text-[#FF5A5F]',
-  BOOKING: 'bg-[#003580]/10 text-[#003580]',
-  OTHER: 'bg-hover text-text-muted',
-};
-
-const CHANNEL_KEYS: Record<string, string> = {
-  AIRBNB: 'airbnb',
-  BOOKING: 'booking',
-  OTHER: 'direct',
-};
-
 export default function UpcomingCheckins({ checkins }: Props) {
   const { t, i18n } = useTranslation();
-  const channelLabel = (channel: string) =>
-    t(`client.dashboard.channels.${CHANNEL_KEYS[channel] ?? 'direct'}`);
+
+  // "in 4 days" / "tomorrow", localized for free via Intl — no i18n keys needed.
+  // Whole UTC calendar days (consistent with the UTC date chip) so the label
+  // never flips with time of day. Captured once per mount (react-hooks/purity).
+  const [today] = useState(() => new Date());
+  const utcDay = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  const relative = (checkIn: string) => {
+    const days = Math.round((utcDay(new Date(checkIn)) - utcDay(today)) / 86400000);
+    return new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' }).format(days, 'day');
+  };
 
   if (checkins.length === 0) {
     return (
@@ -42,15 +40,18 @@ export default function UpcomingCheckins({ checkins }: Props) {
         </span>
       </div>
       <div className="flex-1 min-h-0">
-        <ScrollFade orientation="vertical" className="space-y-2" fadeColor="var(--surface)">
+        <ScrollFade orientation="vertical" className="space-y-1" fadeColor="var(--surface)">
           {checkins.map((c) => {
             const day = new Date(c.checkIn).getUTCDate();
             const month = new Date(c.checkIn).toLocaleDateString(i18n.language, { month: 'short', timeZone: 'UTC' });
             return (
-              <div key={c.id} className="flex items-center gap-3 py-2 border-b border-border last:border-b-0">
-                <div className="flex flex-col items-center w-[36px] flex-shrink-0">
-                  <span className="text-[16px] font-bold text-text leading-none">{day}</span>
-                  <span className="text-[9px] text-text-muted uppercase mt-[1px]">{month}</span>
+              <div
+                key={c.id}
+                className="flex items-center gap-3 py-2 px-[8px] -mx-[8px] rounded-[10px] border-b border-border last:border-b-0 transition-colors hover:bg-hover"
+              >
+                <div className="flex flex-col items-center justify-center w-[40px] py-[4px] flex-shrink-0 rounded-[9px] bg-surface-2 border border-border">
+                  <span className="text-[15px] font-bold text-text leading-none tabular-nums">{day}</span>
+                  <span className="text-[8.5px] text-text-muted uppercase tracking-[0.08em] mt-[2px]">{month}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[12.5px] font-semibold text-text truncate">{c.guestName}</div>
@@ -58,9 +59,10 @@ export default function UpcomingCheckins({ checkins }: Props) {
                     {c.propertyName} · {t('client.dashboard.nights', { n: c.nights })}
                   </div>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${CHANNEL_COLORS[c.channel] ?? CHANNEL_COLORS.OTHER}`}>
-                  {channelLabel(c.channel)}
-                </span>
+                <div className="flex flex-col items-end gap-[4px] flex-shrink-0">
+                  <ChannelBadge channel={c.channel} />
+                  <span className="text-[9.5px] text-text-faint">{relative(c.checkIn)}</span>
+                </div>
               </div>
             );
           })}
