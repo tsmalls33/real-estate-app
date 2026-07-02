@@ -251,6 +251,28 @@ describe('PropertyRepository – getOwnerDashboardMetrics', () => {
     expect(avgNightly.deltaPercent).toBe(100);
   });
 
+  it('formats the next-payout date from local calendar parts (timezone-safe)', async () => {
+    // A completed stay ending this month makes nextPayout.amount > 0, so a date
+    // is emitted. Payout is the 5th of the month after next. With NOW=Jul 2026
+    // that is local Sept 5 — it must not slip to 09-04 via a UTC conversion,
+    // which is what would happen with toISOString() on servers east of UTC.
+    mockPrisma.reservation.findMany.mockResolvedValue([
+      makeRes({
+        status: ReservationStatus.COMPLETED,
+        start: new Date(2026, 6, 2),
+        end: new Date(2026, 6, 6),
+        totalCost: 400,
+      }),
+    ]);
+
+    const { nextPayout } = (
+      await repository.getOwnerDashboardMetrics('owner-1')
+    ).kpis;
+
+    expect(nextPayout.amount).toBeGreaterThan(0);
+    expect(nextPayout.date).toBe('2026-09-05');
+  });
+
   it('scopes the query to a single property when a propertyId is given', async () => {
     mockPrisma.reservation.findMany.mockResolvedValue([]);
 

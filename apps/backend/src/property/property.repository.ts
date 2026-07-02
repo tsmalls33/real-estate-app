@@ -306,6 +306,9 @@ export class PropertyRepository {
 
     // Date constructor normalizes month overflow (e.g. month 13 -> next year).
     const payoutDate = new Date(now.getFullYear(), now.getMonth() + 2, 5);
+    // Format from local calendar parts. toISOString() would convert to UTC and
+    // can shift the day by one on servers east of UTC (e.g. the 5th -> the 4th).
+    const payoutDateStr = `${payoutDate.getFullYear()}-${String(payoutDate.getMonth() + 1).padStart(2, '0')}-${String(payoutDate.getDate()).padStart(2, '0')}`;
 
     const incomeChart: IncomeChartItem[] = [];
     for (let i = 5; i >= 0; i--) {
@@ -361,10 +364,7 @@ export class PropertyRepository {
         },
         nextPayout: {
           amount: nextPayoutAmount,
-          date:
-            nextPayoutAmount > 0
-              ? payoutDate.toISOString().split('T')[0]
-              : null,
+          date: nextPayoutAmount > 0 ? payoutDateStr : null,
         },
       },
       incomeChart,
